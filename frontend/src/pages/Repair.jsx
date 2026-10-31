@@ -112,12 +112,14 @@ export default function RepairDetail() {
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
   const [sig, setSig] = useState({ role: "", name: "" });
-  const [fv, setFv] = useState({ key: "", value: "" });
+  const [fv, setFv] = useState({});
+  const [po, setPo] = useState("");
+  const [lf, setLf] = useState({});
   const [summ, setSumm] = useState(null);
   const load = useCallback(async () => {
     try { setD(await api(`/repairs/${id}`)); } catch (e) { setMsg({ tone: "error", text: errText(e) }); }
   }, [id]);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { setFv({}); setPo(""); load(); }, [load]);
   const act = async (path, body, ok) => {
     setBusy(true);
     try { await api(path, { method: "POST", body: body || {} }); setMsg({ tone: "success", text: ok }); }
@@ -131,8 +133,28 @@ export default function RepairDetail() {
   return (
     <div className="space-y-4">
       <PageHead kicker="Repair" title={`${r.operator_name || "Not set"} - PO ${r.po || "Not set"}`}
-        subtitle={`${r.railroad || "Not set"} - Track ${r.track || "Not set"} - MP ${r.milepost || "Not set"}`} />
+        subtitle={`${r.railroad || "Not set"} - Track ${r.track || "Not set"} - MP ${r.milepost || "Not set"}`}
+        right={d.work_order ? <Link data-testid="repair-workorder-link" to={`/office/work-orders/${d.work_order.uuid}`} className="rr-focus inline-flex min-h-[44px] items-center rounded-md border border-[#C5CCD2] bg-white px-3 text-sm font-bold hover:bg-[#F3F4F4]">Work order {d.work_order.number}</Link> : null} />
+      <Card testid="repair-next">
+        <p data-testid="repair-next-action" className="text-sm font-bold">Next: {d.next_action}</p>
+        <p data-testid="repair-location" className="text-sm">{d.location ? `Location: ${Number(d.location.lat).toFixed(6)}, ${Number(d.location.lon).toFixed(6)} (${d.location.method_label})${[d.location.railroad, d.location.subdivision, d.location.milepost ? `MP ${d.location.milepost}` : null].filter(Boolean).length ? ` - ${[d.location.railroad, d.location.subdivision, d.location.milepost ? `MP ${d.location.milepost}` : null].filter(Boolean).join(", ")}` : ""}` : "Location: Not set"}</p>
+      </Card>
       <Msg msg={msg} testid="repair-message" />
+      {r.completion && !r.po?.trim() ? (
+        <Card testid="repair-po-recovery">
+          <H2>Contract or PO reference</H2>
+          <p className="mt-1 text-sm">Enter the missing reference from the authorized contract or purchase order.</p>
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <Field id="repair-po" testid="repair-po-recovery-input" label="Contract or PO number" value={po} onChange={setPo} />
+            <Btn small kind="secondary" testid="repair-po-recovery-save" disabled={busy || !po.trim() || po.trim().length > 80} onClick={async () => {
+              setBusy(true);
+              try { await api(`/repairs/${id}/po-reference`, { method: "PUT", body: { po: po.trim() } }); setPo(""); setMsg({ tone: "success", text: "Contract or PO reference saved" }); }
+              catch (e) { setMsg({ tone: "error", text: errText(e) }); }
+              finally { setBusy(false); load(); }
+            }}>Save reference</Btn>
+          </div>
+        </Card>
+      ) : null}
       {d.documents_model ? (
         <Card testid="repair-documents-model">
           <H2>Documents</H2>
@@ -153,7 +175,21 @@ export default function RepairDetail() {
         </tbody></table>
         <p className="mt-2 text-sm" data-testid="repair-approval">{r.approved_work ? `Work approved ${r.approved_work.approved_at}` : "Work not approved yet"}</p>
         {r.completion && !r.approved_work ? <Btn small testid="repair-approve-button" disabled={busy} onClick={() => act(`/repairs/${id}/approve-work`, null, "Work approved")}>Approve actual work</Btn> : null}
+        {(r.completion && (d.missing_location_fields || []).length) || (!r.completion && !(d.location && Number.isFinite(d.location.lat))) ? (
+          <div className="mt-3 flex flex-wrap items-end gap-2" data-testid="repair-location-fields">
+            <p className="w-full text-sm font-semibold">{r.completion ? "Required by the operator, missing after Finish. Adding it does not change the recorded work."
+              : "Location: no pin or coordinates. Add railroad/subdivision and milepost so the foreman can finish. Recorded with your name and time."}</p>
+            {(r.completion ? d.missing_location_fields : ["railroad", "track", "milepost"]).map((k) => <Field key={k} id={`lf-${k}`} testid={`repair-location-field-${k}`} label={k[0].toUpperCase() + k.slice(1)} value={lf[k] ?? (r.completion ? "" : r[k] || "")} onChange={(v) => setLf({ ...lf, [k]: v })} />)}
+            <Btn small kind="secondary" testid="repair-location-fields-button" disabled={busy || !Object.values(lf).some((v) => v && v.trim())} onClick={async () => {
+              setBusy(true);
+              try { await api(`/repairs/${id}/location-fields`, { method: "PUT", body: lf }); setLf({}); setMsg({ tone: "success", text: "Saved. Recorded with your name and time." }); }
+              catch (e) { setMsg({ tone: "error", text: errText(e) }); }
+              finally { setBusy(false); load(); }
+            }}>Save</Btn>
+          </div>
+        ) : null}
       </Card>
+      <PaperworkCard id={id} admin={d.can_admin !== false} op={d.operator} auth={auth} onChange={load} />
       <Card testid="repair-findings">
         <H2>Findings</H2>
         <p className="text-sm">{d.findings.evidence.photo} photo(s), {d.findings.evidence.video} video(s){d.findings.evidence.not_verified ? `, ${d.findings.evidence.not_verified} still sending` : ""}</p>
@@ -165,7 +201,8 @@ export default function RepairDetail() {
       <Card testid="repair-documents">
         <H2>Report and forms <Badge label={d.document_status} tone={d.document_status === "Issued" ? "success" : "neutral"} /></H2>
         <p className="mt-2 text-sm"><a data-testid="repair-report-link" className="underline" href={`${API}/repairs/${id}/report${auth}`} target="_blank" rel="noreferrer">Open report</a>
-          {(d.operator?.forms || []).map((f) => <span key={f.uuid}> - <a className="underline" data-testid={`repair-form-${f.uuid}`} href={`${API}/repairs/${id}/forms/${f.uuid}${auth}`} target="_blank" rel="noreferrer">{f.name}</a></span>)}</p>
+          {(d.operator?.forms || []).map((f) => <span key={f.uuid}> - <a className="underline" data-testid={`repair-form-${f.uuid}`} href={`${API}/repairs/${id}/forms/${f.uuid}${auth}`} target="_blank" rel="noreferrer">{f.name}</a>
+            {f.has_pdf ? <> (<a className="underline" data-testid={`repair-form-pdf-${f.uuid}`} href={`${API}/repairs/${id}/forms/${f.uuid}/pdf${auth}`} target="_blank" rel="noreferrer">Filled PDF</a>)</> : null}</span>)}</p>
         <Blockers list={d.blockers.report} testid="repair-report-blockers" />
         <div className="mt-3" data-testid="repair-summary">
           <p className="text-sm font-semibold">Summary {r.summary?.status === "draft" ? <span data-testid="repair-summary-draft-label">- Draft. Review before issuing.</span> : r.summary?.status === "approved" ? "- Approved" : ""}</p>
@@ -185,16 +222,24 @@ export default function RepairDetail() {
             }}>Approve summary</Btn>
           </div>
         </div>
-        <div className="mt-2 flex flex-wrap items-end gap-2">
-          <Field id="fv-key" testid="repair-form-value-key" label="Form value (source)" value={fv.key} onChange={(v) => setFv({ ...fv, key: v })} />
-          <Field id="fv-val" testid="repair-form-value-value" label="Value" value={fv.value} onChange={(v) => setFv({ ...fv, value: v })} />
-          <Btn small kind="secondary" testid="repair-form-value-button" disabled={busy || !fv.key || !fv.value} onClick={async () => {
+        {d.form_fields?.length ? <div className="mt-3 space-y-2" data-testid="repair-form-fields">
+          <p className="text-sm font-semibold">Form details</p>
+          {d.form_fields.map((f, i) => <div key={`${f.source}-${i}`}>
+            {f.editable ? <Field id={`form-field-${i}`} testid={`repair-form-field-${f.source}`}
+              label={`${f.form_name}: ${f.label}${f.required ? " (required)" : ""}`} value={fv[f.source] ?? f.value ?? ""}
+              onChange={(v) => setFv({ ...fv, [f.source]: v })} disabled={busy} />
+              : <p className="text-sm" data-testid={`repair-form-recorded-${f.source}`}><strong>{f.form_name}: {f.label}</strong> - {f.value == null || f.value === "" ? "Not recorded" : String(f.value)}</p>}
+          </div>)}
+          {d.form_fields.some((f) => f.editable) ? <Btn small kind="secondary" testid="repair-form-value-button" disabled={busy || !Object.keys(fv).length} onClick={async () => {
+            const sources = new Set(d.form_fields.filter((f) => f.editable).map((f) => f.source));
+            const values = Object.fromEntries(Object.entries(fv).filter(([key]) => sources.has(key)));
+            if (!Object.keys(values).length) return;
             setBusy(true);
-            try { await api(`/repairs/${id}/form-values`, { method: "PUT", body: { values: { [fv.key]: fv.value } } }); setFv({ key: "", value: "" }); setMsg({ tone: "success", text: "Form value saved" }); }
+            try { await api(`/repairs/${id}/form-values`, { method: "PUT", body: { values } }); setFv({}); setMsg({ tone: "success", text: "Form details saved" }); }
             catch (e) { setMsg({ tone: "error", text: errText(e) }); }
             finally { setBusy(false); load(); }
-          }}>Save form value</Btn>
-        </div>
+          }}>Save form details</Btn> : null}
+        </div> : null}
         <div className="mt-2 flex flex-wrap items-end gap-2">
           <Field id="sig-role" testid="repair-signoff-role" label="Sign-off role" value={sig.role} onChange={(v) => setSig({ ...sig, role: v })} />
           <Field id="sig-name" testid="repair-signoff-name" label="Name as signed" value={sig.name} onChange={(v) => setSig({ ...sig, name: v })} />
@@ -227,5 +272,51 @@ export default function RepairDetail() {
         </div>
       </Card>
     </div>
+  );
+}
+
+// Phase 17: Generic Repair Work Order + invoice + packet PDFs (Preview / Download), issued as one immutable snapshot.
+function PaperworkCard({ id, op, auth, onChange }) {
+  const [p, setP] = useState(null);
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const load = useCallback(() => { api(`/repairs/${id}/paperwork`).then(setP).catch((e) => setMsg({ tone: "error", text: errText(e) })); }, [id]);
+  useEffect(() => { load(); }, [load]);
+  if (!p) return null;
+  const run = async (fn, ok) => {
+    setBusy(true);
+    try { await fn(); setMsg({ tone: "success", text: ok }); } catch (e) { setMsg({ tone: "error", text: errText(e) }); }
+    finally { setBusy(false); load(); onChange(); }
+  };
+  const link = (doc, dl) => `${API}/repairs/${id}/paperwork/${doc}.pdf${auth}${dl ? "&download=true" : ""}`;
+  return (
+    <Card testid="repair-paperwork">
+      <H2>Work order form, invoice and packet <Badge label={p.issued ? "Issued" : "Not issued"} tone={p.issued ? "success" : "neutral"} /></H2>
+      <label className="mt-2 flex items-center gap-2 text-sm">
+        <input type="checkbox" data-testid="paperwork-generic-form-toggle" checked={p.generic_form} disabled={busy || !op}
+          onChange={(e) => run(() => api(`/operators/${op.uuid}/generic-forms/generic-repair-work-order`, { method: "PUT", body: { enabled: e.target.checked } }), "Form selection saved")} />
+        Use form: {p.template.name}
+      </label>
+      <p className="mt-1 text-xs" data-testid="paperwork-template-info">Source: {p.template.publisher}, {p.template.source_url}. Version {p.template.version}. SHA-256 {p.template.sha256}. {p.template.note}</p>
+      <p className="mt-1 text-xs" data-testid="paperwork-disclaimer">Publisher disclaimer: {p.template.disclaimer}</p>
+      {(op?.forms || []).length ? <p className="mt-1 text-sm" data-testid="paperwork-required-forms">Operator forms still required: {op.forms.map((f) => f.name).join(", ")}</p> : null}
+      {p.blockers.length ? <ul className="mt-2 list-disc pl-5 text-sm" data-testid="paperwork-blockers">{p.blockers.map((b) => <li key={b}>{b}</li>)}</ul> : null}
+      <ul className="mt-2 text-sm" data-testid="paperwork-signoffs">{p.signoffs.map((s) => <li key={s}>{s}</li>)}</ul>
+      {p.delivered_key && p.snapshot_key && p.delivered_key !== p.snapshot_key ? (
+        <p className="mt-1 text-xs" data-testid="paperwork-relayout-note">Re-issued with a corrected layout after delivery. Same invoice facts; the delivered copy is unchanged and this copy was not sent.</p>
+      ) : null}
+      <Msg msg={msg} testid="paperwork-message" />
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Btn small testid="paperwork-issue-button" disabled={busy || p.blockers.length > 0} onClick={() => run(() => api(`/repairs/${id}/paperwork/issue`, { method: "POST" }), "Issued. These PDFs are now fixed for this revision.")}>Issue PDFs</Btn>
+      </div>
+      {!p.blockers.length ? (
+        <p className="mt-2 text-sm" data-testid="paperwork-links">
+          {(p.generic_form ? ["work_order", "invoice", "packet"] : ["invoice", "packet"]).map((doc) => (
+            <span key={doc} className="mr-4">{doc.replace("_", " ")}: <a className="underline" data-testid={`paperwork-preview-${doc}`} href={link(doc, false)} target="_blank" rel="noreferrer">Preview</a>{" "}
+              <a className="underline" data-testid={`paperwork-download-${doc}`} href={link(doc, true)}>Download</a></span>
+          ))}
+        </p>
+      ) : null}
+    </Card>
   );
 }

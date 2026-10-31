@@ -26,12 +26,72 @@ def whisper():
 
 
 def llm():
+    """Only ever called inside the extraction child process (see _complete)."""
     global _l
     with _llock:
         if _l is None:
             from llama_cpp import Llama
             _l = Llama(model_path=GGUF, n_ctx=4096, n_threads=8, verbose=False, seed=7)
         return _l
+
+
+# Crash-safe extraction: llama.cpp runs in ONE dedicated child process, one call at a time.
+# A native abort (GGML_ASSERT) kills only the child, never the API worker; the llama context is never shared between threads;
+# a call that overruns is abandoned by killing the child (its context dies with it) and the next call starts a fresh child.
+CALL_TIMEOUT_S = float(os.environ.get("LLM_CALL_TIMEOUT_S", "170"))  # below the 180s extraction job deadline
+_pool = None
+_plock = threading.Lock()
+
+
+class ModelProcessError(RuntimeError):
+    pass
+
+
+def _child_complete(messages: list) -> str:
+    r = llm().create_chat_completion(messages=messages, max_tokens=400, temperature=0.0,
+                                     response_format={"type": "json_object", "schema": SCHEMA})
+    return r["choices"][0]["message"]["content"]
+
+
+def _get_pool():
+    global _pool
+    with _plock:
+        if _pool is None:
+            import multiprocessing as mp
+            from concurrent.futures import ProcessPoolExecutor
+            _pool = ProcessPoolExecutor(max_workers=1, mp_context=mp.get_context("spawn"))
+        return _pool
+
+
+def _discard_pool(pool) -> None:
+    global _pool
+    with _plock:
+        if _pool is pool:
+            _pool = None
+    for p in list((getattr(pool, "_processes", None) or {}).values()):
+        try:
+            p.kill()
+        except Exception:
+            pass
+    pool.shutdown(wait=False, cancel_futures=True)
+
+
+_call_lock = threading.Lock()  # one call in flight; others wait their turn (the pool has one worker anyway)
+
+
+def _complete(messages: list) -> str:
+    from concurrent.futures import TimeoutError as FutTimeout
+    from concurrent.futures.process import BrokenProcessPool
+    with _call_lock:
+        pool = _get_pool()
+        try:
+            return pool.submit(_child_complete, messages).result(timeout=CALL_TIMEOUT_S)
+        except FutTimeout:
+            _discard_pool(pool)
+            raise ModelProcessError(f"Local extraction model did not answer within {int(CALL_TIMEOUT_S)}s")
+        except BrokenProcessPool:
+            _discard_pool(pool)
+            raise ModelProcessError("Local extraction model process stopped unexpectedly")
 
 
 def transcribe(audio: bytes, suffix: str) -> dict:
@@ -187,9 +247,11 @@ def extract(source: str, fail: str = None) -> dict:
         if fail:
             out = "{ this is not json"  # injected malformed output (test)
         else:
-            r = llm().create_chat_completion(messages=messages, max_tokens=400, temperature=0.0,
-                                             response_format={"type": "json_object", "schema": SCHEMA})
-            out = r["choices"][0]["message"]["content"]
+            try:
+                out = _complete(messages)
+            except ModelProcessError as e:  # child crashed or overran: the API keeps running; the job fails retryable
+                return {"status": "Failed", "fields": None, "rejected": [], "raw_responses": raw, "attempts": attempts,
+                        "duration_s": round(time.time() - t0, 2), "model_id": LLM_ID, "error": f"{e}. Retry", "error_stage": "model_process"}
         raw.append({"attempt": attempts, "repair": i == 1, "response": out})
         try:
             fields, rejected = validate_extraction(json.loads(out), source)

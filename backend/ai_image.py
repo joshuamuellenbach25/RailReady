@@ -201,6 +201,9 @@ async def analyze(photo_bytes: bytes, session: str, inject_failure: Optional[str
                                                     f"{ve}. Return ONLY the corrected JSON object."], f"{session}-repair", reserve)
                 raw.append({"attempt": attempts, "repair": True, "response": fix})
                 parsed = validate_output(_extract_json(fix))
+            except BudgetReached:
+                return {"status": "Failed", "error_stage": "budget", "error": "budget", "raw_responses": raw,
+                        "attempts": attempts, "duration_s": round(time.time() - t0, 2)}
             except Exception as e2:
                 return {"status": "Failed", "error_stage": "validation", "error": f"{ve}; repair: {e2}"[:500],
                         "raw_responses": raw, "attempts": attempts, "duration_s": round(time.time() - t0, 2)}

@@ -1,6 +1,7 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
-import { api, errText } from "@/src/api";
+import { useCallback, useEffect, useState } from "react";
+import { Linking, View } from "react-native";
+import { api, errText, paperworkUrl } from "@/src/api";
 import { Badge, Banner, Btn, Card, fmt, H, Input, Loading, Row, Screen, T } from "@/src/ui";
 
 const NEXT: Record<string, string> = { "Not arranged": "Requested", Requested: "Confirmed" };
@@ -21,6 +22,22 @@ export default function WorkOrder() {
     }
   }, [id]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
+  const [ops, setOps] = useState<{ uuid: string; name: string }[]>([]);
+  const [op, setOp] = useState<string | null>(null);
+  const [po, setPo] = useState("");
+  useEffect(() => { api("/operators").then(setOps).catch(() => {}); }, []);
+  async function startRepair() {
+    if (saving || !op || !po.trim() || po.trim().length > 80) return;
+    setSaving(true); // single flight; the server returns the existing repair on a repeat (unique work_order_id)
+    try {
+      const r = await api(`/work-orders/${id}/start-repair`, { method: "POST", body: { operator_id: op, po: po.trim() } });
+      setMsg({ tone: "success", text: r.created ? "Repair started. It is on the foreman's phone." : "Repair already started." });
+    } catch (e) {
+      setMsg({ tone: "error", text: errText(e) });
+    }
+    await load();
+    setSaving(false);
+  }
   async function patch(body: any) {
     if (saving) return;
     setSaving(true); // REQ-162: one planning save in flight at a time
@@ -38,6 +55,33 @@ export default function WorkOrder() {
   return (
     <Screen testID="workorder-screen" title={`Work order ${w.number}`} subtitle={`Planning - from accepted version ${fs.version_no}`}>
       {msg ? <Banner testID="workorder-message" tone={msg.tone} icon="information" text={msg.text} /> : null}
+      <Card testID="workorder-next">
+        <T bold testID="workorder-next-action">Next: {w.next_action}</T>
+        <T size={14} testID="workorder-location">{w.location ? `Location: ${Number(w.location.lat).toFixed(6)}, ${Number(w.location.lon).toFixed(6)} (${w.location.method_label})${[w.location.railroad, w.location.subdivision, w.location.milepost ? `MP ${w.location.milepost}` : null].filter(Boolean).length ? ` - ${[w.location.railroad, w.location.subdivision, w.location.milepost ? `MP ${w.location.milepost}` : null].filter(Boolean).join(", ")}` : ""}` : "Location: Not set"}</T>
+        {w.repair ? <T testID="workorder-repair-status">Repair {w.repair.status} ({w.repair.uuid}). The foreman records the work on their phone.</T> : null}
+        {w.repair ? (
+          <View testID="workorder-paperwork" style={{ gap: 8, marginTop: 8 }}>
+            <T bold>Paperwork PDFs</T>
+            {(["work_order", "invoice", "packet"] as const).map((doc) => (
+              <View key={doc} style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                <T size={14} style={{ flex: 1 }}>{doc === "work_order" ? "Work order form" : doc === "invoice" ? "Invoice" : "Complete packet"}</T>
+                <Btn small testID={`workorder-preview-${doc}`} title="Preview" icon="eye-outline"
+                  onPress={() => Linking.openURL(paperworkUrl(w.repair.visit_id || `wo-repair-${id}`, doc, false)).catch((e) => setMsg({ tone: "error", text: errText(e) }))} />
+                <Btn small testID={`workorder-download-${doc}`} title="Download" icon="download"
+                  onPress={() => Linking.openURL(paperworkUrl(w.repair.visit_id || `wo-repair-${id}`, doc, true)).catch((e) => setMsg({ tone: "error", text: errText(e) }))} />
+              </View>
+            ))}
+          </View>
+        ) : null}
+        {w.start_repair_eligible ? (
+          <View style={{ gap: 8 }}>
+            <T bold>Start repair: pick the operator</T>
+            <Row>{ops.map((o) => <Btn key={o.uuid} small testID={`workorder-operator-${o.uuid}`} kind={op === o.uuid ? "primary" : "secondary"} title={o.name} onPress={() => setOp(o.uuid)} />)}</Row>
+            <Input testID="workorder-po-input" label="Contract or PO number (required)" value={po} onChangeText={setPo} />
+            <Btn testID="workorder-start-repair-button" icon="wrench" title={saving ? "Starting..." : "Start repair"} disabled={saving || !op || !po.trim() || po.trim().length > 80} onPress={startRepair} />
+          </View>
+        ) : null}
+      </Card>
       <Card testID="workorder-frozen-scope">
         <H>Accepted scope (frozen)</H>
         {fs.findings.map((f: string) => <T key={f}>- {f}</T>)}

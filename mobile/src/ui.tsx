@@ -69,7 +69,7 @@ export function toneColors(c: ThemeColors, tone: Tone) {
 
 // Phase 8 (REQ-258): internal states are shown to people in plain words only.
 const PLAIN: Record<string, string> = {
-  "Saved on this device": "Saved", "Saved on device": "Saved", Queued: "Waiting", Uploading: "Backing up", "Uploaded unverified": "Backing up",
+  "Saved on this device": "Saved", "Saved on device": "Saved", Queued: "Waiting", "Uploaded unverified": "Uploading",
   Verified: "Backed up", Synced: "Backed up", "Retry wait": "Will try again", Blocked: "Needs attention", Running: "Working on it", Done: "Ready",
   Failed: "Needs another try", "Not started": "Waiting", "Received complete": "All received", "Receiving partial": "Some items still coming",
   "Unknown with reason": "Not known", "Needs estimator input": "Asked the estimator", Pending: "Waiting for you", "Closer photo requested": "Closer photo asked for",

@@ -219,15 +219,5 @@
       "url": "https://images.pexels.com/photos/1963212/pexels-photo-1963212.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
       "alt": "Industrial train yard placeholder"
     }
-  },
-  "instructions_to_main_agent": [
-    "Ensure the `theme.ts` file is updated to include the `dark` theme alongside `light`. Use the `colorDark` block provided in this JSON to populate the dark theme values.",
-    "Do NOT use @expo-google-fonts. Rely entirely on the system font for maximum reliability and a plain, unbranded industrial aesthetic.",
-    "All interactive touch targets (buttons, list rows) MUST be a minimum of 56pt height to accommodate gloved hands.",
-    "Avoid glassmorphism completely. Rely on solid colors, thick borders (`borderStrong`), and high contrast for elevation and separation.",
-    "Status indicators must ALWAYS combine an icon with text (e.g. '💾 Saved on this device', '⏳ Queued'). Never rely solely on color to convey state.",
-    "The Outbox screen must clearly differentiate between offline storage states and network states (e.g. Saved Locally vs. Uploading vs. Verified).",
-    "Adhere to Stack Navigation only. Do not introduce bottom tabs to maximize the usable screen space for forms and lists.",
-    "Ensure strict adherence to WCAG AA contrast, particularly since this app is used outdoors in direct sunlight."
-  ]
+  }
 }

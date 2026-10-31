@@ -3,9 +3,46 @@ import { ChevronRight, ClipboardList, Repeat } from "lucide-react";
 import { ApiError, api, errText } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { ROLES, STAGES, optLabel, pinBasisLabel } from "@/lib/settings";
-import { Badge, Banner, Blocker, Btn, Card, H2, Modal, Select, fmt } from "./ui";
+import { Badge, Banner, Blocker, Btn, Card, Field, H2, Modal, Select, fmt } from "./ui";
 
 const STATUS_LABEL = { confirmed: "Answered", deferred: "Deferred / unknown", missing: "Missing" };
+const NON_LABEL = { defer: "Defer", unknown: "Unknown" };
+
+/** Office action (estimator/admin): record a required handoff item after submission, without reopening. Same revision check + audit. */
+function OfficeHandoffAction({ visitId, item, revision, onDone }) {
+  const [mode, setMode] = useState("answer");
+  const [val, setVal] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  const allowed = (item.allowed_non_answers || []).filter((x) => x in NON_LABEL);
+  async function save() {
+    setBusy(true);
+    setErr(null);
+    try {
+      const body = mode === "answer" ? { expected_revision: revision, action: "correct", value: val.trim() } : { expected_revision: revision, action: mode, reason: val.trim() };
+      await api(`/visits/${visitId}/checklist/${item.key}`, { body });
+      setVal("");
+      onDone();
+    } catch (e) {
+      setErr(e instanceof ApiError && e.status === 409 ? "This inspection changed elsewhere. It has been reloaded; check and save again." : errText(e));
+      if (e instanceof ApiError && e.status === 409) onDone();
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div data-testid={`office-handoff-${item.key}`} className="mt-2 space-y-2 rounded-md border border-[#D9DEE2] p-3">
+      <p className="text-sm font-medium">Record {item.label} (office, after submission)</p>
+      <div className="flex flex-wrap gap-2">
+        <Btn small kind={mode === "answer" ? "primary" : "secondary"} testid={`office-handoff-mode-answer-${item.key}`} onClick={() => setMode("answer")}>Answer</Btn>
+        {allowed.map((x) => <Btn key={x} small kind={mode === x ? "primary" : "secondary"} testid={`office-handoff-mode-${x}-${item.key}`} onClick={() => setMode(x)}>{NON_LABEL[x]}</Btn>)}
+      </div>
+      <Field id={`oh-${item.key}`} testid={`office-handoff-input-${item.key}`} label={mode === "answer" ? "Answer" : "Reason"} value={val} onChange={setVal} multiline />
+      {err ? <Banner tone="error" testid={`office-handoff-error-${item.key}`} text={err} /> : null}
+      <Btn small testid={`office-handoff-save-${item.key}`} loading={busy} disabled={!val.trim()} onClick={save}>{mode === "answer" ? "Save answer" : mode === "defer" ? "Mark Deferred" : "Mark Unknown"}</Btn>
+    </div>
+  );
+}
 
 function ChangeTemplate({ open, onClose, visitId, revision, pin, onDone, onStale }) {
   const [list, setList] = useState([]);
@@ -48,8 +85,9 @@ function ChangeTemplate({ open, onClose, visitId, revision, pin, onDone, onStale
 }
 
 /** Pinned checklist template + missing items for an inspection (REQ-215). */
-export default function ChecklistPanel({ visitId, revision, refreshKey, onChanged }) {
-  const { canConfigure } = useAuth();
+export default function ChecklistPanel({ visitId, revision, refreshKey, onChanged, submitted }) {
+  const { canConfigure, user } = useAuth();
+  const canRecord = !!user && ["estimator", "admin"].includes(user.role);
   const [c, setC] = useState(null);
   const [err, setErr] = useState(null);
   const [open, setOpen] = useState(false);
@@ -84,14 +122,25 @@ export default function ChecklistPanel({ visitId, revision, refreshKey, onChange
         <p className="text-[15px] font-medium">Still needed ({missing.length})</p>
         {missing.length ? missing.map((f) => <Blocker key={f.key} testid={`checklist-missing-${f.key}`} text={`${f.label} - ${optLabel(ROLES, f.confirming_role).toLowerCase()} confirms at ${optLabel(STAGES, f.stage).toLowerCase()}`} />)
           : <p className="mt-1 text-sm text-[#59636B]">Nothing missing. Every must-have answer is in.</p>}
+        {submitted && canRecord ? (c.handoff_open || []).map((h) => {
+          const item = c.fields.find((f) => f.key === h.key);
+          return item ? <OfficeHandoffAction key={h.key} visitId={visitId} item={item} revision={c.revision} onDone={() => { load(); onChanged(); }} /> : null;
+        }) : null}
       </div>
+      {(c.fields || []).filter((f) => f.handoff && f.status !== "missing").map((f) => (
+        <p key={f.key} data-testid={`checklist-handoff-saved-${f.key}`} className="text-sm">
+          {f.label}: <b className="font-medium">{f.disposition}</b>
+          {f.disposition === "Answered" ? ` - ${f.answer?.value}` : f.answer?.reason ? ` - ${f.answer.reason}` : ""}
+          {f.disposition === "Unknown" ? " (access not confirmed)" : f.disposition === "Deferred" ? " (to coordinate later)" : ""}
+        </p>
+      ))}
       <details data-testid="checklist-all" className="group/all text-sm">
         <summary className="rr-focus inline-flex min-h-[32px] cursor-pointer list-none items-center gap-1 rounded font-medium text-[#3C444B] [&::-webkit-details-marker]:hidden"><ChevronRight aria-hidden className="h-3.5 w-3.5 transition-transform group-open/all:rotate-90" />All checklist items ({c.fields.length})</summary>
         <ul className="mt-2 space-y-1.5">
           {c.fields.map((f) => (
             <li key={f.key} className="flex flex-wrap items-center gap-2">
               <span className="min-w-0 flex-1">{f.label}{f.inherited_by_findings ? <span className="text-[#59636B]"> - findings inherit</span> : null}</span>
-              <Badge label={STATUS_LABEL[f.status] || f.status} tone={f.status === "confirmed" ? "success" : f.status === "missing" && f.required ? "error" : "neutral"} />
+              <Badge label={(f.handoff && f.disposition) || STATUS_LABEL[f.status] || f.status} tone={f.status === "confirmed" ? "success" : f.status === "missing" && f.required ? "error" : "neutral"} />
             </li>
           ))}
         </ul>

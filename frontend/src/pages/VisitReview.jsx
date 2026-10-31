@@ -132,6 +132,19 @@ function SidePanels({ d, isAdmin }) {
   );
 }
 
+// Phase 16: the selected inspection location (pin, GPS, coordinates or milepost reference).
+function VisitLocation({ id }) {
+  const [loc, setLoc] = useState(undefined);
+  useEffect(() => { api(`/visits/${id}`).then((v) => setLoc(v.location || null)).catch(() => setLoc(null)); }, [id]);
+  if (loc === undefined) return null;
+  const rail = loc ? [loc.railroad, loc.subdivision, loc.milepost ? `MP ${loc.milepost}` : null].filter(Boolean).join(", ") : "";
+  return (
+    <p data-testid="review-location" className="mb-3 text-sm">
+      {loc ? <>Location: <span className="font-mono">{Number(loc.lat).toFixed(6)}, {Number(loc.lon).toFixed(6)}</span> ({loc.method_label}){rail ? ` - ${rail}` : ""}</> : "Location: Not set"}
+    </p>
+  );
+}
+
 export default function VisitReview() {
   const { id } = useParams();
   const nav = useNavigate();
@@ -192,6 +205,7 @@ export default function VisitReview() {
           <Btn small kind="secondary" icon={RefreshCw} testid="review-refresh-button" onClick={load}>Refresh</Btn>
         </>} />
       <div className="mb-3"><PolicyStatus visitId={id} refreshKey={tick} /></div>
+      <VisitLocation id={id} />
       <div className="mb-5 flex flex-wrap items-center gap-2">
         {d.manifests.length ? <Mono testid="review-sync-details" label="Sync details">{d.manifests.map((m) => `${m.uuid} - ${m.state}`).join(" | ")}</Mono> : null}
         <Mono testid="review-visit-id" label="Inspection details">inspection {v.uuid} - rev {v.revision} - started {fmt(v.created_at)} - submitted {fmt(v.submitted_at)}</Mono>
@@ -212,7 +226,7 @@ export default function VisitReview() {
         <aside className="min-w-0 space-y-4 lg:col-span-5">
           <NextAction d={d} required={required} staffSubmitted={staffSubmitted} isForeman={isForeman} canSubmit={canSubmit} onEstimate={openEstimate} onPick={(e) => setSp({ e }, { replace: true })}
             onSubmitted={() => { setMsg({ tone: "success", text: "Inspection submitted. It is ready for the estimate." }); refresh(); }} />
-          <ChecklistPanel visitId={id} revision={v.revision} refreshKey={tick} onChanged={refresh} />
+          <ChecklistPanel visitId={id} revision={v.revision} refreshKey={tick} onChanged={refresh} submitted={v.status === "Submitted"} />
           <FieldsPanel visitId={id} locked={locked} refreshKey={tick} onChanged={refresh} />
           <SidePanels d={d} isAdmin={isAdmin} />
         </aside>

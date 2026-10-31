@@ -1,0 +1,13 @@
+{
+ "id": "generic-repair-work-order",
+ "name": "Generic Repair Work Order",
+ "version": "1.0 (Smartsheet simple work order, page 3 blank)",
+ "source_url": "https://www.smartsheet.com/sites/default/files/2024-11/ic-pdf-simple-work-order-template_example-and-blank_pdf-12250.pdf",
+ "source_sha256": "b7813a3bc9f5b8856fb454966c7768756c898c155abbc8b111b6a3a298ba67c3",
+ "sha256": "fe025ad2c58642d93bd5baf9dc99bff6056b2af7aa3db8fc50bd6fc0161a55af",
+ "publisher": "Smartsheet",
+ "disclaimer": "Any articles, templates, or information provided by Smartsheet on the website are for reference only. While we strive to keep the information up to date and correct, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability with respect to the website or the information, articles, templates, or related graphics contained on the website. Any reliance you place on such information is therefore strictly at your own risk.",
+ "text_fields": 33,
+ "button_fields": 1,
+ "note": "Generic layout from a public template. Not provided or endorsed by any railroad operator."
+}

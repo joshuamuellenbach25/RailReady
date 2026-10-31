@@ -143,7 +143,7 @@ def _run_status(results: list, budget_hit: bool, n_frames: int) -> str:
     bad = len(results) - ok + max(0, n_frames - len(results))
     if not ok:
         return "failed"
-    return "partial" if bad or any(r.get("rejected") for r in results) else "complete"
+    return "partial" if bad or any(r.get("rejected") or r.get("cannot_assess") or r.get("assessment_status") == "partial" for r in results) else "complete"
 
 
 async def run_video(job, visit, finish, holds_lease):
@@ -156,18 +156,28 @@ async def run_video(job, visit, finish, holds_lease):
     data = await asyncio.to_thread(storage.get_object, ev["storage_path"])
     if hashlib.sha256(data).hexdigest() != ev["sha256"]:
         return await finish(job, "Failed", "Stored video does not match its recorded hash", "source")
-    rid = {"tie_fastener": f"vrun-{ev['uuid']}-tf-{VERSION_KEY}", "rail_surface": f"vrun-{ev['uuid']}-rs-{VERSION_KEY}"}
+    ident = {"tie_fastener": {"model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION, "schema_id": "tie-fastener", "schema_version": ai_image.PROMPT_VERSION},
+             "rail_surface": {"model_id": PP.MODEL_ID, "prompt_version": RS.PROMPT_VERSION, "schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION}}
+    versions = {s: hashlib.sha256(f"{VERSION_KEY}|{s}|{i['model_id']}|{i['prompt_version']}|{i['schema_version']}|{PP.RSV.VERSION if s == 'rail_surface' else ''}".encode()).hexdigest()[:10]
+                for s, i in ident.items()}
+    rid = {"tie_fastener": f"vrun-{ev['uuid']}-tf-{versions['tie_fastener']}", "rail_surface": f"vrun-{ev['uuid']}-rs-{versions['rail_surface']}"}
+    # Reuse matching pre-detail tie checks without paying for them again. Rail results
+    # have their own versioned identity; old completed results are never relabelled.
+    legacy_tie = await db.image_analysis_runs.find_one({"uuid": f"vrun-{ev['uuid']}-tf-{VERSION_KEY}",
+        "photo_sha256": ev["sha256"], "model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION})
+    if legacy_tie:
+        rid["tie_fastener"] = legacy_tie["uuid"]
     pipes = {"tie_fastener": PIPELINE, "rail_surface": RS.PIPELINE}
-    done = [await db.image_analysis_runs.find_one({"uuid": rid[s], "status": "complete"}) for s in SCHEMAS]
-    if all(done):
+    done = {s: await db.image_analysis_runs.find_one({"uuid": rid[s], "status": "complete"}) for s in SCHEMAS}
+    if all(done.values()):
         return await finish(job, "Done", run_id=rid["tie_fastener"])  # replay, zero sends
     base = {"workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"],
-            "video_sha256": ev["sha256"], "source_kind": "video_frames", "config": CONFIG, "version_key": VERSION_KEY,
+            "video_sha256": ev["sha256"], "source_kind": "video_frames", "config": CONFIG,
             "frame_cap": MAX_FRAMES, "created_at": iso(), "created_by": "system"}
-    ident = {"tie_fastener": {"model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION, "schema_id": "tie-fastener", "schema_version": ai_image.PROMPT_VERSION},
-             "rail_surface": {"model_id": PP.MODEL_ID, "prompt_version": PP.PROMPT_VERSION, "schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION}}
     for s in SCHEMAS:
-        await db.image_analysis_runs.update_one({"uuid": rid[s]}, {"$setOnInsert": {"uuid": rid[s], "pipeline": pipes[s], **ident[s], **base,
+        if done[s]:
+            continue
+        await db.image_analysis_runs.update_one({"uuid": rid[s]}, {"$setOnInsert": {"uuid": rid[s], "pipeline": pipes[s], "version_key": versions[s], **ident[s], **base,
                                                 "frame_results": {}, "raw_responses": []},
                                                 "$set": {"status": "checking", "job_id": job["uuid"], "updated_at": iso()}}, upsert=True)
     runs = {s: await db.image_analysis_runs.find_one({"uuid": rid[s]}) for s in SCHEMAS}
@@ -194,7 +204,14 @@ async def run_video(job, visit, finish, holds_lease):
         for s in SCHEMAS:
             key = fsha
             r = (runs[s].get("frame_results") or {}).get(key)
+            if done[s] and not r:
+                # A historical completed record without frame details is preserved,
+                # never silently re-inferred or rewritten under a new analysis version.
+                r = {"status": "not_checked", "error": "Historical frame details unavailable"}
             if not (r and r["status"] in OK_FRAME + ("rejected",)):  # cached answers are never re-sent (no double pay)
+                if done[s]:
+                    results[s].append(r)
+                    continue
                 if asyncio.get_running_loop().time() - t0 > VIDEO_DEADLINE_S:
                     r = {"status": "not_checked", "error": "deadline"}
                 elif not await holds_lease(job):
@@ -208,10 +225,12 @@ async def run_video(job, visit, finish, holds_lease):
                          if res["status"] == "Done" else {"status": "failed", "error": res.get("error"), "raw_responses": res.get("raw_responses")})
                 else:
                     try:
-                        out = await rs_run.structured("You inspect railway rail-head surfaces in photos. Output JSON only.", RS.INSTRUCTION,
-                                                      [PP.b64_jpeg(img)], f"rail_surface:{fsha[:12]}", RS.validate_shape)
-                        acc, rej = RS.parse_items(out["items"])
-                        r = {"status": "rejected" if rej and not acc else "Done", "accepted": acc, "rejected": rej}
+                        acc, rej = await PP.assess_rail_surface(rs_run, img, purpose=f"rail_surface:{fsha[:12]}")
+                        assessment_status, assessment_label = RS.outcome(acc, rej)
+                        r = {"status": "rejected" if rej and not acc else "Done", "accepted": acc, "rejected": rej,
+                             "assessment_status": assessment_status, "outcome_label": assessment_label,
+                             "cannot_assess": any(a["choice"] == "not_assessable" for a in acc),
+                             "rail_surface_input": rs_run.doc.get("rail_surface_input")}
                     except PP.BudgetReached:
                         budget_hit = True
                         break
@@ -233,7 +252,7 @@ async def run_video(job, visit, finish, holds_lease):
                     if a["choice"] in RS.CLASSES:  # not_assessable / no_visible_surface_fault are outcomes, not review items
                         dets.append({"schema": s, "pipeline": RS.PIPELINE, "category": a["choice"], "condition_kind": a["condition_kind"],
                                      "region": a["bbox"], "rail_surface": a, "visible_reason": a.get("evidence"), "uncertainty": a.get("limitations"),
-                                     "alternatives": [c for c, _ in a["top_alternatives"]], "frame": frame})
+                                     "alternatives": [c for c, _ in a["top_alternatives"]], "frame": {**frame, "source_view": a.get("source_view")}})
         if budget_hit:
             break
     if not await holds_lease(job):  # C6 fence before any finding/result commit
@@ -241,8 +260,11 @@ async def run_video(job, visit, finish, holds_lease):
     findings = merge(dets)
     for c in findings:
         f0 = c["frames"][0]
-        cid = finding_id(ev["uuid"], c["schema"], f0["sha256"], c["category"], c.get("region"), c["region_index"])
         s = c["schema"]
+        if done[s]:
+            continue
+        finding_schema = s if s == "tie_fastener" and legacy_tie else f"{s}:{versions[s]}"
+        cid = finding_id(ev["uuid"], finding_schema, f0["sha256"], c["category"], c.get("region"), c["region_index"])
         await db.visual_candidates.update_one({"uuid": cid}, {"$setOnInsert": {
             "uuid": cid, "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"],
             "video_evidence_id": ev["uuid"], "video_sha256": ev["sha256"], "run_id": rid[s], "pipeline": c["pipeline"], "schema": s, **ident[s],
@@ -257,23 +279,26 @@ async def run_video(job, visit, finish, holds_lease):
             "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system"}}, upsert=True)
     statuses = {}
     for s in SCHEMAS:
+        if done[s]:
+            statuses[s] = "complete"
+            continue
         st = _run_status(results[s], budget_hit, len(frames))
         statuses[s] = st
         n = sum(1 for c in findings if c["schema"] == s)
         rej = [x for r in results[s] for x in (r.get("rejected") or [])]
         label = (f"{n} finding(s)" if n else ("Could not finish the check" if st != "complete" else "No visible issue identified in this video. This does not confirm the track is safe."))
-        if s == "rail_surface" and not n and st == "complete":
-            acc = [a for r in results[s] for a in (r.get("accepted") or [])]
-            if acc and all(a["choice"] == "not_assessable" for a in acc):
-                label = "Rail surface not clear enough to check"  # same wording as photos; never an empty success
+        cannot_assess = s == "rail_surface" and any(r.get("cannot_assess") for r in results[s])
+        if cannot_assess:
+            label = f"{n} finding(s); some selected rail-surface frames could not be assessed" if n else "Rail surface not clear enough to check"
         await db.image_analysis_runs.update_one({"uuid": rid[s]}, {"$set": {
             "status": st, "frames": fr_docs, "candidates": n, "rejected_candidates": rej,
             "frame_errors": [{"t": r.get("t"), "status": r["status"], "error": r.get("error")} for r in results[s] if r["status"] not in OK_FRAME],
             "outcome_label": label,
+            **({"image_assessability": "cannot_assess", "cannot_assess_reason": label} if cannot_assess else {}),
             "completed_at": iso(), "updated_at": iso()}})
     if budget_hit:
-        from jobs import _set_fenced
-        return await _set_fenced(job, {"status": "Blocked", "blocker": calibration.BUDGET_MSG})
+        from jobs import _set_fenced, budget_reason
+        return await _set_fenced(job, {"status": "Blocked", "blocker": calibration.BUDGET_MSG, "block_reason": await budget_reason()})
     if all(v == "failed" for v in statuses.values()):
         return await finish(job, "Failed", "Could not finish the check", "video", rid["tie_fastener"])
     await finish(job, "Done", None if all(v == "complete" for v in statuses.values()) else "Some frames could not be checked", None, rid["tie_fastener"])

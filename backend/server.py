@@ -45,6 +45,8 @@ app.include_router(routes_phase5.router)
 app.include_router(routes_calibration.router)
 app.include_router(routes_map.router)
 app.include_router(routes_repair.router)
+import routes_paperwork  # noqa: E402  Phase 17
+app.include_router(routes_paperwork.router)
 app.include_router(routes_contract.router)
 app.include_router(routes_plain.router)
 app.include_router(routes_kotri.router)
@@ -64,6 +66,7 @@ app.add_middleware(CORSMiddleware, allow_origins=os.environ.get("CORS_ORIGINS", 
 async def startup():
     await ensure_indexes()
     await routes_repair.ensure_indexes()
+    await routes_paperwork.ensure_indexes()
     await routes_contract.ensure_indexes()
     await seed.seed()
     try:

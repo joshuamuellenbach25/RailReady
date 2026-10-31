@@ -21,6 +21,44 @@ export async function putRecord(userId: string, type: string, id: string, parent
   await d.runAsync("INSERT OR REPLACE INTO records VALUES (?,?,?,?,?,?)", userId, id, type, parent, JSON.stringify(data), new Date().toISOString());
 }
 
+// All rows commit together or none do (used where a partial write would strand a record, e.g. pin + its inspection).
+export async function putRecords(userId: string, rows: { type: string; id: string; parent: string | null; data: any }[]) {
+  const d = await db();
+  const at = new Date().toISOString();
+  await d.withExclusiveTransactionAsync(async (tx) => {
+    for (const r of rows) await tx.runAsync("INSERT OR REPLACE INTO records VALUES (?,?,?,?,?,?)", userId, r.id, r.type, r.parent, JSON.stringify(r.data), at);
+  });
+}
+
+// The guard and all dependent rows share one transaction. Replays return the committed
+// guard without replacing records that the worker may already have edited or synced.
+let createTail: Promise<void> = Promise.resolve();
+export async function createRecordsOnce<T>(userId: string, guardId: string, rows: { type: string; id: string; parent: string | null; data: any }[]): Promise<{ data: T; created: boolean }> {
+  const guard = rows.find((r) => r.id === guardId);
+  if (!guard) throw new Error("Creation guard missing.");
+  const run = async () => {
+    const d = await db();
+    let result: { data: T; created: boolean } | undefined;
+    await d.withExclusiveTransactionAsync(async (tx) => {
+      const prior = await tx.getFirstAsync<{ data: string }>("SELECT data FROM records WHERE user_id=? AND id=?", userId, guardId);
+      if (prior) {
+        result = { data: JSON.parse(prior.data) as T, created: false };
+        return;
+      }
+      const at = new Date().toISOString();
+      for (const r of rows) await tx.runAsync("INSERT INTO records VALUES (?,?,?,?,?,?)", userId, r.id, r.type, r.parent, JSON.stringify(r.data), at);
+      result = { data: guard.data as T, created: true };
+    });
+    if (!result) throw new Error("Creation was not committed.");
+    return result;
+  };
+  // Avoid competing write connections in one Expo runtime. The database transaction
+  // also protects the guard against another connection/runtime.
+  const pending = createTail.then(run, run);
+  createTail = pending.then(() => {}, () => {});
+  return pending;
+}
+
 export async function getRecord<T>(userId: string, id: string): Promise<T | null> {
   const row = await (await db()).getFirstAsync<{ data: string }>("SELECT data FROM records WHERE user_id=? AND id=?", userId, id);
   return row ? (JSON.parse(row.data) as T) : null;

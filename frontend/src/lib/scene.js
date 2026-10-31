@@ -1,4 +1,4 @@
-// Scene workspace API (phase 4 contract, backend owned by mobile_dev). Display only - no geometry is invented here.
+// Scene workspace API (phase 4 contract). Display only - no geometry is invented here.
 import { BACKEND, api, withAuth } from "./api";
 
 export const sceneApi = {

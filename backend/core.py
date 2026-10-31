@@ -216,3 +216,19 @@ async def ensure_indexes():
     await db.checklist_templates.create_index([("workspace_id", 1), ("template_id", 1), ("version", 1)], **u)
     await db.checklist_templates.create_index([("workspace_id", 1), ("template_id", 1)], unique=True, name="one_current_template", partialFilterExpression={"current": True})
     await db.scene_views.create_index([("scene_uuid", 1), ("user_id", 1)], **u)
+
+
+async def visit_location(visit_id: Optional[str]) -> Optional[dict]:
+    """Phase 16: the selected inspection location (pin + its location record), shown on inspection, work order and repair."""
+    if not visit_id:
+        return None
+    pin = await db.pins.find_one({"visit_id": visit_id})
+    loc = await db.locations.find_one({"uuid": pin["location_id"]}) if pin else None
+    if not pin or not loc:
+        return None
+    rw = loc.get("railway") or {}
+    mp = (rw.get("milepost") or {}).get("text")
+    return {"pin_id": pin["uuid"], "site_id": pin["site_id"], "location_id": loc["uuid"], "lat": loc.get("lat"), "lon": loc.get("lon"),
+            "method": loc.get("method") or "pin", "method_label": loc.get("method_label") or "Map pin", "railroad": rw.get("railroad"),
+            "subdivision": rw.get("subdivision"), "milepost": mp, "milepost_ref": loc.get("milepost_ref"), "label": loc.get("label"),
+            "source": loc.get("source"), "accuracy_m": loc.get("accuracy_m"), "fixed_at": loc.get("fixed_at"), "recorded_at": loc.get("created_at")}

@@ -1,5 +1,5 @@
 # Phase 4b: Photo-derived 3D viewer: reference-processor adoption + viewer hardening (V01–V15)
-Version: phase-4b. Source: "interactive photo-derived 3D inspection viewer" implementation prompt (2026-10-24), which includes a reference Python processor and frontend snippets. Builds on Phase 4 as delivered and tested CLEAN (iteration_3: 11/11): existing routes /api/visits/{id}/scenes, /api/evidence/{id}/scene, /api/scenes/{id}/asset, /api/visits/{id}/inventory, /api/inventory-items/{id}/crop, PUT /api/anchors/{id}; web /office/visits/:id/scene (SceneViewer.jsx, PhotoView.jsx, Inventory.jsx, EvidenceDrawer.jsx, MoveAnchor.jsx); supersplat-viewer 1.41.0 + playcanvas 2.23.3 already pinned; model verified at models/depth-anything-v2-small.
+Version: phase-4b. Builds on Phase 4: existing routes /api/visits/{id}/scenes, /api/evidence/{id}/scene, /api/scenes/{id}/asset, /api/visits/{id}/inventory, /api/inventory-items/{id}/crop, PUT /api/anchors/{id}; web /office/visits/:id/scene (SceneViewer.jsx, PhotoView.jsx, Inventory.jsx, EvidenceDrawer.jsx, MoveAnchor.jsx); supersplat-viewer 1.41.0 + playcanvas 2.23.3 already pinned; model verified at models/depth-anything-v2-small.
 
 ## Deltas to implement (adapt names to existing code; keep old routes as aliases; record a mapping)
 Processor (backend)

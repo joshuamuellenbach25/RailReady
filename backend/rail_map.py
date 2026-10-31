@@ -16,6 +16,7 @@ import copy
 import csv
 import hashlib
 import io
+import json
 import math
 import os
 import re
@@ -301,6 +302,117 @@ async def nearby(lat: float, lon: float) -> dict:
                                    "id": f"ntad_mileposts:{m['OBJECTID']}", "label": "Nearby, not exact"}
         out["sources"].append({"source": ARCGIS_LAYERS["ntad_mileposts"]["name"]})
     return out
+
+
+TRACK_RIGHTS = ["RROWNER1", "RROWNER2", "RROWNER3"] + [f"TRKRGHTS{i}" for i in range(1, 10)]
+
+
+def _line_distance_m(lat: float, lon: float, geometry: dict) -> float:
+    """Distance to the actual source geometry, never a guessed milepost coordinate."""
+    paths = geometry.get("paths", [])
+    scale = math.cos(math.radians(lat))
+    best = float("inf")
+    for path in paths:
+        for a, b in zip(path, path[1:]):
+            ax, ay = (a[0] - lon) * scale * 111320, (a[1] - lat) * 111320
+            bx, by = (b[0] - lon) * scale * 111320, (b[1] - lat) * 111320
+            dx, dy = bx - ax, by - ay
+            t = max(0, min(1, -(ax * dx + ay * dy) / (dx * dx + dy * dy))) if dx or dy else 0
+            best = min(best, math.hypot(ax + t * dx, ay + t * dy))
+    return best
+
+
+def _milepost_option(point: dict, line: dict) -> dict | None:
+    p, a = point.get("attributes", {}), line.get("attributes", {})
+    sub = str(p.get("SUBDIV") or "").strip()
+    if not sub or sub.casefold() != str(a.get("SUBDIV") or "").strip().casefold():
+        return None
+    lat, lon, mp = p.get("LAT"), p.get("LON"), p.get("MILEPOST")
+    if any(not isinstance(v, (int, float)) or not math.isfinite(v) for v in (lat, lon, mp)):
+        return None
+    if abs(lat) > 90 or abs(lon) > 180 or _line_distance_m(lat, lon, line.get("geometry", {})) > 35:
+        return None
+    railroad = next((str(a[k]).strip() for k in TRACK_RIGHTS if a.get(k) and str(a[k]).strip()), None)
+    if not railroad or p.get("OBJECTID") is None or a.get("FRAARCID") is None:
+        return None
+    return {"resolved": True, "id": f"ntad_mileposts:{p['OBJECTID']}", "line_id": f"ntad_lines:{a['FRAARCID']}",
+            "lat": lat, "lon": lon, "milepost": mp, "railroad": railroad, "subdivision": sub,
+            "source": ARCGIS_LAYERS["ntad_mileposts"]["name"], "label": "Selected reference milepost", "selection": "map_feature",
+            "association": "Same subdivision and source line geometry; line confirmed by worker"}
+
+
+async def map_milepost_options(feature_id: str, line_id: str | None = None) -> dict:
+    """Options for a clicked source feature. No global-nearest lookup or interpolation."""
+    match = re.fullmatch(r"(ntad_lines|ntad_mileposts):(\d+)", feature_id)
+    if not match or (line_id is not None and not re.fullmatch(r"ntad_lines:\d+", line_id)):
+        raise ValueError("Choose a supported rail line or reference milepost.")
+    layer, fid = match.groups()
+    async with httpx.AsyncClient(timeout=30, headers=UA) as c:
+        async def query(name, **params):
+            r = await c.get(ARCGIS_LAYERS[name]["url"] + "/query", params={"f": "json", "outFields": "*",
+                "outSR": 4326, "returnGeometry": "true", "resultRecordCount": 2000, **params})
+            r.raise_for_status()
+            data = r.json()
+            if data.get("error") or data.get("exceededTransferLimit"):
+                raise ValueError("Reference selection is incomplete. Zoom in or select a milepost directly.")
+            return data.get("features", [])
+        selected = await query(layer, where=f"{ARCGIS_LAYERS[layer]['id_field']}={fid}")
+        if len(selected) != 1:
+            return {"options": [], "message": "Reference feature not found. Select another point or place a manual pin."}
+        if layer == "ntad_mileposts":
+            points = selected
+            p = points[0]["attributes"]
+            lines = await query("ntad_lines", where=f"FRAARCID={line_id.split(':')[1]}" if line_id else "1=1",
+                geometry=f"{p['LON']},{p['LAT']}", geometryType="esriGeometryPoint", inSR=4326,
+                distance=35, units="esriSRUnit_Meter", spatialRel="esriSpatialRelIntersects")
+        else:
+            lines = selected
+            a = lines[0]["attributes"]
+            sub = str(a.get("SUBDIV") or "").strip().upper().replace("'", "''")
+            if not sub:
+                return {"options": [], "message": "This line has no reference subdivision. Select a manual pin."}
+            points = await query("ntad_mileposts", where=f"UPPER(SUBDIV)='{sub}'",
+                geometry=json.dumps({**lines[0]["geometry"], "spatialReference": {"wkid": 4326}}),
+                geometryType="esriGeometryPolyline", inSR=4326, distance=35, units="esriSRUnit_Meter",
+                spatialRel="esriSpatialRelIntersects")
+        version = await layer_version(c, "ntad_mileposts")
+        line_version = await layer_version(c, "ntad_lines")
+    options = [o for p in points for line in lines if (o := _milepost_option(p, line))]
+    for o in options:
+        o.update({"version": version, "line_version": line_version})
+    options.sort(key=lambda o: (o["milepost"], o["line_id"]))
+    return {"options": options, "message": "Choose the reference milepost and confirm its line." if options else
+            "No applicable reference mileposts on this line. Keep a manual pin; no milepost has been inferred."}
+
+
+async def resolve_milepost(railroad: str, subdivision: str, milepost: float) -> dict:
+    """REQ-1605: a point only when NTAD Rail Mileposts has this exact milepost on this subdivision AND an NTAD rail line within
+    300 m names the railroad (owner or trackage rights). Otherwise unresolved; nothing is interpolated (REQ-1422)."""
+    rr, sub = railroad.strip().upper(), subdivision.strip().upper().replace("'", "''")
+    async with httpx.AsyncClient(timeout=30, headers=UA) as c:
+        r = await c.get(ARCGIS_LAYERS["ntad_mileposts"]["url"] + "/query", params={
+            "where": f"UPPER(SUBDIV)='{sub}' AND MILEPOST={milepost}", "outFields": "OBJECTID,SUBDIV,MILEPOST,STATEAB,LAT,LON",
+            "returnGeometry": "false", "f": "json", "resultRecordCount": 50})
+        r.raise_for_status()
+        mps = [f["attributes"] for f in r.json().get("features", [])]
+        matches = []
+        for m in mps:
+            q = await c.get(ARCGIS_LAYERS["ntad_lines"]["url"] + "/query", params={
+                "geometry": f"{m['LON']},{m['LAT']}", "geometryType": "esriGeometryPoint", "inSR": 4326, "distance": 300, "units": "esriSRUnit_Meter",
+                "spatialRel": "esriSpatialRelIntersects", "outFields": ",".join(["FRAARCID"] + TRACK_RIGHTS), "returnGeometry": "false", "f": "json"})
+            lines = [f["attributes"] for f in q.json().get("features", [])]
+            hit = next((a for a in lines if rr in {str(a.get(k) or "").strip().upper() for k in TRACK_RIGHTS}), None)
+            if hit:
+                matches.append((m, hit))
+        version = await layer_version(c, "ntad_mileposts")
+    if len(matches) != 1:
+        return {"resolved": False, "candidates": len(matches),
+                "message": "Milepost not found in the reference data for this railroad and subdivision." if not matches
+                else "More than one reference point matches. Place the pin on the map."}
+    m, line = matches[0]
+    return {"resolved": True, "lat": m["LAT"], "lon": m["LON"], "label": "From milepost reference",
+            "source": ARCGIS_LAYERS["ntad_mileposts"]["name"], "id": f"ntad_mileposts:{m['OBJECTID']}", "version": version,
+            "line_id": f"ntad_lines:{line.get('FRAARCID')}", "subdivision": m["SUBDIV"], "milepost": m["MILEPOST"], "state": m.get("STATEAB")}
 
 
 def haversine_m(lat1, lon1, lat2, lon2) -> float:

@@ -76,8 +76,10 @@ async def put_policy(body: PolicyIn, user=Depends(require_role("admin"))):
         history_pending = True
         policy.log.exception("Policy applied; durable history/audit completion is pending for %s", ws)
     # unblock/block queued work according to the new policy (jobs still recheck at execution)
+    added = {e.evidence_id for e in body.evidence_exceptions if e.allow} - {e["evidence_id"] for e in cur.get("evidence_exceptions", []) if e.get("allow")}
+    trigger = "evidence_exception_added" if added else "policy_changed"
     async for v in db.visits.find({"workspace_id": ws, "status": {"$ne": "Draft-deleted"}}, {"_id": 0}):
-        await jobs.on_permission_change(v)
+        await jobs.on_permission_change(v, trigger)
     return {**doc, "history_pending": history_pending}
 
 
@@ -228,7 +230,23 @@ def _repair_state(v, pin, reason):
 
 @router.get("/visits/{visit_id}/checklist")
 async def visit_checklist(visit_id: str, user=Depends(current_user)):
-    v = await get_visit(user, visit_id)
+    return await checklist_for(await get_visit(user, visit_id))
+
+
+DISPOSITION = {"Provided": "Answered", "Confirmed": "Answered", "Deferred": "Deferred", "Defer": "Deferred", "Unknown": "Unknown",
+               "Unknown with reason": "Unknown", "Not applicable": "Not applicable", "Needs estimator input": "Needs estimator input"}
+NON_ANSWER = {"Deferred": "defer", "Defer": "defer", "Unknown": "unknown", "Unknown with reason": "unknown", "Not applicable": "not_applicable"}
+NON_ANSWER_LABEL = {"defer": "Deferred", "unknown": "Unknown", "not_applicable": "Not applicable"}
+
+
+def is_handoff(f: dict) -> bool:
+    """Required inspection-level items of the pinned template that the core estimating fields do not cover (e.g. 'access').
+    The phone's Details step asks them and submit requires them; the five core fields keep their own readiness flow."""
+    return bool(f.get("required")) and (f.get("applies_to") or "inspection") == "inspection" and f.get("key") not in CORE_FIELDS
+
+
+async def checklist_for(v: dict) -> dict:
+    visit_id = v["uuid"]
     if "template" not in v:  # fresh / legacy unpinned visit: first pin = workspace default (this is pinning, not swapping)
         t = await default_template(v)
         if not t:
@@ -258,6 +276,13 @@ async def visit_checklist(visit_id: str, user=Depends(current_user)):
         status = "confirmed" if st in ("Provided", "Confirmed") else ("deferred" if st in ("Unknown", "Unknown with reason", "Defer", "Not applicable", "Deferred") else
                                                                        "needs_estimator" if st == "Needs estimator input" else "missing")
         distinct = sorted({str(p["value"]) for p in ps})
+        handoff = is_handoff(f)
+        allowed = f.get("allowed_non_answers") or []
+        if handoff and st in NON_ANSWER and NON_ANSWER[st] not in allowed:
+            status = "missing"  # a disposition this template does not allow never clears the requirement
+        if handoff and status == "missing":
+            opts = " or ".join(NON_ANSWER_LABEL[x] for x in allowed if x in NON_ANSWER_LABEL)
+            hb = f"Required before submitting: {f['label']}. Answer it" + (f", or mark it {opts}." if opts else ".")
         if status in ("confirmed", "deferred"):
             group, blocker = "ready", None
         elif status == "needs_estimator":
@@ -269,14 +294,20 @@ async def visit_checklist(visit_id: str, user=Depends(current_user)):
         else:
             group = "missing" if f.get("required") else "ready"
             blocker = "Required. Not stated in any note, voice note or photo yet." if f.get("required") else None
+        if handoff and status == "missing":
+            blocker = hb
         items.append({**f, "answer": a or None, "status": status, "group": group, "blocker": blocker, "proposals": ps,
+                      "handoff": handoff, "disposition": DISPOSITION.get(st) if status != "missing" else None,
                       "discrepancy": len(distinct) > 1, "distinct_values": distinct,
                       "finding_overrides": (v.get("finding_overrides") or {}).get(f["key"], {}),
                       "inherited_by_findings": f.get("applies_to") == "inspection" and f["key"] in ("material_responsibility", "access")})
     groups = {g: [i["key"] for i in items if i["group"] == g] for g in ("needs_review", "missing", "ready")}
     return {"visit_id": visit_id, "state": "ok", "template": {k: t.get(k) for k in ("template_id", "version", "name", "work_type", "label")}, "pin": pin, "fields": items,
             "template_pin_missing": pin_missing,
-            "groups": groups, "revision": v["revision"], "missing": [i["key"] for i in items if i.get("required") and i["status"] == "missing"]}
+            "groups": groups, "revision": v["revision"], "missing": [i["key"] for i in items if i.get("required") and i["status"] == "missing"],
+            "handoff_open": [{"key": i["key"], "label": i["label"],
+                              "blocker": i["blocker"] if (i["blocker"] or "").startswith("Required before") else f"Required before submitting: {i['label']}. {i['blocker'] or ''}".strip()}
+                             for i in items if i["handoff"] and i["status"] not in ("confirmed", "deferred")]}
 
 
 class RepairIn(BaseModel):
@@ -338,6 +369,8 @@ async def answer_checklist(visit_id: str, key: str, body: ChecklistAnswerIn, use
     v = await get_visit(user, visit_id)
     if v["status"] == "Submitted" and user["role"] == "foreman":
         e409("Inspection submitted. Ask the office to reopen")
+    if v["status"] == "Submitted" and user["role"] not in ("estimator", "admin"):
+        raise HTTPException(403, {"code": "forbidden", "message": "Only an estimator or admin can record this after submission", "retryable": False})
     if key in CORE_FIELDS and not body.finding_id:
         raise HTTPException(422, {"code": "use_fields_endpoint", "message": f"Use POST /api/visits/{visit_id}/fields/{key}", "retryable": False})
     if body.action == "ask_estimator" and not (body.reason or "").strip():
@@ -352,6 +385,13 @@ async def answer_checklist(visit_id: str, key: str, body: ChecklistAnswerIn, use
         value = p["value"]
     if body.action in ("confirm", "correct") and (value is None or str(value).strip() == ""):
         raise HTTPException(422, {"code": "value_required", "message": "A value is required", "retryable": False})
+    if not body.finding_id and body.action in ("unknown", "defer", "not_applicable"):
+        cl = await checklist_for(v)
+        item = next((i for i in cl.get("fields", []) if i["key"] == key), None)
+        if item and item.get("handoff") and body.action not in (item.get("allowed_non_answers") or []):
+            raise HTTPException(422, {"code": "not_allowed", "message": f"'{item['label']}' cannot be marked {NON_ANSWER_LABEL[body.action]} on this checklist",
+                                      "retryable": False})
+    old_rec = (v.get("finding_overrides") or {}).get(key, {}).get(body.finding_id) if body.finding_id else (v.get("checklist_answers") or {}).get(key)
     state = {"confirm": "Confirmed", "correct": "Confirmed", "unknown": "Unknown", "defer": "Deferred", "not_applicable": "Not applicable",
              "ask_estimator": "Needs estimator input"}[body.action]
     rec = {"state": state, "value": value, "unit": body.unit, "reason": body.reason, "proposal_id": body.proposal_id, "source": body.action,
@@ -361,7 +401,8 @@ async def answer_checklist(visit_id: str, key: str, body: ChecklistAnswerIn, use
                                    {"$set": {path: rec, "updated_at": iso(), "updated_by": user["uuid"]}, "$inc": {"revision": 1}})
     if not r.modified_count:
         e409("Inspection changed. Reload")
-    await audit(user, v["workspace_id"], "checklist_answer", "visit", visit_id, {"key": key, "action": body.action, "finding_id": body.finding_id})
+    await audit(user, v["workspace_id"], "checklist_answer", "visit", visit_id, {"key": key, "action": body.action, "finding_id": body.finding_id,
+                "old": old_rec, "new": rec, "after_submit": v["status"] == "Submitted", "expected_revision": body.expected_revision})
     return await visit_checklist(visit_id, user)
 
 

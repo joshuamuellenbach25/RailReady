@@ -489,5 +489,29 @@ class QueueRecoveryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.db.audit_events.rows, [])
 
 
+    async def test_live_release_keeps_other_holds_and_resolves_photo_runs(self):
+        self.db.processing_policies.rows[0]["evidence_exceptions"] = [
+            {"evidence_id": name, "allow": True} for name in ("a", "b", "c")]
+        await self.db.evidence.insert_one({"uuid": "c", "workspace_id": "ws", "visit_id": "v"})
+        await self.db.image_analysis_runs.insert_one({"uuid": "run", "workspace_id": "ws", "visit_id": "v", "evidence_id": "a"})
+        await self.add_job("photo-run", "run", stage="photo_analysis", source_kind="photo_run")
+        budget = await self.add_job("budget", "b", blocker=sys.modules["calibration"].BUDGET_MSG)
+        manual = await self.add_job("manual", "c", blocker="Manual hold")
+        result = await self.jobs._release_pass("sweep")
+        self.assertEqual(result["released"], ["photo-run"])
+        self.assertEqual(await self.saved("budget"), budget)
+        self.assertEqual(await self.saved("manual"), manual)
+
+    async def test_live_budget_release_requires_budget_trigger_and_does_not_change_cap(self):
+        self.db.processing_policies.rows[0]["default"] = "allow"
+        await self.add_job("budget", blocker=sys.modules["calibration"].BUDGET_MSG)
+        before = copy.deepcopy(self.db.cal_budget.rows)
+        self.assertEqual((await self.jobs._release_pass("policy_changed"))["released"], [])
+        self.assertEqual((await self.jobs._release_pass("budget_available"))["released"], ["budget"])
+        self.assertEqual((await self.jobs._release_pass("budget_available"))["released"], [])
+        self.assertEqual(self.db.cal_budget.rows, before)
+        self.assertEqual(len(self.db.jobs.rows), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

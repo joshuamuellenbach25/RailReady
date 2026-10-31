@@ -2,8 +2,8 @@ import { Redirect, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/src/auth";
 import * as repo from "@/src/local/repo";
-import { isSyncing, subscribe, syncAll } from "@/src/sync";
-import { Badge, Btn, Card, Empty, fmt, Row, Screen, T } from "@/src/ui";
+import { getSyncError, isSyncing, subscribe, syncAll } from "@/src/sync";
+import { Badge, Banner, Btn, Card, Empty, fmt, Row, Screen, T } from "@/src/ui";
 
 const KIND: Record<string, string> = { "visit record": "Inspection", photo: "Photo", audio: "Voice note", note: "Note", measurement: "Measurement", location: "Location", "not inspected": "Not checked", urgent: "Urgent" };
 type Item = { id: string; kind: string; visit: string; title: string; sync: repo.SyncInfo; at: string };
@@ -14,19 +14,23 @@ export default function Outbox() {
   const [items, setItems] = useState<Item[]>([]);
   const [visits, setVisits] = useState<repo.LocalVisit[]>([]);
   const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const vs = await repo.listVisits(uid);
     const names = Object.fromEntries(vs.map((v) => [v.uuid, v.title]));
     const ev = await repo.listEvidence(uid);
     const ob = await repo.listObs(uid);
+    const pins = await repo.listPins(uid);
     setVisits(vs);
     setItems([
       ...vs.map((v) => ({ id: v.uuid, kind: "visit record", visit: v.title, title: v.pending_permission ? `Permission change -> ${v.pending_permission}` : "Visit details", sync: v.pending_permission ? { ...v.sync, state: "Queued" as const } : v.sync, at: v.created_at })),
       ...ob.map((o) => ({ id: o.uuid, kind: o.kind.replace("_", " "), visit: names[o.visit_id], title: o.label || o.area || o.text || "", sync: o.sync, at: o.captured_at })),
       ...ev.map((e) => ({ id: e.uuid, kind: e.kind, visit: names[e.visit_id], title: e.kind === "note" ? e.text!.slice(0, 60) : e.filename, sync: e.sync, at: e.captured_at })),
+      ...pins.map((p) => ({ id: p.id, kind: "location", visit: names[p.visit_id] || p.payload.name, title: p.payload.name, sync: p.sync, at: p.created_at })),
     ]);
     setSyncing(isSyncing());
+    setSyncError(getSyncError(uid));
   }, [uid]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => subscribe(load), [load]);
@@ -39,9 +43,10 @@ export default function Outbox() {
   const admin = !!user && user.role === "admin";
   if (!admin) return <Redirect href="/home" />; // diagnostics are admin-only (REQ-263); foremen only see the gentle home line // technical details (receipts, errors) are admin-only (REQ-258)
   return (
-    <Screen testID="outbox-screen" title="Backup status" subtitle={pending ? `${pending} item${pending === 1 ? "" : "s"} not backed up yet` : "Everything is backed up"}
+    <Screen testID="outbox-screen" title="Backup status" subtitle={syncError ? "Some saved locations need attention" : pending ? `${pending} item${pending === 1 ? "" : "s"} not backed up yet` : "Everything is backed up"}
       footer={<Btn testID="outbox-sync-now-button" title={syncing ? "Backing up..." : "Back up now"} icon="cloud-upload-outline" loading={syncing} onPress={() => syncAll(uid, true)} />}>
       <T muted size={13}>Everything you capture is kept safe on this phone and backed up automatically when you have a connection.</T>
+      {syncError ? <Banner testID="outbox-location-sync-error" tone="warning" icon="map-marker-alert-outline" text={syncError} /> : null}
       {visits.filter((v) => v.manifest && admin).map((v) => (
         <Card key={v.uuid} testID={`outbox-transfer-${v.uuid}`}>
           <T bold>{v.title}</T>

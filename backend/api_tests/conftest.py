@@ -1,6 +1,10 @@
 import os
 import hashlib, time, uuid, pathlib
 import httpx, pytest
+from dotenv import load_dotenv
+
+# The API and these tests share backend/.env (SEED_PASSWORD and friends).
+load_dotenv(pathlib.Path(__file__).resolve().parent.parent / ".env")
 
 BASE = "http://localhost:8001/api"
 PW = os.environ["SEED_PASSWORD"]

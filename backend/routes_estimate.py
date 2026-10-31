@@ -89,6 +89,10 @@ async def open_engagement(visit_id: str, user=Depends(staff)):
     if e:
         return {"engagement_id": e["uuid"]}
     ws = await ws_settings(v["workspace_id"])
+    missing = [k for k in ("tax_rate", "default_terms", "legal_identity") if not (ws or {}).get(k)]
+    if missing:  # a workspace without estimate settings must not 500; say what is missing
+        raise HTTPException(409, {"code": "workspace_not_configured", "missing": missing,
+                                  "message": "Estimate settings are not set for this company (tax rate, default terms, legal identity). Ask your admin."})
     eid, did = new_id(), new_id()
     d = {"uuid": did, "workspace_id": v["workspace_id"], "engagement_id": eid, "visit_id": visit_id, "lines": [],
          "tax_rate": ws["tax_rate"], "terms": dict(ws["default_terms"]), "terms_reviewed": True,
@@ -405,7 +409,8 @@ async def patch_draft(eid: str, body: DraftPatch, user=Depends(staff)):
 async def build_snapshot(eng, d):
     v = await db.visits.find_one({"uuid": eng["visit_id"]})
     site = await db.sites.find_one({"uuid": eng["site_id"]})
-    cust = await db.customers.find_one({"uuid": eng["customer_id"]})
+    cust = await db.customers.find_one({"uuid": eng["customer_id"]}) if eng.get("customer_id") else None
+    cust = cust or {"name": "Not set"}  # sites created from the map have no customer yet; blockers_for lists it
     ws = await ws_settings(eng["workspace_id"])
     scopes = await db.scope_items.find({"visit_id": v["uuid"]}).to_list(50)
     inc = [l for l in d["lines"] if l.get("included", True)]
@@ -441,6 +446,8 @@ async def build_snapshot(eng, d):
 async def blockers_for(eng, d):
     snap, internal, variables, scopes, v = await build_snapshot(eng, d)
     b = []
+    if not eng.get("customer_id"):
+        b.append("Choose the customer for this site")
     if eng.get("accepted_version_id"):
         b.append("Engagement already accepted")
     inc = [l for l in d["lines"] if l.get("included", True)]
@@ -626,6 +633,32 @@ async def copy_to_draft(vid: str, user=Depends(staff)):
     return {"draft_revision": res["revision"], "feedback_history": res["feedback_history"]}
 
 
+# ---------------- Phase 16: customer for sites created from the map ----------------
+class CustomerPick(BaseModel):
+    customer_id: str
+
+
+@router.get("/customers")
+async def list_customers(user=Depends(staff)):
+    return [{"uuid": c["uuid"], "name": c["name"]} async for c in db.customers.find({"workspace_id": user["workspace_id"]})]
+
+
+@router.put("/engagements/{eid}/customer")
+async def set_customer(eid: str, body: CustomerPick, user=Depends(staff)):
+    """Sets the customer once on an engagement (and its site/inspection when they have none). Never changes an accepted one."""
+    eng = await db.engagements.find_one({"uuid": eid, "workspace_id": user["workspace_id"]})
+    c = await db.customers.find_one({"uuid": body.customer_id, "workspace_id": user["workspace_id"]})
+    if not eng or not c:
+        raise HTTPException(404, "Not found")
+    if eng.get("accepted_version_id") or (eng.get("customer_id") and eng["customer_id"] != c["uuid"]):
+        raise HTTPException(409, {"code": "customer_set", "message": "The customer is already set for this estimate."})
+    await db.engagements.update_one({"uuid": eid}, {"$set": {"customer_id": c["uuid"]}})
+    await db.sites.update_one({"uuid": eng["site_id"], "customer_id": None}, {"$set": {"customer_id": c["uuid"]}})
+    await db.visits.update_one({"uuid": eng["visit_id"], "customer_id": None}, {"$set": {"customer_id": c["uuid"]}})
+    await audit(user, user["workspace_id"], "engagement.customer_set", "engagement", eid, {"customer_id": c["uuid"]})
+    return {"customer_id": c["uuid"], "customer_name": c["name"]}
+
+
 # ---------------- work orders ----------------
 @router.get("/work-orders")
 async def list_wos(user=Depends(staff)):
@@ -638,7 +671,24 @@ async def get_wo(wid: str, user=Depends(staff)):
     if not w:
         raise HTTPException(404, "Not found")
     crews = clean_all(await db.crews.find({"workspace_id": user["workspace_id"]}).to_list(20))
-    return {**clean(w), "crews": crews}
+    import routes_repair as RR  # late import (Phase 16 link): repair -> work order
+    from core import visit_location
+    eng = await db.engagements.find_one({"uuid": w["engagement_id"]}, {"visit_id": 1})
+    rep = await db.repairs.find_one({"work_order_id": wid, "workspace_id": user["workspace_id"]})
+    pv = await db.proposal_versions.find_one({"uuid": w.get("accepted_version_id")}, {"status": 1, "visit_id": 1})
+    eligible = bool(pv and pv.get("status") == "Accepted")
+    insp_id = (eng or {}).get("visit_id") or (pv or {}).get("visit_id")
+    nxt = None
+    if rep:
+        op = await RR.operator_for(rep)
+        inv = await db.repair_invoices.find_one({"repair_id": rep["uuid"]})
+        sub = await db.invoice_submissions.find_one({"invoice_id": inv["uuid"]}) if inv else None
+        docs = (rep.get("packet") or {}).get("documents") or []
+        nxt = RR.next_action(rep, op, docs, inv, sub)
+    return {**clean(w), "crews": crews, "inspection_visit_id": insp_id,
+            "location": await visit_location(insp_id), "start_repair_eligible": eligible and not rep,
+            "repair": {"uuid": rep["uuid"], "visit_id": rep["visit_id"], "status": "Finished" if rep.get("completion") else "Open"} if rep else None,
+            "next_action": nxt or ("Office: tap Start repair." if eligible else "Waiting for the customer to accept the proposal.")}
 
 
 class WOPatch(BaseModel):

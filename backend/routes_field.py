@@ -171,7 +171,9 @@ async def list_visits(user=Depends(current_user)):
 
 @router.get("/visits/{visit_id}", tags=["visits"])
 async def get_visit_api(visit_id: str, user=Depends(current_user)):
-    return clean(await get_visit(user, visit_id))
+    from core import visit_location
+    v = await get_visit(user, visit_id)
+    return {**clean(v), "location": await visit_location(v.get("location_visit_id") or visit_id)}
 
 
 @router.patch("/visits/{visit_id}", tags=["visits"])
@@ -539,8 +541,14 @@ async def departure(visit_id: str, user=Depends(current_user)):
                               "created_by": user["uuid"], "revision": 1}}, upsert=True)
         q = {**clean(await db.questions.find_one({"visit_id": visit_id, "field": f["field"], "visit_revision": v["revision"], "status": "open"})),
              "field_info": f}
-    return {"question": q, "remaining": len(pending), "readiness": r, "visit_revision": v["revision"],
-            "uploads": await upload_gaps(visit_id), "status": v["status"]}
+    import routes_phase5  # pinned-template handoff items (e.g. 'Access / track time arrangement'), asked in this Details step
+    cl = await routes_phase5.checklist_for(v)
+    open_keys = {i["key"] for i in cl.get("handoff_open", [])}
+    handoff = [{k: i.get(k) for k in ("key", "label", "type", "options", "allowed_non_answers", "status", "disposition", "answer", "blocker", "help")}
+               | {"open": i["key"] in open_keys} for i in cl.get("fields", []) if i.get("handoff")]
+    return {"question": q, "remaining": len(pending) + len(open_keys), "readiness": r, "visit_revision": v["revision"],
+            "uploads": await upload_gaps(visit_id), "status": v["status"], "handoff": handoff, "handoff_open": cl.get("handoff_open", []),
+            "checklist_state": cl.get("state")}
 
 
 class FieldAction(BaseModel):
@@ -625,6 +633,11 @@ async def submit_visit(visit_id: str, body: SubmitIn, user=Depends(require_role(
     if missing:
         raise HTTPException(409, {"code": "uploads_incomplete", "missing": missing,
                                   "message": f"Submit blocked: {missing} item(s) not yet verified on the server."})
+    import routes_phase5
+    hand = (await routes_phase5.checklist_for(v)).get("handoff_open") or []
+    if hand:  # required handoff items need an answer or an allowed disposition before submission
+        raise HTTPException(409, {"code": "handoff_required", "fields": [h["key"] for h in hand],
+                                  "message": "Submit blocked. " + " ".join(h["blocker"] for h in hand)})
     res = await bump_visit(v, user, body.expected_revision, {"status": "Submitted", "submitted_at": iso(), "submitted_by": user["uuid"]})
     await audit(user, v["workspace_id"], "visit_submitted", "visit", visit_id)
     return clean(res)

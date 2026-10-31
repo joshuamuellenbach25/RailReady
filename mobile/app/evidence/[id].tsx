@@ -10,6 +10,7 @@ import { mediaUri } from "@/src/local/db";
 import * as repo from "@/src/local/repo";
 import { Badge, Banner, Btn, Card, fmt, H, Input, Row, Screen, Sheet, T } from "@/src/ui";
 import { useTheme } from "@/src/theme";
+import { goToStep, NextStep, StepGuide, useStepProgress } from "@/src/stepGuide";
 
 const STAGE_LABEL: Record<string, string> = { image_analysis: "Photo check", transcription: "Voice to text", extraction: "Reading notes" };
 const CATS = ["possible missing/displaced fastener", "visible tie-surface deterioration", "other visible condition"];
@@ -158,6 +159,8 @@ export default function EvidenceScreen() {
   const terminal = useRef(false);
   const [tEdit, setTEdit] = useState<string | null>(null);
   const [locked, setLocked] = useState(false);
+  const stepVid = visit || local?.visit_id || null;
+  const steps = useStepProgress(uid, stepVid);
   const [details, setDetails] = useState(false);
 
   const load = useCallback(async () => {
@@ -264,6 +267,7 @@ export default function EvidenceScreen() {
   const synced = !local || local.sync.state === "Verified";
   return (
     <Screen testID="evidence-screen" title={kind === "photo" ? "Photo" : kind === "video" ? "Video" : kind === "audio" ? "Recording" : "Note"} subtitle={local ? fmt(local.captured_at) : undefined}>
+      {stepVid ? <StepGuide testID="evidence-steps" current="review" done={steps.done} repair={steps.repair} onGo={(s) => goToStep(stepVid, s)} /> : null}
       {msg ? <Banner testID="evidence-message" tone={msg.tone} icon="information" text={msg.text} /> : null}
       {kind === "photo" && uri ? <PhotoOverlay uri={uri} candidates={cands} /> : null}
       {kind === "video" && uri ? <VideoPlayer testID="evidence-video-player" uri={uri} token={getToken()} seek={seek} /> : null}
@@ -352,6 +356,7 @@ export default function EvidenceScreen() {
         <Input testID="correct-note-input" label="In your words (optional)" multiline value={corr.note} onChangeText={(t) => setCorr({ ...corr, note: t })} />
         <Btn testID="correct-save-button" title="Save" icon="check" onPress={() => decide(correctFor, "correct", { corrected_category: corr.category, note: corr.note || undefined })} />
       </Sheet>
+      {stepVid ? <NextStep to="details" repair={steps.repair} onPress={() => goToStep(stepVid, "details")} /> : null}
       <Sheet visible={manual !== null} onClose={() => setManual(null)} title="Add a note" testID="manual-observation-sheet">
         <Input testID="manual-observation-input" label="Note" multiline value={manual || ""} onChangeText={setManual} />
         <Btn testID="manual-observation-save" title="Save" icon="content-save" onPress={addManual} />

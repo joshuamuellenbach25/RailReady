@@ -1,5 +1,5 @@
 // Local domain records (device-first). Every record is committed before the UI says "Saved on this device".
-import { getRecord, listRecords, putRecord, saveMedia } from "./db";
+import { getRecord, listRecords, putRecord, createRecordsOnce, saveMedia } from "./db";
 import { sha256Hex, utf8, uuid } from "./hash";
 
 export type SyncState = "Queued" | "Uploading" | "Uploaded unverified" | "Verified" | "Retry wait" | "Blocked";
@@ -19,6 +19,11 @@ export type LocalVisit = {
   manifest?: { uuid: string; state: string; receipt_id: string | null; missing: number } | null;
   repair?: LocalRepair | null; // Phase 15: authorized repair (no proposal/acceptance step)
   repair_sync?: "Saved" | "Verified";
+  repair_finish_blockers?: string[];
+  repair_requirements?: { operator_id: string; fields: string[]; name: string };
+  // Phase 16: display-only links (never sent): selected location, and the work order a repair came from
+  links?: { location?: { lat: number; lon: number; method_label: string; railroad?: string | null; subdivision?: string | null; milepost?: string | null } | null;
+    work_order_id?: string | null; work_order_number?: string | null; repair_id?: string | null } | null;
   sync: SyncInfo;
 };
 export type WorkItem = { uuid: string; kind: "work" | "material" | "labor" | "equipment"; description: string; quantity: string; unit: string; rate_key?: string | null };
@@ -96,6 +101,36 @@ export async function createVisit(u: string, siteId: string, siteName: string, t
   return v;
 }
 export const listVisits = (u: string) => listRecords<LocalVisit>(u, "visit");
+
+// Phase 16: map location -> site + inspection + pending pin, written in ONE local transaction with stable client ids,
+// before anything is shown as created. The pin (with its location metadata) is sent by the normal queue after its site/inspection.
+export type PinPayload = { uuid: string; lat: number; lon: number; name: string; site_id: string; visit_id: string; method: string;
+  camera_accuracy_m: number | null; fixed_at: string | null; milepost_ref?: Record<string, unknown> | null; railway: { railroad: string | null; subdivision: string | null; milepost_text: string | null } | null };
+export type LocalPin = { id: string; visit_id: string; payload: PinPayload; created_at: string; sync: SyncInfo };
+export async function createPinVisit(u: string, p: { pinId: string; name: string; lat: number; lon: number; accuracy: number | null; method: string;
+  fixed_at: string | null; milepost_ref?: Record<string, unknown> | null; railway: PinPayload["railway"]; method_label: string }): Promise<{ visitId: string; created: boolean }> {
+  const any = (await listRecords<Bundle>(u, "bundle"))[0];
+  const site: LocalSite = { uuid: uuid(), name: p.name, address: null, description: null, lat: p.lat, lon: p.lon, location_accuracy_m: p.accuracy,
+    created_at: now(), sync: queued() };
+  const bundle: Bundle = { site_id: site.uuid, prepared_at: now(), data: { site: { uuid: site.uuid, name: site.name, address: null, revision: 0, prior_findings: [] },
+    customer: null, tracks: [], fields: any?.data?.fields || [], generated_at: now(), bundle_version: "local", local_only: true } };
+  const v: LocalVisit = { uuid: uuid(), site_id: site.uuid, site_name: p.name, title: p.name, processing_permission: "Policy", server_revision: null,
+    status: "Draft", created_at: now(), sync: queued(),
+    links: { location: { lat: p.lat, lon: p.lon, method_label: p.method_label, railroad: p.railway?.railroad || null, subdivision: p.railway?.subdivision || null,
+      milepost: p.railway?.milepost_text || null } } };
+  const pin: LocalPin = { id: `pinrec-${p.pinId}`, visit_id: v.uuid, created_at: now(), sync: queued(),
+    payload: { uuid: p.pinId, lat: p.lat, lon: p.lon, name: p.name, site_id: site.uuid, visit_id: v.uuid, method: p.method,
+      camera_accuracy_m: p.method === "gps" ? p.accuracy : null, fixed_at: p.method === "gps" ? p.fixed_at : null, railway: p.railway, milepost_ref: p.milepost_ref || null } };
+  const result = await createRecordsOnce<LocalPin>(u, pin.id, [{ type: "site", id: site.uuid, parent: null, data: site }, { type: "bundle", id: `bundle-${site.uuid}`, parent: null, data: bundle },
+    { type: "visit", id: v.uuid, parent: site.uuid, data: v }, { type: "pin", id: pin.id, parent: v.uuid, data: pin }]);
+  const back = result.data; // may belong to a concurrent creator; use its committed IDs
+  if (!back || !(await getRecord<LocalVisit>(u, back.visit_id)) || !(await getRecord<LocalSite>(u, back.payload.site_id))) {
+    throw new Error("Saved location is incomplete. Its original data is kept on this device.");
+  }
+  return { visitId: back.visit_id, created: result.created };
+}
+export const listPins = (u: string) => listRecords<LocalPin>(u, "pin");
+export const savePin = (u: string, p: LocalPin) => putRecord(u, "pin", p.id, p.visit_id, p);
 export const getLocalVisit = (u: string, id: string) => getRecord<LocalVisit>(u, id);
 export async function saveVisit(u: string, v: LocalVisit) {
   await putRecord(u, "visit", v.uuid, v.site_id, v);
@@ -152,7 +187,8 @@ export async function saveRecovery(u: string, r: Omit<Recovery, "id" | "at">) {
 export const listRecovery = (u: string, visitId: string) => listRecords<Recovery>(u, "recovery", visitId);
 
 export async function unsyncedCount(u: string, visitId?: string) {
-  const [ev, ob, vs] = await Promise.all([listEvidence(u, visitId), listObs(u, visitId), listVisits(u)]);
+  const [ev, ob, vs, pins] = await Promise.all([listEvidence(u, visitId), listObs(u, visitId), listVisits(u), listPins(u)]);
   const pendingVisits = vs.filter((v) => (!visitId || v.uuid === visitId) && (v.sync.state !== "Verified" || v.pending_permission));
-  return ev.filter((e) => e.sync.state !== "Verified").length + ob.filter((o) => o.sync.state !== "Verified").length + pendingVisits.length;
+  return ev.filter((e) => e.sync.state !== "Verified").length + ob.filter((o) => o.sync.state !== "Verified").length + pendingVisits.length
+    + pins.filter((p) => (!visitId || p.visit_id === visitId) && p.sync.state !== "Verified").length;
 }

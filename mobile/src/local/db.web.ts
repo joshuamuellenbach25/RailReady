@@ -38,6 +38,40 @@ export async function putRecord(userId: string, type: string, id: string, parent
   await done(tx);
 }
 
+// All rows commit together or none do (one IndexedDB transaction).
+export async function putRecords(userId: string, rows: { type: string; id: string; parent: string | null; data: any }[]) {
+  const tx = (await idb()).transaction("records", "readwrite");
+  const at = new Date().toISOString();
+  for (const r of rows) tx.objectStore("records").put({ user_id: userId, id: r.id, type: r.type, parent: r.parent, data: JSON.stringify(r.data), updated_at: at });
+  await done(tx);
+}
+
+// IndexedDB serializes read/write transactions on this store across tabs. Keep the
+// guard read and dependent inserts in that same transaction, and never replace data.
+export async function createRecordsOnce<T>(userId: string, guardId: string, rows: { type: string; id: string; parent: string | null; data: any }[]): Promise<{ data: T; created: boolean }> {
+  const guard = rows.find((r) => r.id === guardId);
+  if (!guard) throw new Error("Creation guard missing.");
+  const tx = (await idb()).transaction("records", "readwrite");
+  const committed = done(tx);
+  try {
+    const store = tx.objectStore("records");
+    const prior: any = await req(store.get([userId, guardId]));
+    if (prior) {
+      const data = JSON.parse(prior.data) as T;
+      await committed;
+      return { data, created: false };
+    }
+    const at = new Date().toISOString();
+    for (const r of rows) store.add({ user_id: userId, id: r.id, type: r.type, parent: r.parent, data: JSON.stringify(r.data), updated_at: at });
+    await committed;
+    return { data: guard.data as T, created: true };
+  } catch (error) {
+    try { tx.abort(); } catch { /* already finished */ }
+    await committed.catch(() => {});
+    throw error;
+  }
+}
+
 export async function getRecord<T>(userId: string, id: string): Promise<T | null> {
   const r = await req((await idb()).transaction("records").objectStore("records").get([userId, id]));
   return r ? (JSON.parse((r as any).data) as T) : null;

@@ -91,7 +91,7 @@ export default function Home() {
           <div className={WRAP}>
             <h1 id="hero-h" data-testid="landing-title" className="max-w-[880px] text-[36px] font-bold leading-[1.12] md:text-[52px]">Your next estimate starts on site.</h1>
             <p data-testid="landing-one-liner" className="mt-5 max-w-[760px] text-[18px] md:text-[20px]">
-              Bring field photos, voice notes and typed notes into one inspection.
+              Bring field photos, voice notes and typed notes into one inspection. AI helps flag possible issues and missing details, so your team can turn inspection findings into repair estimates while still on site.
             </p>
             <div className="mt-8 flex flex-wrap items-start gap-3">
               <StartDemo label="See an example" testid="home-view-example-button" className={RED} />

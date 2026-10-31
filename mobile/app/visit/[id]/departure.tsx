@@ -5,11 +5,14 @@ import { useAuth } from "@/src/auth";
 import * as repo from "@/src/local/repo";
 import { Badge, Banner, Btn, Card, H, Input, Loading, Row, Screen, T } from "@/src/ui";
 import { fieldAction, RecoveryList } from "./fields";
+import { goToStep, StepGuide, useStepProgress } from "@/src/stepGuide";
+import { HandoffCard } from "@/src/handoff";
 
 export default function Departure() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
   const uid = user ? user.uuid : "";
+  const steps = useStepProgress(uid, id);
   const [d, setD] = useState<any>(null);
   const [val, setVal] = useState("");
   const [reason, setReason] = useState("");
@@ -68,14 +71,17 @@ export default function Departure() {
   const fi = q?.field_info;
   const missing = d.uploads.missing + localUnsynced;
   const submitted = d.status === "Submitted";
+  const handOpen: any[] = d.handoff_open || [];
   return (
     <Screen testID="departure-screen" title="Departure check" subtitle={submitted ? "Submitted" : `${d.remaining} question(s) remaining`}
       footer={!submitted ? (
         <>
           {missing ? <Banner testID="submit-blocked-message" tone="error" icon="cloud-alert" text={`${missing} item${missing === 1 ? " isn't" : "s aren't"} backed up yet. Stay connected for a moment, then finish.`} /> : null}
+          {handOpen.length ? <Banner testID="submit-handoff-blocked-message" tone="error" icon="clipboard-alert" text={handOpen.map((h) => h.blocker).join(" ")} /> : null}
           <Btn testID="submit-visit-button" title="Finish inspection" icon="send-lock" disabled={missing > 0} loading={busy} onPress={submit} />
         </>
       ) : undefined}>
+      <StepGuide testID="departure-steps" current="details" done={steps.done} repair={steps.repair} onGo={(s) => goToStep(id, s)} />
       {msg ? <Banner testID="departure-message" tone={msg.tone} icon="information" text={msg.text} /> : null}
       {submitted ? <Banner testID="departure-submitted-banner" tone="success" icon="lock" text="Submitted - ask estimator to reopen." /> : null}
       <RecoveryList visitId={id} />
@@ -116,6 +122,7 @@ export default function Departure() {
       ) : !submitted ? (
         <Banner testID="departure-all-answered" tone="success" icon="check-all" text="All fields have a status. Review below, then submit." />
       ) : null}
+      <HandoffCard visitId={id} items={d.handoff || []} revision={d.visit_revision} locked={submitted} onSaved={load} />
       <Card testID="readiness-card">
         <H>Readiness</H>
         {d.readiness.fields.map((f: any) => (

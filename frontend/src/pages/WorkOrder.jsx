@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ArrowRight, CalendarDays, FileText, KeyRound, Truck } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowRight, CalendarDays, FileText, KeyRound, Truck, Wrench } from "lucide-react";
 import { api, errText } from "@/lib/api";
 import { Badge, Banner, Btn, Card, Field, H2, Loading, Mono, Msg, PageHead, fmt } from "@/components/rr/ui";
 
@@ -25,6 +25,62 @@ function FrozenScope({ fs }) {
       </table>
       <p data-testid="workorder-total" className="mt-3 text-lg font-semibold">Total ${fs.totals.total} USD</p>
       <Mono label="Document details" className="mt-2 block">snapshot {fs.snapshot_hash} - agreement {fs.document_hash}</Mono>
+    </Card>
+  );
+}
+
+function LocationLine({ loc, testid }) {
+  if (!loc) return <p data-testid={testid} className="text-sm text-[#59636B]">Location: Not set</p>;
+  const rail = [loc.railroad, loc.subdivision, loc.milepost ? `MP ${loc.milepost}` : null].filter(Boolean).join(", ");
+  return (
+    <p data-testid={testid} className="text-sm">
+      Location: <span className="font-mono">{Number(loc.lat).toFixed(6)}, {Number(loc.lon).toFixed(6)}</span> ({loc.method_label}){rail ? ` - ${rail}` : ""}
+    </p>
+  );
+}
+
+function StartRepair({ w, onDone }) {
+  const nav = useNavigate();
+  const [ops, setOps] = useState([]);
+  const [op, setOp] = useState(null);
+  const [po, setPo] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  useEffect(() => { api("/operators").then(setOps).catch(() => {}); }, []);
+  if (w.repair) {
+    return (
+      <Card testid="workorder-repair" className="space-y-2">
+        <H2>Repair</H2>
+        <p className="text-sm">Repair {w.repair.status}. <Link data-testid="workorder-repair-link" className="font-bold underline" to={`/office/repairs/${w.repair.visit_id}`}>Open repair</Link></p>
+      </Card>
+    );
+  }
+  async function start() {
+    if (busy || !op || !po.trim() || po.trim().length > 80) return;
+    setBusy(true); // one request in flight; the server also returns the existing repair on a repeat
+    try {
+      const r = await api(`/work-orders/${w.uuid}/start-repair`, { method: "POST", body: { operator_id: op, po: po.trim() } });
+      onDone();
+      nav(`/office/repairs/${r.repair.visit_id}`);
+    } catch (e) {
+      setMsg({ tone: "error", text: errText(e) });
+      setBusy(false);
+    }
+  }
+  return (
+    <Card testid="workorder-start-repair" className="space-y-3">
+      <H2>Start repair</H2>
+      <Msg msg={msg} testid="workorder-start-repair-message" />
+      {w.start_repair_eligible ? (
+        <>
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Operator">
+            {ops.map((o) => <Btn key={o.uuid} small role="radio" aria-checked={op === o.uuid} kind={op === o.uuid ? "primary" : "secondary"} testid={`workorder-operator-${o.uuid}`} onClick={() => setOp(o.uuid)}>{o.name}</Btn>)}
+          </div>
+          <Field id="wo-po" testid="workorder-po-input" label="Contract or PO number (required)" value={po} onChange={setPo} />
+          <Btn testid="workorder-start-repair-button" icon={Wrench} disabled={busy || !op || !po.trim() || po.trim().length > 80} onClick={start}>{busy ? "Starting..." : "Start repair"}</Btn>
+          <p className="text-xs text-[#59636B]">The repair goes to the foreman who did the inspection. It keeps this work order and the inspection location.</p>
+        </>
+      ) : <p className="text-sm text-[#59636B]">Start repair is available once the customer has accepted the proposal.</p>}
     </Card>
   );
 }
@@ -72,6 +128,12 @@ export default function WorkOrder() {
         ) : null} />
       <div className="space-y-4">
         <Msg msg={msg} testid="workorder-message" />
+        <Card testid="workorder-next" className="space-y-1">
+          <p data-testid="workorder-next-action" className="text-sm font-bold">Next: {w.next_action}</p>
+          <LocationLine loc={w.location} testid="workorder-location" />
+          {w.inspection_visit_id ? <Link data-testid="workorder-inspection-link" className="text-sm underline" to={`/office/visits/${w.inspection_visit_id}`}>Open inspection</Link> : null}
+        </Card>
+        <StartRepair w={w} onDone={load} />
         <div className="grid gap-5 lg:grid-cols-12">
           <div className="lg:col-span-7"><FrozenScope fs={fs} /></div>
           <Card testid="workorder-planning" className="space-y-4 lg:col-span-5">

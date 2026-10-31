@@ -62,6 +62,14 @@ async def seed():
                           "assumptions": "Track time and access provided by customer; quantities per confirmed survey.",
                           "exclusions": "Rail, surfacing, ballast and areas marked Not inspected are excluded.",
                           "validity": "Proposal valid for 30 days.", "acceptance_wording": "By accepting, the customer agrees to this agreement and proposal version."}}})
+    # The automated-test workspace needs its own estimate settings (open_engagement requires them). Only filled when absent.
+    await db.workspaces.update_one({"uuid": WS2, "tax_rate": {"$exists": False}}, {"$set": {
+        "legal_identity": "Isolation Test Co (TEST ONLY workspace). Contractor license: Not set",
+        "tax_rate": "0", "taxable_flags": {"material": True, "labor": False, "handling": False, "equipment": False, "mobilization": False, "general_repair": False, "other": False},
+        "tax_treatment_text": "TEST ONLY: 0% sales tax.",
+        "default_terms": {"payment_terms": "TEST ONLY: Net 30 from completion.", "schedule_wording": "TEST ONLY: scheduled within 30 days of acceptance.",
+                          "assumptions": "TEST ONLY: quantities per confirmed survey.", "exclusions": "TEST ONLY: areas marked Not inspected are excluded.",
+                          "validity": "Proposal valid for 30 days.", "acceptance_wording": "By accepting, the customer agrees to this agreement and proposal version."}}})
     await upsert("packages", base("pkg-tie-v1", workspace_id=WS1, name="Tie replacement package", version=1, rates_version="rates-2026-sample-1",
                                   rates={"crosstie": {"unit_cost": "62.50", "markup_pct": "20", "assumption": "Crosstie 7x9x8'6\" hardwood grade 5 price"},
                                          "switch_tie": {"unit_cost": "185.00", "markup_pct": "20", "assumption": "Switch tie sized-set price (not substitutable)"},

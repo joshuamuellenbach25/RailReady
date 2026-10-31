@@ -1,9 +1,5 @@
-// Design tokens for this app. Light theme only.Always modify the colors and theme to Dark, Light or Dark and Light according to the design guidelines.
-//
-// The keys match the "color" block of /app/design_guidelines.json. Fill the
-// values from that file (or from the user's brand colors). Keep every key; do
-// not add a second theme or colors file; do not write color literals in
-// components.
+// Design tokens for this app (light theme only). The keys match the "color"
+// block of design_guidelines.json. Do not write color literals in components.
 //
 // How the names work: a plain key is a background, and its `on` partner is the
 // text or icon color that sits on top of it. Always use them as a pair.

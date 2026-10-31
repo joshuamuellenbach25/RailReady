@@ -2,9 +2,35 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Handshake } from "lucide-react";
 import { ApiError, api, errText, apiWrite } from "@/lib/api";
-import { Banner, Loading, Mono, Msg, PageHead } from "@/components/rr/ui";
+import { Banner, Btn, Card, Loading, Mono, Msg, PageHead, Select } from "@/components/rr/ui";
 import { EditLineModal, LineModal, PackageModal, ScopeModal, TermsModal, blankLine } from "@/components/rr/estimate/Forms";
 import { AgreementPanel, GateCard, LinesList, PhotosTerms, ScopeList, TotalsCard, VersionsList } from "@/components/rr/estimate/Sections";
+
+// Phase 16: sites created from the rail map have no customer yet; the estimator chooses one before publishing.
+function CustomerPicker({ eid, onDone }) {
+  const [list, setList] = useState([]);
+  const [c, setC] = useState("");
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { api("/customers").then(setList).catch((e) => setMsg({ tone: "error", text: errText(e) })); }, []);
+  async function save() {
+    if (busy || !c) return;
+    setBusy(true);
+    try { await api(`/engagements/${eid}/customer`, { method: "PUT", body: { customer_id: c } }); await onDone(); }
+    catch (e) { setMsg({ tone: "error", text: errText(e) }); }
+    finally { setBusy(false); }
+  }
+  return (
+    <Card testid="estimate-customer-picker" className="space-y-2">
+      <p className="text-sm font-bold">Customer: Not set. Choose the customer for this site.</p>
+      <Msg msg={msg} testid="estimate-customer-message" />
+      <div className="flex flex-wrap items-end gap-2">
+        <Select id="est-customer" testid="estimate-customer-select" label="Customer" value={c} placeholder="Choose..." options={list.map((x) => [x.uuid, x.name])} onChange={setC} />
+        <Btn small testid="estimate-customer-save" disabled={busy || !c} onClick={save}>Save customer</Btn>
+      </div>
+    </Card>
+  );
+}
 
 export default function Estimate() {
   const { id: visitId } = useParams();
@@ -128,6 +154,7 @@ export default function Estimate() {
         <Mono testid="estimate-ids" label="Estimate details">engagement {eid} - draft {dr.uuid} - rev {rev}</Mono>
         <Msg msg={msg} testid="estimate-message" />
         {accepted ? <Banner testid="estimate-accepted-banner" tone="success" icon={Handshake} text="Accepted by the customer. Prices and scope are locked." /> : null}
+        {!d.engagement.customer_id ? <CustomerPicker eid={eid} onDone={load} /> : null}
       </div>
       <div className="grid gap-6 lg:grid-cols-12">
         <div className="space-y-6 lg:col-span-7">

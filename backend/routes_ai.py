@@ -44,7 +44,9 @@ def result_state(stages: dict, runs: list, pending: int) -> tuple[str | None, st
         return ("partial" if any((r.get("candidates") or 0) for r in runs if r not in bad) else "failed"), None
     if not runs:
         return None, None  # never checked: not "complete"
-    if any(r.get("image_assessability") == "cannot_assess" for r in runs):
+    if any(r.get("image_assessability") == "cannot_assess"
+           or r.get("outcome_label") == "Rail surface not clear enough to check"
+           or (r.get("rail_surface") or {}).get("label") == "Rail surface not clear enough to check" for r in runs):
         return "failed", None
     if any(r.get("status") == "partial" or r.get("rejected_candidates") or (r.get("rail_surface") or {}).get("status") == "partial" for r in runs):
         # rejected output with nothing usable = failed; partial with all findings reviewed = partial (pending -> needs_review above)
@@ -68,7 +70,8 @@ async def processing(visit_id: str, user=Depends(current_user)):
     for j in js:
         tgt = run_ev.get(j["target_id"], j["target_id"]) if j["stage"] == "photo_analysis" else j["target_id"]  # Phase 7 jobs target the run
         by_target.setdefault(tgt, {})[j["stage"]] = {k: j.get(k) for k in (
-            "uuid", "status", "blocker", "attempts", "error", "error_stage", "last_run_id", "updated_at", "retryable")}
+            "uuid", "status", "blocker", "attempts", "error", "error_stage", "last_run_id", "updated_at", "retryable")
+            + (("block_reason", "last_block_reason", "released_at", "release_trigger") if user.get("role") == "admin" else ())}
     # C4: uncertain findings count too (no hidden filter); every pipeline incl. rail_surface_v1
     pending: dict = {}
     async for c in db.visual_candidates.find({"visit_id": visit_id, "review_state": "Pending"}, {"evidence_id": 1}):

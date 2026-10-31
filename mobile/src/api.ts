@@ -116,3 +116,8 @@ async function once<T>(path: string, opts: ApiOpts, timeoutMs: number): Promise<
 export function mediaUrl(evidenceId: string) {
   return `${API}/evidence/${evidenceId}/content?auth=${encodeURIComponent(token || "")}`;
 }
+
+// Phase 17: work-order form / invoice / packet PDF (Preview = inline, Download = attachment).
+export function paperworkUrl(repairVisitId: string, doc: "work_order" | "invoice" | "packet", download: boolean) {
+  return `${API}/repairs/${repairVisitId}/paperwork/${doc}.pdf?download=${download}&auth=${encodeURIComponent(token || "")}`;
+}

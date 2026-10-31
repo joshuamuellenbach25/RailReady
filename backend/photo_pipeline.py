@@ -19,6 +19,7 @@ from PIL import Image, ImageOps
 import calibration
 import photo_analysis_rules as R
 import rail_surface as RS
+import rail_surface_views as RSV
 import storage
 from core import db, iso, new_id
 
@@ -32,7 +33,8 @@ MIN_SIDE, COMPACT_MAX_AREA = 0.01, 0.25
 GEOMETRY_POLICY = {"version": "geom-v1", "object": {"min_side": MIN_SIDE, "max_area": COMPACT_MAX_AREA},
                    "linear_component_region": {"min_side": MIN_SIDE, "max_area": 1.0}, "host_region": {"min_side": MIN_SIDE, "max_area": 1.0}}
 CONFIG = {"max_candidates": MAX_CANDIDATES, "max_attempts": MAX_ATTEMPTS, "max_repairs": MAX_REPAIRS, "max_transient_retries": MAX_RETRIES,
-          "crop_padding": R.PAD, "crop_jpeg_quality": R.JPEG_Q, "crop_max_side": R.MAX_SIDE, "concurrency": 2, "geometry_policy": GEOMETRY_POLICY}
+          "crop_padding": R.PAD, "crop_jpeg_quality": R.JPEG_Q, "crop_max_side": R.MAX_SIDE, "concurrency": 2, "geometry_policy": GEOMETRY_POLICY,
+          "rail_surface_prompt": RS.PROMPT_VERSION, "rail_surface_input": RSV.VERSION}
 BUDGET_MSG = calibration.BUDGET_MSG
 
 DETECT_INSTRUCTION = (
@@ -162,6 +164,15 @@ class Run:
             fix = await self.call(system, f"{text}\n\nYour previous reply was:\n{resp}\n\nIt failed validation: {ve}. Return ONLY the corrected JSON.",
                                   images, purpose + ":repair")
             return validate(extract_json(fix))
+
+
+async def assess_rail_surface(run, img, purpose="rail_surface"):
+    images, views = RSV.build_views(img)
+    await run.save(rail_surface_input={"version": RSV.VERSION, "prompt_version": RS.PROMPT_VERSION, "views": views})
+    reply = await run.structured("You inspect railway rail-head surfaces in photos. Output JSON only.",
+                                RS.INSTRUCTION + "\nViews: " + json.dumps(views, separators=(",", ":")),
+                                images, purpose, RS.validate_shape)
+    return RS.parse_response(reply, views)
 
 
 def validate_detection(obj) -> dict:
@@ -333,9 +344,7 @@ async def execute(run_id: str, job: dict | None = None):
         # B4: rail-surface path (separate schema), only when a rail/joint is in view; one budget-reserved call, resumable
         if status != "budget_limited" and doc.get("rail_surface") is None and any(re.search(RS.RAIL_HINT, str(o.get("label") or ""), re.I) for o in kept):
             try:
-                rs = await run.structured("You inspect railway rail-head surfaces in photos. Output JSON only.", RS.INSTRUCTION, [full_b64],
-                                          "rail_surface", RS.validate_shape)
-                acc, rej = RS.parse_items(rs["items"])
+                acc, rej = await assess_rail_surface(run, img)
             except BudgetReached:
                 raise
             except Exception as e:  # unparseable even after repair: keep the failure visible, never "nothing found"
@@ -345,7 +354,7 @@ async def execute(run_id: str, job: dict | None = None):
             for a in acc:
                 await persist_rail_surface(doc, ev, a)
             rs_status, rs_label = RS.outcome(acc, rej)
-            await run.save(rail_surface={"schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "status": rs_status, "label": rs_label,
+            await run.save(rail_surface={"schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "prompt_version": RS.PROMPT_VERSION, "status": rs_status, "label": rs_label,
                                          "accepted": len(acc), "rejected": rej})
             if rs_status == "partial":
                 stage_errors.append({"stage": "rail_surface", "error": f"{len(rej)} rail-surface item(s) failed validation"})
@@ -396,7 +405,7 @@ async def persist_rail_surface(run, ev, a):
     await db.visual_candidates.update_one({"run_id": run["uuid"], "pipeline": RS.PIPELINE, "local_key": a["local_key"]}, {"$setOnInsert": {
         "uuid": new_id(), "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"],
         "run_id": run["uuid"], "pipeline": RS.PIPELINE, "schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "local_key": a["local_key"],
-        "source": "server_model", "model_id": MODEL_ID, "prompt_version": PROMPT_VERSION,
+        "source": "server_model", "model_id": MODEL_ID, "prompt_version": RS.PROMPT_VERSION,
         "category": a["choice"], "condition_kind": a["condition_kind"], "scope": a["scope"], "rail_surface": a,
         "region": a["bbox"], "localized": a["scope"] == "localized", "region_frame": {"kind": "oriented_full"},
         "admitted": a["status"] == "suggested" and a["choice"] in RS.CLASSES, "identity_status": a["status"],
@@ -407,23 +416,22 @@ async def persist_rail_surface(run, ev, a):
 
 async def run_rail_surface_for_evidence(ev: dict, data: bytes, job: dict | None, source_run_id: str | None = None) -> dict:
     """C2: ordinary-intake rail-surface check (rail_surface_v1) as its own run, alongside the tie/fastener check.
-    Idempotent per (evidence, schema version): an existing finished run is returned, never re-paid."""
+    Completed results are reused only for the same evidence bytes, model, schema and prompt."""
     import jobs as J
-    prior = await db.image_analysis_runs.find_one({"evidence_id": ev["uuid"], "pipeline": RS.PIPELINE, "schema_version": RS.SCHEMA_VERSION,
-                                                   "status": {"$in": ["complete", "partial"]}}, {"_id": 0, "raw_responses": 0})
+    prior = await db.image_analysis_runs.find_one({"evidence_id": ev["uuid"], "photo_sha256": ev["sha256"], "model_id": MODEL_ID,
+                                                   "prompt_version": RS.PROMPT_VERSION, "pipeline": RS.PIPELINE, "schema_version": RS.SCHEMA_VERSION,
+                                                   "$or": [{"status": "complete"}, {"status": "partial", "candidates": {"$gt": 0}}]}, {"_id": 0, "raw_responses": 0})
     if prior:
         return prior
     doc = {"uuid": new_id(), "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"],
-           "pipeline": RS.PIPELINE, "schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "provider": "anthropic", "model_id": MODEL_ID,
+           "pipeline": RS.PIPELINE, "schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "prompt_version": RS.PROMPT_VERSION, "provider": "anthropic", "model_id": MODEL_ID,
            "source_run_id": source_run_id, "job_id": job and job["uuid"], "status": "checking", "raw_responses": [], "attempts": 0, "stage_errors": [],
            "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system", "revision": 1}
     await db.image_analysis_runs.insert_one(dict(doc))
     run = Run(doc)
     img, _ = oriented(data)
     try:
-        rs = await run.structured("You inspect railway rail-head surfaces in photos. Output JSON only.", RS.INSTRUCTION, [b64_jpeg(img)],
-                                  "rail_surface", RS.validate_shape)
-        acc, rej = RS.parse_items(rs["items"])
+        acc, rej = await assess_rail_surface(run, img)
     except BudgetReached as e:
         await run.save(status="budget_limited", stage_errors=[{"stage": "rail_surface", "error": str(e)}], attempts=run.attempts, completed_at=iso())
         return run.doc
@@ -435,7 +443,10 @@ async def run_rail_surface_for_evidence(ev: dict, data: bytes, job: dict | None,
     for a in acc:
         await persist_rail_surface(doc, ev, a)
     st, label = RS.outcome(acc, rej)
+    cannot_assess = not acc or any(a["choice"] == "not_assessable" for a in acc)
     await run.save(status=st, outcome_label=label, rejected_candidates=rej, candidates=sum(1 for a in acc if a["choice"] in RS.CLASSES), attempts=run.attempts, repairs=run.repairs,
+                   image_assessability="cannot_assess" if cannot_assess else "assessable",
+                   cannot_assess_reason=label if cannot_assess else None,
                    rail_surface={"schema_id": RS.SCHEMA_ID, "schema_version": RS.SCHEMA_VERSION, "status": st, "label": label, "accepted": len(acc), "rejected": rej},
                    completed_at=iso())
     return run.doc

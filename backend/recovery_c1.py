@@ -17,10 +17,12 @@ VERSION = ai_image.PROMPT_VERSION
 
 
 async def _source_runs(sha: str, ws: str):
-    legacy = await db.image_analysis_runs.find_one({"photo_sha256": sha, "workspace_id": ws, "prompt_version": VERSION, "status": "Done",
+    legacy = await db.image_analysis_runs.find_one({"photo_sha256": sha, "workspace_id": ws, "model_id": ai_image.PROVIDER.model_id, "prompt_version": VERSION, "status": "Done",
                                                     "pipeline": {"$exists": False}, "copied_from_run_id": None}, sort=[("created_at", -1)])
-    rail = await db.image_analysis_runs.find_one({"photo_sha256": sha, "workspace_id": ws, "pipeline": RS.PIPELINE, "schema_version": RS.SCHEMA_VERSION,
-                                                  "status": {"$in": ["complete", "partial"]}, "copied_from_run_id": None}, sort=[("created_at", -1)])
+    rail = await db.image_analysis_runs.find_one({"photo_sha256": sha, "workspace_id": ws, "model_id": ai_image.PROVIDER.model_id,
+                                                  "prompt_version": RS.PROMPT_VERSION, "pipeline": RS.PIPELINE, "schema_version": RS.SCHEMA_VERSION,
+                                                  "$or": [{"status": "complete"}, {"status": "partial", "candidates": {"$gt": 0}}],
+                                                  "copied_from_run_id": None}, sort=[("created_at", -1)])
     return legacy, rail
 
 

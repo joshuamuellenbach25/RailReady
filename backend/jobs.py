@@ -25,8 +25,9 @@ async def enqueue(visit: dict, stage: str, target_id: str, source_kind: str, for
     """Returns the job (existing or new). REQ-1223: a duplicate-key race returns the existing job; other errors propagate."""
     import policy
     from pymongo.errors import DuplicateKeyError
-    permitted = (await policy.evaluate_job({"workspace_id": visit["workspace_id"], "visit_id": visit["uuid"],
-                                           "stage": stage, "target_id": target_id, "source_kind": source_kind}))["allowed"]
+    decision = await policy.evaluate_job({"workspace_id": visit["workspace_id"], "visit_id": visit["uuid"],
+                                          "stage": stage, "target_id": target_id, "source_kind": source_kind})
+    permitted = decision["allowed"]
     status = "Queued" if permitted else "Blocked"
     existing = await db.jobs.find_one({"stage": stage, "target_id": target_id})
     if existing:
@@ -37,7 +38,8 @@ async def enqueue(visit: dict, stage: str, target_id: str, source_kind: str, for
     doc = {
             "uuid": new_id(), "workspace_id": visit["workspace_id"], "visit_id": visit["uuid"], "stage": stage,
             "target_id": target_id, "source_kind": source_kind, "status": status,
-            "blocker": None if permitted else BLOCKER, "attempts": 0, "lease_owner": None, "lease_until": None,
+            "blocker": None if permitted else BLOCKER, "block_reason": None if permitted else policy_reason(decision),
+            "attempts": 0, "lease_owner": None, "lease_until": None,
             "error": None, "error_stage": None, "created_at": iso(), "updated_at": iso(), "revision": 1,
             "created_by": "system", "updated_by": "system",
         }
@@ -70,7 +72,7 @@ async def queue_verified(ev: dict):
     await db.evidence.update_one({"uuid": ev["uuid"]}, {"$set": {"analysis_intent.state": "enqueued", "analysis_intent.enqueued_at": iso()}})
 
 
-async def on_permission_change(visit: dict):
+async def on_permission_change(visit: dict, trigger: str = "visit_restriction_changed"):
     """Recheck every affected job; only policy-blocked, idle work can auto-resume."""
     import policy
     import calibration
@@ -85,54 +87,128 @@ async def on_permission_change(visit: dict):
         if not decision["allowed"]:
             if job["status"] == "Blocked":
                 continue
-            fields = {"status": "Blocked", "blocker": BLOCKER}
+            fields = {"status": "Blocked", "blocker": BLOCKER, "block_reason": policy_reason(decision)}
         elif job["status"] == "Queued":
             continue
         elif not await _budget_available(job):
-            fields = {"status": "Blocked", "blocker": calibration.BUDGET_MSG}
+            fields = {"status": "Blocked", "blocker": calibration.BUDGET_MSG, "block_reason": await budget_reason()}
         else:
-            fields = {"status": "Queued", "blocker": None, "error": None, "error_stage": None,
+            fields = {"status": "Queued", "blocker": None, "block_reason": None, "released_at": iso(), "release_trigger": trigger, "error": None, "error_stage": None,
+                      "last_block_reason": job.get("block_reason") or {"kind": "policy", "inferred": True},  # admin detail keeps the reason
                       "lease_owner": None, "lease_token": None, "lease_until": None}
+        inc = {"revision": 1, **({"release_count": 1} if fields["status"] == "Queued" else {})}
         await db.jobs.update_one(_idle_snapshot(job),
-                                 {"$set": {**fields, "updated_at": iso()}, "$inc": {"revision": 1}})
+                                 {"$set": {**fields, "updated_at": iso()}, "$inc": inc})
 
 
-def _active_lease(job):
-    return bool(job.get("lease_until") and job["lease_until"] > iso())
+# ---------------------------------------------------------------- REQ-1225: blocked work resumes when its blocker clears
+EV_STAGES = ("image_analysis", "depth", "video_analysis")  # stages whose policy check includes evidence exceptions (as _execute)
+# Estimated hosted image calls per job, used only to decide how many budget-limited jobs to release; the send-time
+# reserve_call stays authoritative (a job that runs out still re-blocks with a budget reason).
+BUDGET_COST = {"image_analysis": 1, "photo_analysis": 1, "video_analysis": 4}
+RELEASE_LOCK = "blocked_release_lock"
+SWEEP_S, CAP_WATCH_S = 300, 30
 
 
-def _idle_snapshot(job):
-    """CAS includes the observed state and lease, so a later claim always wins."""
-    q = {"uuid": job["uuid"], "workspace_id": job["workspace_id"], "status": job["status"]}
-    q.update({k: job.get(k) for k in ("lease_owner", "lease_token", "lease_until")})
-    q.update({k: job[k] for k in ("revision", "updated_at") if k in job})
-    return q
+def policy_reason(pe: dict) -> dict:
+    kind = "visit_restriction" if str(pe.get("basis", "")).startswith("legacy_visit_") else "policy"
+    return {"kind": kind, "basis": pe.get("basis"), "policy_version": pe.get("policy_version"), "at": iso()}
 
 
-async def _budget_available(job):
-    if job["stage"] not in ("image_analysis", "photo_analysis", "video_analysis"):
-        return True
-    # Do not call calibration.budget(): it can initialize or change the cap.
-    b = await db.cal_budget.find_one({"_id": "hosted_image_calls"})
-    return bool(b and b.get("cap", 0) > b.get("used", 0))
+async def budget_reason() -> dict:
+    b = await db.cal_budget.find_one({"_id": "hosted_image_calls"}, {"cap": 1, "used": 1}) or {}
+    return {"kind": "budget", "budget_cap": b.get("cap"), "budget_used": b.get("used"), "at": iso()}
 
 
-class RetryBlocked(Exception):
-    def __init__(self, code, message):
-        super().__init__(message)
-        self.code, self.message = code, message
-
-
-async def recover_policy_blocked():
-    """Finish a permission-change reconciliation interrupted by a crash or failed response."""
+async def _release_pass(trigger: str) -> dict:
+    import calibration
     import policy
-    seen = set()
-    async for job in db.jobs.find({"status": "Blocked", "blocker": {"$in": [BLOCKER, policy.BLOCKED_MSG]}}):
-        key = (job["workspace_id"], job["visit_id"])
-        if key in seen:
+    budget = await db.cal_budget.find_one({"_id": "hosted_image_calls"}) or {}
+    available = max(0, budget.get("cap", 0) - budget.get("used", 0))
+    async for queued in db.jobs.find({"status": "Queued", "stage": {"$in": list(BUDGET_COST)}}):
+        available -= BUDGET_COST[queued["stage"]]
+    released, kept = [], 0
+    budget_trigger = trigger in ("budget_cap_raised", "budget_available")
+    async for job in db.jobs.find({"status": "Blocked"}).sort("created_at", 1):
+        is_budget = job.get("blocker") == calibration.BUDGET_MSG
+        known_hold = job.get("blocker") in (BLOCKER, policy.BLOCKED_MSG, calibration.BUDGET_MSG)
+        if not known_hold or _active_lease(job) or (is_budget and not budget_trigger):
+            kept += 1
             continue
-        seen.add(key)
-        await on_permission_change({"workspace_id": key[0], "uuid": key[1]})
+        decision = await policy.evaluate_job(job)
+        if not decision["allowed"]:
+            kept += 1
+            continue
+        cost = BUDGET_COST.get(job["stage"], 0)
+        if cost and cost > available:
+            kept += 1
+            if not is_budget:
+                await db.jobs.update_one(_idle_snapshot(job), {"$set": {
+                    "blocker": calibration.BUDGET_MSG, "block_reason": await budget_reason(),
+                    "updated_at": iso()}, "$inc": {"revision": 1}})
+            continue
+        result = await db.jobs.update_one(_idle_snapshot(job), {"$set": {
+            "status": "Queued", "blocker": None, "block_reason": None,
+            "last_block_reason": job.get("block_reason") or {"kind": "budget" if is_budget else "policy", "inferred": True},
+            "error": None, "error_stage": None, "lease_owner": None, "lease_token": None, "lease_until": None,
+            "released_at": iso(), "release_trigger": trigger, "updated_at": iso(), "updated_by": "system"},
+            "$inc": {"release_count": 1, "revision": 1}})
+        if result.modified_count:
+            available -= cost
+            released.append(job["uuid"])
+    return {"released": released, "kept": kept}
+
+
+async def release_blocked(trigger: str) -> dict:
+    """Serialised across triggers/processes by a Mongo lock; a trigger arriving mid-pass asks the holder to run once more."""
+    from pymongo.errors import DuplicateKeyError
+    token = new_id()
+    for _ in range(5):
+        t = now()
+        try:
+            await db.meta.find_one_and_update({"_id": RELEASE_LOCK, "until": {"$lt": iso(t)}},
+                                              {"$set": {"owner": token, "until": iso(t + timedelta(seconds=120)), "rerun": False}}, upsert=True)
+            break
+        except DuplicateKeyError:
+            r = await db.meta.update_one({"_id": RELEASE_LOCK, "until": {"$gte": iso(t)}}, {"$set": {"rerun": True}})
+            if r.matched_count:
+                return {"deferred": True, "trigger": trigger, "released": []}
+    else:
+        return {"deferred": True, "trigger": trigger, "released": []}
+    out = {"deferred": False, "trigger": trigger, "released": [], "kept": 0}
+    try:
+        while True:
+            res = await _release_pass(trigger)
+            out["released"] += res["released"]
+            out["kept"] = res["kept"]
+            r = await db.meta.update_one({"_id": RELEASE_LOCK, "owner": token, "rerun": {"$ne": True}}, {"$set": {"until": ""}})
+            if r.modified_count:
+                return out
+            await db.meta.update_one({"_id": RELEASE_LOCK, "owner": token}, {"$set": {"rerun": False, "until": iso(now() + timedelta(seconds=120))}})
+    except Exception:
+        await db.meta.update_one({"_id": RELEASE_LOCK, "owner": token}, {"$set": {"until": ""}})
+        raise
+
+
+async def blocked_release_loop():
+    """Safety net: full re-evaluation every 5 min. Every 30 s: a raised cap, or remaining calls while budget-blocked work waits
+    (covers a cap changed twice between two ticks), releases budget-limited jobs."""
+    loop, last_cap, last_sweep = asyncio.get_running_loop(), None, None
+    while True:
+        try:
+            b = await db.cal_budget.find_one({"_id": "hosted_image_calls"}, {"cap": 1, "used": 1}) or {}
+            cap = b.get("cap")
+            waiting = cap is not None and cap > b.get("used", 0) and await db.jobs.find_one({"status": "Blocked", "block_reason.kind": "budget"}, {"_id": 1})
+            if (last_cap is not None and cap is not None and cap > last_cap) or waiting:
+                await release_blocked("budget_cap_raised" if last_cap is not None and cap > last_cap else "budget_available")
+                last_sweep = loop.time()
+            elif last_sweep is None or loop.time() - last_sweep >= SWEEP_S:
+                await release_blocked("sweep")
+                last_sweep = loop.time()
+            last_cap = cap
+        except Exception:
+            log.exception("blocked release sweep")
+        await asyncio.sleep(CAP_WATCH_S)
 
 
 async def _claim(stage: str):
@@ -231,6 +307,9 @@ async def run_extraction(job, visit):
         "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system", "revision": 1,
     })
     if res["status"] != "Done":
+        if res["error_stage"] == "model_process":  # model child crashed/overran: retryable, same as the deadline path
+            return await _set_fenced(job, {"status": "Failed", "error": res["error"], "error_stage": "model_process", "retryable": True,
+                                           "last_run_id": run_id, "finished_at": iso()})
         return await _finish(job, "Failed", res["error"], res["error_stage"], run_id)
     if not await holds_lease(job):  # C6: re-check right before replacing the active proposed fields
         return
@@ -254,52 +333,81 @@ async def run_image(job, visit):
         return await _finish(job, "Failed", "Stored photo hash mismatch", "source")
     fault = await _take_fault(visit["uuid"], "image_analysis", ev["uuid"])
     import calibration
-    # B4: reserve one unit of the global hosted image-call budget immediately before EVERY provider send
-    res = await ai_image.analyze(data, f"img-{ev['uuid']}-{job['attempts']}", inject_failure=fault,
-                                 reserve=None if fault else (lambda: calibration.reserve_call(1)))
-    if res.get("error_stage") == "budget":
-        await _set_fenced(job, {"status": "Blocked", "blocker": calibration.BUDGET_MSG})
-        return
-    if not await holds_lease(job):  # B3: a reclaimed (stale) execution must not commit runs/candidates
-        log.warning("fenced: image job %s lost its lease before commit", job["uuid"])
-        return
-    run_id = new_id()
-    outcome = None
-    if res["status"] == "Done":
-        if res["image_assessability"] == "cannot_assess":
-            outcome = "Cannot assess. Request closer photo"
-        elif not res["candidates"] and res.get("rejected"):
-            outcome = "Results could not be checked"  # B4: all output rejected = visible validation failure (rejected kept below)
-        elif not res["candidates"]:
-            outcome = "No candidate identified in this image"
-        else:
-            outcome = f"{len(res['candidates'])} candidate(s) for review"
-    await db.image_analysis_runs.insert_one({
-        "uuid": run_id, "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "job_id": job["uuid"],
-        "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"], "provider": ai_image.PROVIDER.provider,
-        "model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION, "status": res["status"],
-        "image_assessability": res.get("image_assessability"), "cannot_assess_reason": res.get("cannot_assess_reason"),
-        "outcome_label": outcome, "candidates": len(res["candidates"]), "rejected_candidates": res.get("rejected", []), "raw_responses": res["raw_responses"],
-        "attempts": res["attempts"], "duration_s": res["duration_s"], "error": res["error"], "error_stage": res["error_stage"],
-        "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system", "revision": 1,
-    })
-    if res["status"] != "Done":
-        return await _finish(job, "Failed", res["error"], res["error_stage"], run_id)
-    import calibration
-    cal_field = await calibration.live_candidate_calibration(ev["workspace_id"])  # new runs only; historical keep theirs
-    for c in res["candidates"]:
-        await db.visual_candidates.insert_one({
-            "calibration": cal_field,
-            "uuid": new_id(), "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"],
+    # Reuse only this job's durable, verified primary result. A secondary retry must not pay for
+    # the tie/fastener check again or create a second set of its review candidates.
+    prior = None if fault else await db.image_analysis_runs.find_one({
+        "job_id": job["uuid"], "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"],
+        "model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION,
+        "status": "Done", "candidate_payloads": {"$type": "array"}}, sort=[("created_at", -1)])
+    if prior:
+        run_id, payloads = prior["uuid"], prior["candidate_payloads"]
+    else:
+        # Reserve immediately before EVERY provider send, including retries and validation repair.
+        res = await ai_image.analyze(data, f"img-{ev['uuid']}-{job['attempts']}", inject_failure=fault,
+                                     reserve=None if fault else (lambda: calibration.reserve_call(1)))
+        if res.get("error_stage") == "budget":
+            await _set_fenced(job, {"status": "Blocked", "blocker": calibration.BUDGET_MSG, "block_reason": await budget_reason()})
+            return
+        if res.get("status") == "Done" and not res.get("candidates") and res.get("rejected"):
+            res = {**res, "status": "Failed", "error_stage": "validation",
+                   "error": "Photo check returned candidates that could not be validated. Retry the check."}
+        if not await holds_lease(job):
+            log.warning("fenced: image job %s lost its lease before commit", job["uuid"])
+            return
+        run_id = new_id()
+        outcome, payloads = None, []
+        if res["status"] == "Done":
+            if res["image_assessability"] == "cannot_assess":
+                outcome = "Cannot assess. Request closer photo"
+            elif not res["candidates"] and res.get("rejected"):
+                outcome = "Results could not be checked"
+            elif not res["candidates"]:
+                outcome = "No candidate identified in this image"
+            else:
+                outcome = f"{len(res['candidates'])} candidate(s) for review"
+            cal_field = await calibration.live_candidate_calibration(ev["workspace_id"])
+            payloads = [{"uuid": new_id(), "candidate": c, "calibration": cal_field} for c in res["candidates"]]
+        if not await holds_lease(job):
+            return
+        await db.image_analysis_runs.insert_one({
+            "uuid": run_id, "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "job_id": job["uuid"],
+            "evidence_id": ev["uuid"], "photo_sha256": ev["sha256"], "provider": ai_image.PROVIDER.provider,
+            "model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION, "status": res["status"],
+            "image_assessability": res.get("image_assessability"), "cannot_assess_reason": res.get("cannot_assess_reason"),
+            "outcome_label": outcome, "candidates": len(res.get("candidates", [])), "rejected_candidates": res.get("rejected", []), "raw_responses": res["raw_responses"],
+            "candidate_payloads": payloads,
+            "attempts": res["attempts"], "duration_s": res["duration_s"], "error": res["error"], "error_stage": res["error_stage"],
+            "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system", "revision": 1,
+        })
+        if res["status"] != "Done":
+            return await _finish(job, "Failed", res["error"], res["error_stage"], run_id)
+    # Candidate UUIDs were persisted with the primary result before any candidate write. A
+    # restarted worker resumes these upserts, retaining prior review decisions and provenance.
+    for payload in payloads:
+        if not await holds_lease(job):
+            return
+        c = payload["candidate"]
+        await db.visual_candidates.update_one({"uuid": payload["uuid"]}, {"$setOnInsert": {
+            "calibration": payload["calibration"],
+            "uuid": payload["uuid"], "workspace_id": ev["workspace_id"], "visit_id": ev["visit_id"], "evidence_id": ev["uuid"],
             "photo_sha256": ev["sha256"], "run_id": run_id, "source": "server_model", **c,
-            "region_frame": {"kind": "oriented_full"},  # analysis input is already EXIF-oriented (REQ-170: never transform twice)
+            "region_frame": {"kind": "oriented_full"},
             "raw_output": c, "model_id": ai_image.PROVIDER.model_id, "prompt_version": ai_image.PROMPT_VERSION,
             "review_state": "Pending", "decisions": [], "revision": 1,
             "created_at": iso(), "created_by": "system", "updated_at": iso(), "updated_by": "system",
-        })
-    # C2: ordinary intake also runs the rail-surface check (separate schema/run; joints are components, not defects)
+        }}, upsert=True)
+    if not await holds_lease(job):
+        return
     import photo_pipeline
-    await photo_pipeline.run_rail_surface_for_evidence(ev, data, job, run_id)
+    secondary = await photo_pipeline.run_rail_surface_for_evidence(ev, data, job, run_id)
+    if secondary.get("status") == "budget_limited":
+        await _set_fenced(job, {"status": "Blocked", "blocker": calibration.BUDGET_MSG,
+                                "block_reason": await budget_reason(), "last_run_id": run_id})
+        return
+    # Usable partial output stays reviewable; an entirely failed secondary check remains
+    # retryable through the ordinary photo job and cannot be called a completed check.
+    if secondary.get("status") not in ("complete", "partial") or (secondary.get("status") == "partial" and not secondary.get("candidates")):
+        return await _finish(job, "Failed", "Rail-surface check could not be completed. Retry the photo check.", "rail_surface", run_id)
     await _finish(job, "Done", run_id=run_id)
 
 
@@ -359,7 +467,7 @@ async def _execute(job):
     ev = await policy.evaluate_job(job)  # fresh per-evidence policy, including photo-run/transcript targets
     await db.jobs.update_one(_fence(job), {"$set": {"policy": {k: ev[k] for k in ("allowed", "basis", "policy_version")}}})
     if not ev["allowed"]:
-        await _set_fenced(job, {"status": "Blocked", "blocker": BLOCKER})
+        await _set_fenced(job, {"status": "Blocked", "blocker": BLOCKER, "block_reason": policy_reason(ev)})
         return
 
     async def keepalive():  # B3: renew the lease while the handler runs; stop once fenced out
@@ -452,6 +560,7 @@ def start_workers():
     for s in STAGES:
         asyncio.create_task(_stage_loop(s))
     asyncio.create_task(recovery_loop())
+    asyncio.create_task(blocked_release_loop())
 
 
 async def retry(job: dict, user: dict):
@@ -481,3 +590,41 @@ async def retry(job: dict, user: dict):
         await audit(user, current["workspace_id"], "processing_retry", "job", current["uuid"], {"stage": current["stage"]})
         return updated
     return await db.jobs.find_one(key)
+
+
+def _active_lease(job):
+    return bool(job.get("lease_until") and job["lease_until"] > iso())
+
+
+def _idle_snapshot(job):
+    """CAS includes the observed state and lease, so a later claim always wins."""
+    q = {"uuid": job["uuid"], "workspace_id": job["workspace_id"], "status": job["status"]}
+    q.update({k: job.get(k) for k in ("lease_owner", "lease_token", "lease_until")})
+    q.update({k: job[k] for k in ("revision", "updated_at") if k in job})
+    return q
+
+
+async def _budget_available(job):
+    if job["stage"] not in ("image_analysis", "photo_analysis", "video_analysis"):
+        return True
+    # Do not call calibration.budget(): it can initialize or change the cap.
+    b = await db.cal_budget.find_one({"_id": "hosted_image_calls"})
+    return bool(b and b.get("cap", 0) > b.get("used", 0))
+
+
+class RetryBlocked(Exception):
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code, self.message = code, message
+
+
+async def recover_policy_blocked():
+    """Finish a permission-change reconciliation interrupted by a crash or failed response."""
+    import policy
+    seen = set()
+    async for job in db.jobs.find({"status": "Blocked", "blocker": {"$in": [BLOCKER, policy.BLOCKED_MSG]}}):
+        key = (job["workspace_id"], job["visit_id"])
+        if key in seen:
+            continue
+        seen.add(key)
+        await on_permission_change({"workspace_id": key[0], "uuid": key[1]}, "sweep")

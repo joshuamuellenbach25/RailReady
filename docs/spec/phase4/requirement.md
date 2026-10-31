@@ -4,8 +4,7 @@ Version: phase-4. Context: docs/spec/overview.md. Source: research handoff of 20
 ## Goal
 Every ordinary foreman photo gets its own private interactive photo-derived 3D view (server Depth Anything V2 Small ONNX relative depth -> coloured Gaussian samples -> SuperSplat viewer) inside an authenticated web inspection workspace at /office/visits/:id/scene, with inventory <-> marker <-> evidence selection tied to the same finding IDs. The marketing entry page is refreshed. Business-rule corrections and test-found polish land. No deployment, no external sharing.
 
-## Constraints (from user)
-- Keep everything private: do not use Emergent Publish/Re-publish, change sharing, or contact anyone. In-app proposal publish is fine.
+## Constraints
 - No new third-party service receives user photos. Depth model runs on our server via normal dependency install.
 - Depth model: onnx-community/depth-anything-v2-small @ 4472b7362082ad9968fee890ca0f1e5aca36b93d, Apache-2.0; onnx/model.onnx sha256 afb6a5c28f3b6bf1618c6e43f02073ef9dfdc70e937502d51603e57b0a1df10c; preprocessor_config.json sha256 03576db3c13dd0471fdf5f5e1428befcb95de063fe699879150b293dc9e0a2c6. Verify hashes; if unobtainable report exact blocker, never fake output.
 - Viewer: @playcanvas/supersplat-viewer (+ compatible playcanvas peer; reference 1.41.0 / 2.23.3), createViewer from its /viewer entry; only supported APIs.

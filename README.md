@@ -11,8 +11,9 @@ A foreman walks the track with a phone, captures photos, voice notes and measure
 - **Interactive 3D view per photo.** Depth Anything V2 Small (ONNX, pinned and hash-verified) turns a single photo into a Gaussian-splat scene in the browser, with finding markers linked to the original image.
 - **Estimating and proposals.** Decimal money math, frozen agreement packets, immutable versions, and public proposal links that store only a token hash.
 - **Accept to work order.** Compare-and-swap writes plus unique indexes guarantee one accepted proposal yields one work order.
-- **Repairs and invoicing.** Repair records, contract progress packets and an optional invoice email channel.
-- **Rail map and video.** A rail-only map built from public GTFS and GIS sources, plus video capture and review.
+- **Map-first inspections.** Start an inspection from a pin on a rail-only map (public GTFS, NTAD and Caltrans data), by GPS, coordinates or a verified milepost.
+- **Repairs, paperwork and invoicing.** Office-started repairs with PO references, generated work-order, invoice and packet PDFs, contract progress packets and an optional invoice email channel.
+- **Video capture and review**, plus a step guide (Capture, Review, Details) and handoff checklists that block submission until required items are answered.
 - **Role scoping.** JWT auth. Foremen, estimators and customers each see only their own routes and data.
 
 ## Stack
@@ -47,7 +48,7 @@ docs/spec/  Product requirements and user journeys, by build phase
    ```
 3. `cd frontend && yarn install && yarn start`
 4. `cd mobile && yarn install && yarn start`
-5. Tests: with the API running, `cd backend && pytest e1_tests`.
+5. Tests: with the API running, `cd backend && pytest api_tests`.
 
 AI features need `EMERGENT_LLM_KEY` (or your own adapter) and `RAILREADY_DEPTH_MODEL_PATH` pointing to the downloaded depth model. The app was built on the Emergent platform, and some integrations route through its proxy by default.
 
@@ -64,3 +65,4 @@ MIT. See `LICENSE`.
 - Depth Anything V2 Small, Apache-2.0: https://huggingface.co/depth-anything/Depth-Anything-V2-Small
 - SuperSplat viewer: https://github.com/playcanvas/supersplat-viewer
 - Evaluation images are Wikimedia Commons files under CC0, PD, CC BY or CC BY-SA. Authors and licenses are listed per row in `eval/tie_fastener/manifest.csv`.
+- The blank work-order layout in `backend/form_templates/` comes from a free public Smartsheet template; source and disclaimer are in `generic_repair_work_order_v1.json`. It is not covered by this repo's MIT license.

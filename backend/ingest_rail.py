@@ -16,6 +16,7 @@ async def main():
     await db.rail_tile_cache.create_index("key", unique=True)
     await db.rail_tile_cache.create_index("expires_at", expireAfterSeconds=0)
     await db.pins.create_index("uuid", unique=True)
+    await db.pins.create_index("visit_id", unique=True, name="one_pin_per_inspection", partialFilterExpression={"visit_id": {"$type": "string"}})
     await db.pins.create_index([("workspace_id", 1), ("lat", 1), ("lon", 1)])
     await db.locations.create_index("uuid", unique=True)
     await db.locations.create_index([("workspace_id", 1), ("visit_id", 1)])

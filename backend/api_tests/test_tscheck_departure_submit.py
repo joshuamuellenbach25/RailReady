@@ -17,6 +17,11 @@ def test_departure_relevance_submit_stale(fm):
     r = fm.patch(f"/visits/{vid}", json={"expected_revision": cur["revision"], "title": "tscheck-stale"})
     assert r.status_code == 409 and "recovery copy" in r.text
     cur = fm.get(f"/visits/{vid}").json()
+    # required handoff items (for example "access") need an answer or an allowed disposition before submit
+    for h in fm.get(f"/visits/{vid}/checklist").json().get("handoff_open", []):
+        r = fm.post(f"/visits/{vid}/checklist/{h['key']}", json={"expected_revision": cur["revision"], "action": "defer", "reason": "tscheck: arranged at dispatch"})
+        assert r.status_code == 200, r.text
+        cur = fm.get(f"/visits/{vid}").json()
     r = fm.post(f"/visits/{vid}/submit", json={"expected_revision": cur["revision"]})
     assert r.status_code == 200, r.text
     r = fm.patch(f"/visits/{vid}", json={"expected_revision": r.json()["revision"], "title": "x"})

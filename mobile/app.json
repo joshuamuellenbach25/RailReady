@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.emergent.railreadydemo.jyc6p2",
+      "bundleIdentifier": "com.railready.app",
       "infoPlist": {
         "NSCameraUsageDescription": "Photograph track conditions during site visits",
         "NSMicrophoneUsageDescription": "Record voice notes about track conditions",
@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.emergent.railreadydemo.jyc6p2",
+      "package": "com.railready.app",
       "permissions": [
         "CAMERA",
         "RECORD_AUDIO"

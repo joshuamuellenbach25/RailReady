@@ -15,10 +15,11 @@ import { useAuth } from "@/src/auth";
 import * as repo from "@/src/local/repo";
 import { usePermission } from "@/src/permissions";
 import { isSyncing, subscribe, syncAll } from "@/src/sync";
-import { Badge, Banner, Btn, Card, Empty, fmt, H, Icon, Input, Row, Screen, Segments, Sheet, T } from "@/src/ui";
+import { Badge, Banner, Btn, Card, Empty, fmt, H, Icon, Input, Row, Screen, Sheet, T } from "@/src/ui";
 import { useTheme } from "@/src/theme";
 import { volumeModulePresent } from "@/src/volumeCapture";
 import { RepairPanel } from "@/src/repairPanel";
+import { NextStep, StepGuide, stepDone } from "@/src/stepGuide";
 
 type FormKind = "note" | "measurement" | "location" | "not_inspected" | "urgent" | null;
 const STAGES: Record<string, string[]> = { photo: ["image_analysis", "photo_analysis"], video: ["video_analysis"], audio: ["transcription", "extraction"], note: ["extraction"] };
@@ -31,8 +32,11 @@ const VIDEO_MAX_MB = 200;
 // "No issues marked" only ever comes from the server when a check completed with zero candidates.
 function itemState(kind: string, synced: boolean, syncing: boolean, jobs?: Record<string, any>, needsReview?: boolean) {
   const noun = kind === "video" ? "video" : "photo";
-  if (!synced) return kind === "photo" || kind === "video" ? (syncing ? `Sending ${noun}` : isOnline() === false ? "Waiting for connection" : "Saved on phone") : "Saved on phone";
+  if (!synced) return kind === "photo" || kind === "video" ? (syncing ? "Uploading" : isOnline() === false ? "Waiting for connection" : "Saved on phone") : "Saved on phone";
   if (kind !== "photo" && kind !== "video") return "";
+  // REQ-1610: held by the processing policy until an admin allows this item; the release watcher then starts the check
+  if (jobs?.result_state === "unavailable" && jobs?.result_reason === "policy") return "Waiting for permission";
+  if (jobs?.result_state === "failed") return "Could not finish the check";
   if (jobs?.result_label) return jobs.result_label as string;
   const js = (STAGES[kind] || []).map((s) => jobs?.[s]?.status).filter(Boolean);
   if (js.some((s) => s === "Failed")) return "Could not finish the check";
@@ -49,11 +53,13 @@ function Thumb({ uid, path }: { uid: string; path?: string }) {
 }
 
 export default function VisitScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, step } = useLocalSearchParams<{ id: string; step?: string }>();
   const { user } = useAuth();
   const uid = user ? user.uuid : "";
   const { colors } = useTheme();
   const [visit, setVisit] = useState<repo.LocalVisit | null>(null);
+  const [procKnown, setProcKnown] = useState(false); // results loaded at least once (Review is never "done" without them)
+  const [openQ, setOpenQ] = useState<number | null>(null); // open review questions; unknown = Review not done
   const [bundle, setBundle] = useState<repo.Bundle | null>(null);
   const [ev, setEv] = useState<repo.LocalEvidence[]>([]);
   const [obs, setObs] = useState<repo.LocalObs[]>([]);
@@ -63,9 +69,15 @@ export default function VisitScreen() {
   const [toast, setToast] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [scn, setScn] = useState<Record<string, any>>({});
+  const [loc, setLoc] = useState<any>(null);
   const [pol, setPol] = useState<{ allowed: boolean; message: string | null } | null>(null);
   const [recOpen, setRecOpen] = useState(false);
-  const [seg, setSeg] = useState<"capture" | "review" | "details">("capture");
+  const [seg, setSeg] = useState<"capture" | "review" | "details">(step === "review" || step === "details" ? step : "capture");
+  const [lastStep, setLastStep] = useState(step); // a new ?step= from the step guide on another screen selects that step
+  if (step !== lastStep) {
+    setLastStep(step);
+    if (step === "capture" || step === "review" || step === "details") setSeg(step);
+  }
   const [sitesForMove, setSitesForMove] = useState<any[]>([]);
   const camBusy = useRef(false); // REQ-188 single-flight camera/picker lock
   const savingRef = useRef(false); // B5 single-flight form save
@@ -99,6 +111,9 @@ export default function VisitScreen() {
         const [sv, p] = await Promise.all([api(`/visits/${id}`, { signal }), api(`/visits/${id}/processing`, { signal })]);
         if (signal.aborted) return;
         setProc(p.by_evidence);
+        setProcKnown(true);
+        api(`/visits/${id}/review-questions`, { signal }).then((q) => setOpenQ(q.questions.length)).catch(() => {});
+        if (sv.location) setLoc(sv.location);
         api(`/visits/${id}/scenes`, { signal }).then((s) => setScn(Object.fromEntries(s.scenes.map((x: any) => [x.evidence_id, x])))).catch(() => {});
         api(`/visits/${id}/processing-policy`, { signal }).then(setPol).catch(() => {});
         if (sv.status !== v.status || sv.revision !== v.server_revision) {
@@ -121,6 +136,17 @@ export default function VisitScreen() {
     const a = AppState.addEventListener("change", (st) => { if (st === "active" && uid) syncAll(uid).catch(() => {}); });
     return () => { clearInterval(t); clearInterval(s); a.remove(); };
   }, [load, uid]);
+
+  async function retryItem(kind: string, jobs: Record<string, any> | undefined) {
+    const failed = (STAGES[kind] || []).map((s) => jobs?.[s]).filter((j) => j && j.status === "Failed" && j.uuid);
+    try {
+      for (const j of failed) await api(`/jobs/${j.uuid}/retry`, { method: "POST" });
+      flash(failed.length ? "Checking again" : "Nothing to retry yet");
+    } catch (e: any) {
+      setErr(`Retry not started: ${e?.message || "try again"}`);
+    }
+    load();
+  }
 
   function flash(msg: string) {
     setToast(msg);
@@ -324,7 +350,7 @@ export default function VisitScreen() {
   return (
     <Screen testID="visit-screen" title={visit.title} subtitle={visit.site_name}
       right={<T testID="visit-status-badge" size={13} style={{ color: colors.onSurfaceInverse }}>{visit.status}</T>}>
-      <Segments testID="visit-segments" value={seg} onChange={setSeg} items={[["capture", "Capture"], ["review", "Review"], ["details", visit.repair ? "Finish" : "Details"]]} />
+      <StepGuide testID="visit-segments" current={seg} onGo={setSeg} repair={!!visit.repair} done={stepDone(visit, ev, obs, procKnown ? proc : null, openQ)} />
       {toast ? <Banner testID="visit-saved-toast" tone="success" icon="content-save-check-outline" text={toast} /> : null}
       {err ? <Banner testID="visit-error-message" tone="error" icon="alert-circle-outline" text={err} /> : null}
       {locked ? <Banner testID="visit-locked-banner" tone="info" icon="lock-outline" text="Submitted - ask estimator to reopen. This inspection is read-only." /> : null}
@@ -338,6 +364,15 @@ export default function VisitScreen() {
       {seg === "details" ? (
         <View testID="visit-details" style={{ gap: 12 }}>
           {visit.repair ? <RepairPanel uid={uid} visit={visit} onChange={load} /> : null}
+          <Card testID="visit-location-card">
+            <T bold>Location</T>
+            <T size={14} testID="visit-location">{(() => {
+              const l = loc || visit.links?.location;
+              if (!l) return "Location: Not set";
+              const rail = [l.railroad, l.subdivision, l.milepost ? `MP ${l.milepost}` : null].filter(Boolean).join(", ");
+              return `${Number(l.lat).toFixed(6)}, ${Number(l.lon).toFixed(6)} - ${l.method_label}${rail ? ` - ${rail}` : ""}`;
+            })()}</T>
+          </Card>
           <Card>
             <T bold size={16}>{visit.title}</T>
             <T muted size={13}>{visit.site_name} - started {fmt(visit.created_at)}</T>
@@ -405,7 +440,10 @@ export default function VisitScreen() {
                 {itemState(x.e.kind, x.e.sync.state === "Verified", isSyncing(), proc[x.e.uuid], proc[x.e.uuid]?.needs_review) ? (
                   <Badge testID={`visit-item-state-${x.e.uuid}`} label={itemState(x.e.kind, x.e.sync.state === "Verified", isSyncing(), proc[x.e.uuid], proc[x.e.uuid]?.needs_review)} />
                 ) : null}
-                {null}
+                {proc[x.e.uuid]?.result_state === "complete" && proc[x.e.uuid]?.result_empty_copy ? <T size={13} testID={`visit-item-result-${x.e.uuid}`}>{proc[x.e.uuid].result_empty_copy}</T> : null}
+                {itemState(x.e.kind, x.e.sync.state === "Verified", isSyncing(), proc[x.e.uuid], proc[x.e.uuid]?.needs_review) === "Could not finish the check" ? (
+                  <Btn small kind="secondary" testID={`visit-item-retry-${x.e.uuid}`} icon="refresh" title="Retry" onPress={() => retryItem(x.e!.kind, proc[x.e!.uuid])} />
+                ) : null}
               </View>
               <Icon name="chevron-right" size={20} color={colors.muted} />
             </Row>
@@ -422,6 +460,9 @@ export default function VisitScreen() {
           </Row>
         </Card>
       ))}
+
+      {seg === "capture" ? <NextStep to="review" repair={!!visit.repair} onPress={() => setSeg("review")} /> : null}
+      {seg === "review" ? <NextStep to="details" repair={!!visit.repair} onPress={() => setSeg("details")} /> : null}
 
       <Sheet visible={!!videoAsk} onClose={() => setVideoAsk(null)} title="Video limits" testID="video-limits-sheet">
         <T testID="video-limits-text">Up to {VIDEO_MAX_S} seconds and {VIDEO_MAX_MB} MB. MP4 or MOV. Longer videos are refused, never cut.</T>

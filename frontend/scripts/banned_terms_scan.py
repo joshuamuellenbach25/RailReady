@@ -6,7 +6,6 @@ excluded (it is the one place technical content may appear).
 
 Standalone:  pip install playwright && playwright install chromium
              BASE=http://localhost:3000 python3 scripts/banned_terms_scan.py
-In the screenshot tool: exec(open('/app/frontend/scripts/banned_terms_scan.py').read()); hits = await run_all(page, BASE)
 """
 import asyncio
 import json

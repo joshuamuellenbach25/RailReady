@@ -1,14 +1,15 @@
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { api, API, errText } from "@/src/api";
 import { useAuth } from "@/src/auth";
 import * as repo from "@/src/local/repo";
-import { syncAll } from "@/src/sync";
+import { getSyncError, subscribe, syncAll } from "@/src/sync";
 import { safeReload } from "@/src/reload";
 import { Banner, Btn, Card, Fab, fmt, H, Input, Row, Screen, Sheet, T } from "@/src/ui";
 import { volumeSupported } from "@/src/volumeCapture";
 import { backgroundStatus, bgSupported } from "@/src/background";
+import { storage } from "@/src/utils/storage";
 
 export function useSignOut() {
   const { user, signOut } = useAuth();
@@ -36,12 +37,41 @@ export function useSignOut() {
   return { start, sheet };
 }
 
+// Phase 16: repairs started in the office from a work order (Start repair) appear on the foreman's phone once.
+// They arrive already sent (Verified); the existing repair panel then records the work and the Finish tap.
+async function importAssignedRepairs(uid: string) {
+  const list: any[] = await api("/repairs-assigned");
+  if (list.length) await storage.setItem(`operators:${uid}`, JSON.stringify(await api("/operators"))); // rate items for the repair panel
+  let n = 0;
+  for (const a of list) {
+    const local = await repo.getLocalVisit(uid, a.visit.uuid);
+    const r = a.repair;
+    const loc = r.location;
+    const links = { work_order_id: r.work_order_id, work_order_number: a.work_order?.number || null, repair_id: r.uuid,
+      location: loc ? { lat: loc.lat, lon: loc.lon, method_label: loc.method_label, railroad: loc.railroad, subdivision: loc.subdivision, milepost: loc.milepost } : null };
+    if (local) {
+      if (!local.links?.work_order_id) await repo.saveVisit(uid, { ...local, links });
+      continue;
+    }
+    await repo.saveVisit(uid, {
+      uuid: a.visit.uuid, site_id: a.visit.site_id, site_name: a.site_name || "", title: a.visit.title, processing_permission: a.visit.processing_permission || "Policy",
+      server_revision: a.visit.revision, status: a.visit.status, created_at: a.visit.created_at, sync: { state: "Verified", attempts: 0 }, links,
+      repair: { operator_id: r.operator_id, operator_name: r.operator_name, po: r.po, railroad: r.railroad, track: r.track, milepost: r.milepost,
+        work: r.work || [], completion_date: r.completion_date, finish: !!r.completion, finished_at_client: r.completion?.confirmed_at_client || null },
+      repair_sync: "Verified",
+    });
+    n++;
+  }
+  return n;
+}
+
 export default function Home() {
   const { user, workspace } = useAuth();
   const [sites, setSites] = useState<any[] | null>(null);
   const [bundles, setBundles] = useState<Record<string, repo.Bundle>>({});
   const [visits, setVisits] = useState<repo.LocalVisit[]>([]);
   const [unsynced, setUnsynced] = useState(0);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [offline, setOffline] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -51,6 +81,8 @@ export default function Home() {
     volumeSupported().then(setVolOk);
   }, []);
   const [newSite, setNewSite] = useState(false);
+  const { newsite } = useLocalSearchParams<{ newsite?: string }>();
+  useEffect(() => { if (newsite === "1") { setNewSite(true); router.setParams({ newsite: undefined }); } }, [newsite]); // map "New site" option
   const [ns, setNs] = useState({ name: "", address: "", description: "" });
   const [nsErr, setNsErr] = useState<string | null>(null);
   const nsBusy = useRef(false);
@@ -74,6 +106,15 @@ export default function Home() {
   const so = useSignOut();
   const uid = user ? user.uuid : "";
 
+  useEffect(() => {
+    const refresh = () => {
+      setSyncError(getSyncError(uid));
+      repo.unsyncedCount(uid).then(setUnsynced).catch(() => {});
+    };
+    refresh();
+    return subscribe(refresh);
+  }, [uid]);
+
   const load = useCallback(async () => {
     if (!uid) return;
     const bs = await repo.listBundles(uid);
@@ -93,6 +134,10 @@ export default function Home() {
     }
     // REQ-195: background prep of assigned sites + sync of saved captures; never blocks capture.
     syncAll(uid).then(async () => setUnsynced(await repo.unsyncedCount(uid))).catch(() => {});
+    if (user && user.role === "foreman") {
+      await importAssignedRepairs(uid).catch(() => 0);
+      setVisits((await repo.listVisits(uid)).reverse());
+    }
     for (const s of list) {
       try {
         await repo.saveBundle(uid, s.uuid, await api(`/sites/${s.uuid}/bundle`));
@@ -102,7 +147,7 @@ export default function Home() {
     }
     const nb = await repo.listBundles(uid);
     setBundles(Object.fromEntries(nb.map((b) => [b.site_id, b])));
-  }, [uid]);
+  }, [uid, user]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => {
     const sub = AppState.addEventListener("change", (st) => st === "active" && load()); // retry on foreground
@@ -114,7 +159,7 @@ export default function Home() {
     <Screen testID="home-screen" back={false} title="My work" subtitle={`${user ? user.name : ""} - ${workspace?.name || ""}`}
       right={<Btn small kind="header" title="Account" icon="account-circle-outline" testID="account-menu-button" onPress={() => setMenu(true)} />}
       refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }}
-      fab={<Fab testID="home-new-site-fab" label="New site" onPress={() => { setNsErr(null); setNewSite(true); }} />}>
+      fab={<Fab testID="home-new-site-fab" label="New inspection on the rail map" onPress={() => router.push("/map")} />}>
       {user && user.role === "foreman" ? <Btn testID="home-open-repair-button" kind="secondary" icon="wrench" title="Open repair" onPress={() => router.push("/repair/new")} /> : null}
       {status ? (
         <Row style={{ flexWrap: "nowrap" }}>
@@ -122,6 +167,11 @@ export default function Home() {
           <Btn small kind="ghost" testID="home-sync-retry-button" title="Try again" icon="refresh"
             onPress={() => syncAll(uid, true).then(async () => setUnsynced(await repo.unsyncedCount(uid))).catch(() => {})} />
         </Row>
+      ) : null}
+      {syncError ? (
+        <Banner testID="home-location-sync-error" tone="warning" icon="map-marker-alert-outline" text={syncError}>
+          <Btn small kind="ghost" testID="home-location-sync-retry" title="Try again" icon="refresh" onPress={() => syncAll(uid, true).catch(() => {})} />
+        </Banner>
       ) : null}
       {visits.length ? <H>In progress</H> : null}
       {visits.map((v) => (

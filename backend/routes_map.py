@@ -7,6 +7,7 @@ from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
+from pymongo.errors import DuplicateKeyError
 
 import rail_map as RM
 from core import audit, clean, current_user, db, get_scoped, get_visit, iso, require_role
@@ -92,7 +93,48 @@ async def nearby(lat: float = Query(ge=-90, le=90), lon: float = Query(ge=-180, 
         raise HTTPException(502, LAYER_FAIL)
 
 
+class MilepostQuery(BaseModel):
+    railroad: str = Field(min_length=1, max_length=20)
+    subdivision: str = Field(min_length=1, max_length=120)
+    milepost: str = Field(min_length=1, max_length=20)  # as entered; kept verbatim when unresolved (REQ-1606)
+
+
+@router.get("/map/milepost-options", tags=["map"])
+async def milepost_options(feature_id: str = Query(pattern=r"^(ntad_lines|ntad_mileposts):\d+$"), user=Depends(current_user)):
+    try:
+        return await RM.map_milepost_options(feature_id)
+    except ValueError as e:
+        return {"options": [], "message": str(e)}
+    except Exception:
+        raise HTTPException(502, {"code": "reference_unavailable", "message": "Milepost references unavailable. Use a saved selection or a manual pin."})
+
+
+@router.post("/map/milepost", tags=["map"])
+async def milepost(body: MilepostQuery, user=Depends(current_user)):
+    try:
+        n = float(body.milepost.strip())
+    except ValueError:
+        n = None
+    if n is None or not math.isfinite(n) or n < 0 or n > 10000:
+        return {"resolved": False, "text": body.milepost, "message": "Milepost must be a number. Place the pin on the map."}
+    try:
+        r = await RM.resolve_milepost(body.railroad, body.subdivision, n)
+    except Exception:
+        r = {"resolved": False, "message": "Milepost reference is unavailable right now. Place the pin on the map."}
+    return {**r, "text": body.milepost, "railroad": body.railroad.strip(), "subdivision_entered": body.subdivision.strip()}
+
+
 # ---------------- pins ----------------
+class PinRail(BaseModel):
+    railroad: Optional[str] = Field(None, max_length=120)
+    subdivision: Optional[str] = Field(None, max_length=120)
+    milepost_text: Optional[str] = Field(None, max_length=40)  # as entered
+
+
+METHOD_LABEL = {"gps": "My location (GPS)", "pin": "Map pin", "coordinates": "Entered coordinates", "milepost": "From milepost reference",
+                "milepost_pin": "Milepost entered; pin confirmed by worker"}
+
+
 class PinIn(BaseModel):
     uuid: str = Field(min_length=8, max_length=64)
     lat: float
@@ -104,6 +146,10 @@ class PinIn(BaseModel):
     camera_accuracy_m: Optional[float] = Field(None, ge=0)
     site_id: Optional[str] = None  # link mode: the phone created the site + inspection locally (offline-first) and synced them
     visit_id: Optional[str] = None
+    method: Literal["gps", "pin", "coordinates", "milepost", "milepost_pin"] = "pin"
+    railway: Optional[PinRail] = None
+    milepost_ref: Optional[dict] = None  # the /map/milepost result when method == "milepost"
+    fixed_at: Optional[str] = Field(None, max_length=40)  # GPS fix time reported by the phone (method == "gps")
 
     @field_validator("lat", "lon", "camera_lat", "camera_lon")
     @classmethod
@@ -134,18 +180,55 @@ async def create_pin(body: PinIn, user=Depends(require_role("foreman"))):
             raise HTTPException(404, "Not found")
         return await _pin_view(old)
     name = (body.name or "").strip() or f"Pin {body.lat:.5f}, {body.lon:.5f}"
+    ref = None
+    if body.method == "milepost":  # only a server-verified reference point may be labeled as one
+        rw0 = body.railway or PinRail()
+        if not (rw0.railroad and rw0.subdivision and rw0.milepost_text):
+            raise HTTPException(422, {"code": "milepost_incomplete", "message": "Enter railroad, subdivision and milepost."})
+        selected = body.milepost_ref or {}
+        if selected.get("selection") == "map_feature":
+            if not selected.get("id") or not selected.get("line_id"):
+                raise HTTPException(422, {"code": "milepost_incomplete", "message": "Select the reference milepost and its line again."})
+            try:
+                options = await RM.map_milepost_options(selected["id"], selected["line_id"])
+            except ValueError as e:
+                raise HTTPException(422, {"code": "milepost_unresolved", "message": str(e)})
+            except Exception:
+                raise HTTPException(503, {"code": "reference_unavailable", "message": "Saved location is waiting for reference verification. Retry when connected."})
+            chk = next((o for o in options["options"] if o["id"] == selected["id"] and o["line_id"] == selected["line_id"]), {})
+            try:
+                same_milepost = float(chk.get("milepost")) == float(rw0.milepost_text)
+            except (TypeError, ValueError):
+                same_milepost = False
+            if chk and (str(chk["railroad"]).casefold() != rw0.railroad.strip().casefold() or
+                        str(chk["subdivision"]).casefold() != rw0.subdivision.strip().casefold() or
+                        not same_milepost):
+                raise HTTPException(422, {"code": "milepost_mismatch", "message": "Selected milepost metadata does not match its source record."})
+        else:
+            chk = await milepost(MilepostQuery(railroad=rw0.railroad, subdivision=rw0.subdivision, milepost=rw0.milepost_text), user)
+        if not chk.get("resolved") or abs(chk["lat"] - body.lat) > 1e-6 or abs(chk["lon"] - body.lon) > 1e-6:
+            raise HTTPException(422, {"code": "milepost_unresolved", "message": "Milepost not found in the reference data. Confirm a pin on the map."})
+        ref = {k: chk.get(k) for k in ("source", "id", "version", "line_id", "line_version", "subdivision", "milepost", "label", "association", "selection")}
     if body.site_id and body.visit_id:
         site = await db.sites.find_one({"uuid": body.site_id, "workspace_id": user["workspace_id"]})
         visit = await db.visits.find_one({"uuid": body.visit_id, "workspace_id": user["workspace_id"], "site_id": body.site_id})
         if not site or not visit:
             raise HTTPException(409, {"code": "not_synced", "message": "Waiting for the inspection to send. The pin will link after that."})
+        linked = await db.pins.find_one({"visit_id": visit["uuid"]})
+        if linked:  # one pin per inspection: a replay under another client id returns the existing pin + location
+            return await _pin_view(linked)
     else:
         site = await create_site(SiteIn(uuid=f"pin-site-{body.uuid}", name=name, lat=body.lat, lon=body.lon,
                                         description=(body.note or "").strip() or None), user)
         visit = await create_visit(VisitIn(uuid=f"pin-visit-{body.uuid}", site_id=site["uuid"], title=name), user)
+    rw = body.railway or PinRail()
+    railway = {"railroad": rw.railroad, "subdivision": rw.subdivision, "milepost": {"text": rw.milepost_text} if rw.milepost_text else None}
     loc = {"uuid": f"pin-loc-{body.uuid}", "workspace_id": user["workspace_id"], "visit_id": visit["uuid"], "evidence_id": None,
-           "role": "approximate_defect", "source": "manual", "lat": body.lat, "lon": body.lon, "accuracy_m": None,
-           "label": "Approximate defect location", "railway": {}, "revision": 1, "history": [], "created_by": user["uuid"], "created_at": iso()}
+           "role": "approximate_defect", "source": {"gps": "device", "milepost": "operator_dataset"}.get(body.method, "manual"),
+           "lat": body.lat, "lon": body.lon, "accuracy_m": body.camera_accuracy_m if body.method == "gps" else None,
+           "fixed_at": body.fixed_at if body.method == "gps" else None,
+           "method": body.method, "method_label": METHOD_LABEL[body.method], "milepost_ref": ref,
+           "label": "Approximate defect location", "railway": railway, "revision": 1, "history": [], "created_by": user["uuid"], "created_at": iso()}
     await db.locations.update_one({"uuid": loc["uuid"]}, {"$setOnInsert": loc}, upsert=True)
     if body.camera_lat is not None and body.camera_lon is not None:
         cam = {**loc, "uuid": f"pin-cam-{body.uuid}", "role": "camera_position", "source": "device", "lat": body.camera_lat, "lon": body.camera_lon,
@@ -154,7 +237,10 @@ async def create_pin(body: PinIn, user=Depends(require_role("foreman"))):
     pin = {"uuid": body.uuid, "workspace_id": user["workspace_id"], "site_id": site["uuid"], "visit_id": visit["uuid"], "location_id": loc["uuid"],
            "lat": body.lat, "lon": body.lon, "name": name, "dataset_versions": {k: v.get("feed_version") async for k, v in _feeds()},
            "filter_version": RM.FILTER_VERSION, "created_by": user["uuid"], "created_at": iso()}
-    await db.pins.update_one({"uuid": body.uuid}, {"$setOnInsert": pin}, upsert=True)
+    try:
+        await db.pins.update_one({"uuid": body.uuid}, {"$setOnInsert": pin}, upsert=True)
+    except DuplicateKeyError:  # concurrent link under another client id: one pin per inspection (unique index)
+        return await _pin_view(await db.pins.find_one({"visit_id": visit["uuid"]}))
     await audit(user, user["workspace_id"], "pin.created", "pin", body.uuid, {"site_id": site["uuid"], "visit_id": visit["uuid"]})
     return await _pin_view(await db.pins.find_one({"uuid": body.uuid}))
 

@@ -147,6 +147,15 @@ async def rail_surface_diagnostics(user=Depends(require_role("admin"))):
     return {**RS.DIAGNOSTICS, "classes": {k: v[0] for k, v in RS.CLASSES.items()}, "runs_with_rail_surface": runs, "runs_with_rejected_output": partial}
 
 
+@router.post("/admin/jobs/release-blocked")
+async def release_blocked_now(user=Depends(require_role("admin"))):
+    """REQ-1225: run the blocked-work reconciliation now (same pass as the 5-min sweep; policy and budget re-checked per job)."""
+    import jobs as J
+    res = await J.release_blocked("sweep_manual")
+    await audit(user, user["workspace_id"], "blocked_release_run", "workspace", user["workspace_id"], {"released": len(res["released"])})
+    return res
+
+
 @router.get("/admin/recovery")
 async def recovery_preview(since: Optional[str] = None, user=Depends(require_role("admin"))):
     import jobs as J

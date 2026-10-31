@@ -4,8 +4,9 @@ import { Platform } from "react-native";
 import { ApiError, OfflineError, api, getToken, API } from "./api";
 import { uploadForm } from "./utils/upload";
 import { uploadFile } from "./background";
-import { mediaUri } from "./local/db";
+import { mediaUri, getRecord, createRecordsOnce } from "./local/db";
 import * as repo from "./local/repo";
+import { storage } from "./utils/storage";
 import type { LocalEvidence, LocalObs, LocalVisit, SyncInfo } from "./local/repo";
 
 const listeners = new Set<() => void>();
@@ -16,6 +17,8 @@ export function subscribe(fn: () => void) {
   };
 }
 const notify = () => listeners.forEach((f) => f());
+const syncErrors = new Map<string, string>();
+export const getSyncError = (u: string): string | null => syncErrors.get(u) || null;
 
 let running = false;
 
@@ -64,13 +67,25 @@ async function syncVisitRecord(u: string, v: LocalVisit, force: boolean): Promis
     notify();
   }
   if (v.sync.state === "Verified" && v.repair && v.repair_sync !== "Verified") {
+    const pendingRepair = v.repair;
     try { // Phase 15: replay-safe (server is keyed by the inspection; finished repairs accept identical replays)
-      await api(`/repairs/${v.uuid}`, { method: "PUT", body: v.repair, sameKeyRetries: 1 });
-      v = { ...v, repair_sync: "Verified" };
+      await api(`/repairs/${v.uuid}`, { method: "PUT", body: pendingRepair, sameKeyRetries: 1 });
+      v = { ...v, repair_sync: "Verified", repair_finish_blockers: pendingRepair.finish ? undefined : v.repair_finish_blockers };
       await repo.saveVisit(u, v);
       notify();
-    } catch {
-      /* stays "Saved": retried on the next queue pass */
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 409 && e.detail?.code === "finish_blocked") {
+        // The server did not record completion. Keep the work and let the foreman correct this draft.
+        await repo.saveRecovery(u, { visit_id: v.uuid, what: "Finish repair rejected", value: JSON.stringify(pendingRepair),
+          server_value: JSON.stringify(e.detail.blockers || []) });
+        const op = e.detail.operator;
+        v = { ...v, repair: { ...pendingRepair, finish: false, finished_at_client: null }, repair_sync: "Saved",
+          repair_finish_blockers: e.detail.blockers || [e.detail.message],
+          ...(op?.uuid ? { repair_requirements: { operator_id: op.uuid, fields: op.required_location_fields || [], name: op.name } } : {}) };
+        await repo.saveVisit(u, v);
+        notify();
+      }
+      // Network failures keep the pending completion intact for the next queue pass.
     }
   }
   return v;
@@ -170,6 +185,51 @@ async function syncSites(u: string, force: boolean) {
 
 let paused = false;
 let startedAt = 0;
+
+// Phase 16: pending map locations. Sent only after their site AND inspection are on the server; the server is idempotent by pin uuid.
+// Lists left by the earlier map-screen-only flush (pending-pins:<user>) are moved into the queue once.
+async function syncPins(u: string, force: boolean) {
+  const legacy = await storage.getItem<string | null>(`pending-pins:${u}`, null);
+  syncErrors.delete(u);
+  if (legacy) {
+    try {
+      const list = JSON.parse(legacy);
+      if (!Array.isArray(list) || list.some((p) => !p || typeof p !== "object" || Array.isArray(p)
+        || ![p.uuid, p.visit_id, p.site_id].every((v) => typeof v === "string" && v.trim())
+        || !Number.isFinite(p.lat) || !Number.isFinite(p.lon) || Math.abs(p.lat) > 90 || Math.abs(p.lon) > 180)) {
+        throw new Error("Invalid saved location data.");
+      }
+      // Validate the whole source first. Atomic insert-if-absent preserves any pin
+      // that has already synced, including a concurrent migration in another tab.
+      for (const p of list) {
+        const pin: repo.LocalPin = { id: `pinrec-${p.uuid}`, visit_id: p.visit_id, payload: { fixed_at: null, ...p },
+          created_at: new Date().toISOString(), sync: { state: "Queued", attempts: 0 } };
+        await createRecordsOnce<repo.LocalPin>(u, pin.id, [{ type: "pin", id: pin.id, parent: pin.visit_id, data: pin }]);
+      }
+      // Retain the legacy source as a recovery copy. Removing an async-storage key
+      // can erase a new value written by an older app/tab while migration awaits.
+    } catch {
+      syncErrors.set(u, "Some saved locations could not sync. The original location data is kept on this device.");
+    }
+    notify();
+  }
+  for (const p of await repo.listPins(u)) {
+    if (p.sync.state === "Verified" || !due(p.sync, force)) continue;
+    const site = await getRecord<repo.LocalSite>(u, p.payload.site_id);
+    const visit = await repo.getLocalVisit(u, p.payload.visit_id);
+    if ((site && site.sync.state !== "Verified") || !visit || visit.sync.state !== "Verified") continue; // dependencies first
+    try {
+      await api("/map/pins", { body: p.payload, sameKeyRetries: 1 });
+      await repo.savePin(u, { ...p, sync: { state: "Verified", attempts: p.sync.attempts + 1 } });
+    } catch (e) {
+      // 409 not_synced = the server has not got the inspection yet: wait and retry, never Blocked
+      const s = e instanceof ApiError && e.status === 409 ? { state: "Retry wait" as const, attempts: p.sync.attempts + 1, next_at: new Date(Date.now() + 5_000).toISOString(), error: "Waiting for the inspection to send" } : backoff(p.sync, e);
+      await repo.savePin(u, { ...p, sync: s });
+    }
+    notify();
+  }
+}
+
 export function pauseSync(p: boolean) {
   paused = p;
 }
@@ -183,7 +243,7 @@ export async function syncAll(u: string, force = false) {
   try {
     await syncSites(u, force); // new sites first, so their inspections can be sent
     for (let v of await repo.listVisits(u)) {
-      if (v.status === "Submitted" && v.sync.state === "Verified" && !v.pending_permission) {
+      if (v.status === "Submitted" && v.sync.state === "Verified" && !v.pending_permission && (!v.repair || v.repair_sync === "Verified")) {
         // REQ-1207: a status change never strands captured evidence - still send anything pending
         if (!(await repo.listEvidence(u, v.uuid)).some((e) => e.sync.state !== "Verified")) continue;
       }
@@ -199,6 +259,7 @@ export async function syncAll(u: string, force = false) {
       // receipts are kept per inspection but no longer gate analysis (the server queues each verified item)
       if (changed || !v.manifest || v.manifest.state !== "Received complete") await finalizeManifest(u, v).catch(() => {});
     }
+    await syncPins(u, force).catch(() => {}); // after sites and inspections
   } finally {
     running = false;
     notify();
