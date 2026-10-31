@@ -1,0 +1,60 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.0,0.6,0.2,0.17],\"visible_reason\":\"Several dark metal plate assemblies on the left side of the ties have no rail sitting in them and no clearly visible clips or hold-down hardware. Two loose-looking rails lie in the middle of the ties, offset from these plates.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The scene looks like track under construction or renewal, so the rails and fasteners may not have been installed yet. The plate design is also unfamiliar, so I can't tell whether clips are meant to be there.\",\"alternatives\":[\"Track not yet assembled, so rails are temporarily laid on the ties\",\"Alternate fastening design where clips are installed later\",\"Rails staged for installation rather than displaced\",\"Perspective and lighting hiding small hardware\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.47,0.69,0.15,0.08],\"visible_reason\":\"A plate assembly near the lower center has no rail seated in it. The two loose rails in the foreground run to the left of it, and no clips are clearly visible.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The rails may simply not be placed yet, and the plate's intended hardware is not identifiable from this angle.\",\"alternatives\":[\"Construction-stage layout\",\"Clips present but hidden by shadow or the angle\",\"Plate type that doesn't use visible clips\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 11.76,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.0,
+    0.6,
+    0.2,
+    0.17
+   ],
+   "localized": true,
+   "visible_reason": "Several dark metal plate assemblies on the left side of the ties have no rail sitting in them and no clearly visible clips or hold-down hardware. Two loose-looking rails lie in the middle of the ties, offset from these plates.",
+   "assessability": "assessable",
+   "uncertainty": "High. The scene looks like track under construction or renewal, so the rails and fasteners may not have been installed yet. The plate design is also unfamiliar, so I can't tell whether clips are meant to be there.",
+   "alternatives": [
+    "Track not yet assembled, so rails are temporarily laid on the ties",
+    "Alternate fastening design where clips are installed later",
+    "Rails staged for installation rather than displaced",
+    "Perspective and lighting hiding small hardware"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.47,
+    0.69,
+    0.15,
+    0.08
+   ],
+   "localized": true,
+   "visible_reason": "A plate assembly near the lower center has no rail seated in it. The two loose rails in the foreground run to the left of it, and no clips are clearly visible.",
+   "assessability": "assessable",
+   "uncertainty": "High. The rails may simply not be placed yet, and the plate's intended hardware is not identifiable from this angle.",
+   "alternatives": [
+    "Construction-stage layout",
+    "Clips present but hidden by shadow or the angle",
+    "Plate type that doesn't use visible clips"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc022",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:45:19Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

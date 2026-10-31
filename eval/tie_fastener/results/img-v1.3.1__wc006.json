@@ -1,0 +1,60 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.36,0.62,0.28,0.09],\"visible_reason\":\"Two round holes in the lower part of the metal plate show no spike or fastener head in them. Small stones and debris are visible inside the openings.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium-high. I cannot tell from one close-up whether these holes were ever meant to hold fasteners, or whether the plate design has extra holes.\",\"alternatives\":[\"Unused spike holes that are normally empty on this plate design\",\"Alternate fastening design where these holes are not used\",\"Fasteners removed or never installed at this location\",\"Debris or ballast dust masking a spike shank below the surface\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.40,0.50,0.05,0.07],\"visible_reason\":\"A small square notch on the plate edge next to the rail base, on the left of the one spike head that is visible, shows no spike. It contains debris.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The notch may be a design feature or an unused position, and it is small in the frame.\",\"alternatives\":[\"Unused spike notch by design\",\"Plate designed to take only one spike at this notch\",\"Debris filling an empty slot that was never used\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 15.94,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.36,
+    0.62,
+    0.28,
+    0.09
+   ],
+   "localized": true,
+   "visible_reason": "Two round holes in the lower part of the metal plate show no spike or fastener head in them. Small stones and debris are visible inside the openings.",
+   "assessability": "assessable",
+   "uncertainty": "Medium-high. I cannot tell from one close-up whether these holes were ever meant to hold fasteners, or whether the plate design has extra holes.",
+   "alternatives": [
+    "Unused spike holes that are normally empty on this plate design",
+    "Alternate fastening design where these holes are not used",
+    "Fasteners removed or never installed at this location",
+    "Debris or ballast dust masking a spike shank below the surface"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.4,
+    0.5,
+    0.05,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "A small square notch on the plate edge next to the rail base, on the left of the one spike head that is visible, shows no spike. It contains debris.",
+   "assessability": "assessable",
+   "uncertainty": "High. The notch may be a design feature or an unused position, and it is small in the frame.",
+   "alternatives": [
+    "Unused spike notch by design",
+    "Plate designed to take only one spike at this notch",
+    "Debris filling an empty slot that was never used"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc006",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:10Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

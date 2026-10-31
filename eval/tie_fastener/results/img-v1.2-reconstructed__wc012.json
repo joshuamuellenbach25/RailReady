@@ -1,0 +1,80 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.77,1.0,0.11],\"visible_reason\":\"The nearest wooden tie has a gray-brown, rough surface with long lengthwise grain lines and what look like cracks or splits. Some edges look frayed or worn.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The photo is low-angle and slightly soft, so the depth of the cracks cannot be judged. Weathering lines may be only superficial.\",\"alternatives\":[\"Normal surface checking in aged but sound wood\",\"Dirt or dry-wood discoloration\",\"Shadow or ballast dust emphasizing the grain\",\"Perspective distortion from the low camera angle\"]},{\"region\":[0.07,0.67,0.82,0.06],\"category\":\"visible tie-surface deterioration\",\"visible_reason\":\"The second tie from the camera has a weathered, bleached surface with streaky grain and some darker patches along its length. Rough texture is visible near its ends.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The tie is seen at a grazing angle and is partly covered by small stones and leaves, so surface condition is hard to separate from normal weathering.\",\"alternatives\":[\"Ordinary surface weathering\",\"Wet wood colour\",\"Ballast or leaf debris covering parts of the surface\",\"Shadow\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.65,0.52,0.35,0.26],\"visible_reason\":\"On the right-hand rail, the rail base and tie-plate area are largely covered by dry leaves and debris. Fasteners cannot be seen clearly there, so the area is flagged for review rather than as an observed fault.\",\"assessability\":\"cannot_assess\",\"uncertainty\":\"High. The area is occluded, so no fastener presence or absence can be seen.\",\"alternatives\":[\"Fasteners present but hidden under leaves\",\"Alternate fastening design\",\"Shadow from the rail\",\"Ballast covering\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 11.39,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.77,
+    1.0,
+    0.11
+   ],
+   "localized": true,
+   "visible_reason": "The nearest wooden tie has a gray-brown, rough surface with long lengthwise grain lines and what look like cracks or splits. Some edges look frayed or worn.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The photo is low-angle and slightly soft, so the depth of the cracks cannot be judged. Weathering lines may be only superficial.",
+   "alternatives": [
+    "Normal surface checking in aged but sound wood",
+    "Dirt or dry-wood discoloration",
+    "Shadow or ballast dust emphasizing the grain",
+    "Perspective distortion from the low camera angle"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.07,
+    0.67,
+    0.82,
+    0.06
+   ],
+   "localized": true,
+   "visible_reason": "The second tie from the camera has a weathered, bleached surface with streaky grain and some darker patches along its length. Rough texture is visible near its ends.",
+   "assessability": "assessable",
+   "uncertainty": "High. The tie is seen at a grazing angle and is partly covered by small stones and leaves, so surface condition is hard to separate from normal weathering.",
+   "alternatives": [
+    "Ordinary surface weathering",
+    "Wet wood colour",
+    "Ballast or leaf debris covering parts of the surface",
+    "Shadow"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.65,
+    0.52,
+    0.35,
+    0.26
+   ],
+   "localized": true,
+   "visible_reason": "On the right-hand rail, the rail base and tie-plate area are largely covered by dry leaves and debris. Fasteners cannot be seen clearly there, so the area is flagged for review rather than as an observed fault.",
+   "assessability": "cannot_assess",
+   "uncertainty": "High. The area is occluded, so no fastener presence or absence can be seen.",
+   "alternatives": [
+    "Fasteners present but hidden under leaves",
+    "Alternate fastening design",
+    "Shadow from the rail",
+    "Ballast covering"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc012",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:45Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

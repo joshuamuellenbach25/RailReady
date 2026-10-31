@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.27,0.165,0.46,0.06],\"visible_reason\":\"On the upper tie plate, both round holes near the plate ends show ballast stones and debris inside. No spike or screw head is visible in either hole.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The holes may be unused spike holes, or the plate may be designed to be held by other hardware, such as the dome-headed bolt or hook visible near the rail base. I cannot tell from one top-down photo whether a fastener is expected in these holes.\",\"alternatives\":[\"unused or spare plate holes\",\"alternate fastening design where these holes are not meant to be filled\",\"fastener hidden or covered by ballast\",\"debris sitting on top of a seated fastener shank\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.28,0.78,0.46,0.065],\"visible_reason\":\"On the lower tie plate, the two round end holes appear to have no spike or screw head in them. The left hole holds ballast and leaf debris. The right hole shows a reddish-brown surface with a bit of leaf matter.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The same ambiguity applies as for the upper plate. Empty holes could be normal for this plate and fastening design, and a reddish-brown surface could be wood, rust or debris.\",\"alternatives\":[\"unused or spare plate holes\",\"alternate fastening design\",\"debris or leaf covering the hole\",\"rust-coloured fill rather than exposed wood\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 13.96,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.27,
+    0.165,
+    0.46,
+    0.06
+   ],
+   "localized": true,
+   "visible_reason": "On the upper tie plate, both round holes near the plate ends show ballast stones and debris inside. No spike or screw head is visible in either hole.",
+   "assessability": "assessable",
+   "uncertainty": "High. The holes may be unused spike holes, or the plate may be designed to be held by other hardware, such as the dome-headed bolt or hook visible near the rail base. I cannot tell from one top-down photo whether a fastener is expected in these holes.",
+   "alternatives": [
+    "unused or spare plate holes",
+    "alternate fastening design where these holes are not meant to be filled",
+    "fastener hidden or covered by ballast",
+    "debris sitting on top of a seated fastener shank"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.28,
+    0.78,
+    0.46,
+    0.065
+   ],
+   "localized": true,
+   "visible_reason": "On the lower tie plate, the two round end holes appear to have no spike or screw head in them. The left hole holds ballast and leaf debris. The right hole shows a reddish-brown surface with a bit of leaf matter.",
+   "assessability": "assessable",
+   "uncertainty": "High. The same ambiguity applies as for the upper plate. Empty holes could be normal for this plate and fastening design, and a reddish-brown surface could be wood, rust or debris.",
+   "alternatives": [
+    "unused or spare plate holes",
+    "alternate fastening design",
+    "debris or leaf covering the hole",
+    "rust-coloured fill rather than exposed wood"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc005",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:08Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

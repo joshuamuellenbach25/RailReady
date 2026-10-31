@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.88,0.58,0.12],\"visible_reason\":\"The nearest ties at the bottom-left are dark and rough, with pronounced lengthwise grain lines and what look like darker streaks or splits along the top surface. Leaves and small stones lie on and around them.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The photo is taken at a low oblique angle, and the surface texture could be ordinary weathering rather than deterioration. A person needs to judge depth and extent in person or in a closer photo.\",\"alternatives\":[\"normal surface weathering or grain checking\",\"wet or oil-darkened wood colour\",\"shadow between the tie and the rail base\",\"ballast, leaves or debris covering parts of the surface\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.66,0.86,0.22,0.14],\"visible_reason\":\"On the right-side foreground ties, near the rail, the wood looks dark and uneven. Leaves and debris partly cover the surface, and some darker patches sit next to the tie plates.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The area is small, partly covered, and seen at a steep angle, so the dark patches may not be surface damage.\",\"alternatives\":[\"shadow from the rail or tie plate\",\"leaf litter and ballast covering the surface\",\"wet wood colour\",\"normal weathering\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.14,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.88,
+    0.58,
+    0.12
+   ],
+   "localized": true,
+   "visible_reason": "The nearest ties at the bottom-left are dark and rough, with pronounced lengthwise grain lines and what look like darker streaks or splits along the top surface. Leaves and small stones lie on and around them.",
+   "assessability": "assessable",
+   "uncertainty": "High. The photo is taken at a low oblique angle, and the surface texture could be ordinary weathering rather than deterioration. A person needs to judge depth and extent in person or in a closer photo.",
+   "alternatives": [
+    "normal surface weathering or grain checking",
+    "wet or oil-darkened wood colour",
+    "shadow between the tie and the rail base",
+    "ballast, leaves or debris covering parts of the surface"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.66,
+    0.86,
+    0.22,
+    0.14
+   ],
+   "localized": true,
+   "visible_reason": "On the right-side foreground ties, near the rail, the wood looks dark and uneven. Leaves and debris partly cover the surface, and some darker patches sit next to the tie plates.",
+   "assessability": "assessable",
+   "uncertainty": "High. The area is small, partly covered, and seen at a steep angle, so the dark patches may not be surface damage.",
+   "alternatives": [
+    "shadow from the rail or tie plate",
+    "leaf litter and ballast covering the surface",
+    "wet wood colour",
+    "normal weathering"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc013",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:43Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

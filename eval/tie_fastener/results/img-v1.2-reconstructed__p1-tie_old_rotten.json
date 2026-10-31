@@ -1,0 +1,78 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.2,0.28,0.6,0.32],\"visible_reason\":\"The upper timber surface shows heavy splitting and checking, with the wood grain peeling into thin layers. There is rough, eroded texture and dark patches. Rust-orange staining covers much of the surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The surface damage is clearly visible, but the rust staining and shadow make it hard to judge how deep the damage goes from one photo.\",\"alternatives\":[\"Normal weathering and surface checking of aged timber\",\"Rust staining from former metal hardware that looks worse than the wood damage\",\"Shadow or dark preservative residue exaggerating the appearance of damage\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.6,0.46,0.2,0.14],\"visible_reason\":\"Near the lower edge of the upper timber, wood fibers are lifted into splintered flakes and slivers, and there is an irregular broken edge with a dark cavity.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The splintering is visible, but the 2D view gives no information on depth or on whether it is only surface spalling.\",\"alternatives\":[\"Mechanical damage from handling or stacking\",\"Surface splintering that does not go deep\",\"Shadow making the cavity look larger\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.2,0.3,0.55,0.2],\"visible_reason\":\"Several round dark holes sit in the upper timber surface, and a faint rectangular plate-shaped outline is visible toward the right. No spikes or screws are seen in the holes, which could mean fasteners were removed.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The timber appears to be stacked off the track, not installed, so there is no way to tell whether fasteners are missing from a track position. The holes may be old and unused.\",\"alternatives\":[\"Unused or old spike holes\",\"Holes left by deliberate fastener removal when the timber was taken out of service\",\"Knots or insect or decay cavities rather than fastener holes\",\"Tie plate impression rather than a displaced fastener\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 6.83,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.2,
+    0.28,
+    0.6,
+    0.32
+   ],
+   "localized": true,
+   "visible_reason": "The upper timber surface shows heavy splitting and checking, with the wood grain peeling into thin layers. There is rough, eroded texture and dark patches. Rust-orange staining covers much of the surface.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The surface damage is clearly visible, but the rust staining and shadow make it hard to judge how deep the damage goes from one photo.",
+   "alternatives": [
+    "Normal weathering and surface checking of aged timber",
+    "Rust staining from former metal hardware that looks worse than the wood damage",
+    "Shadow or dark preservative residue exaggerating the appearance of damage"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.6,
+    0.46,
+    0.2,
+    0.14
+   ],
+   "localized": true,
+   "visible_reason": "Near the lower edge of the upper timber, wood fibers are lifted into splintered flakes and slivers, and there is an irregular broken edge with a dark cavity.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The splintering is visible, but the 2D view gives no information on depth or on whether it is only surface spalling.",
+   "alternatives": [
+    "Mechanical damage from handling or stacking",
+    "Surface splintering that does not go deep",
+    "Shadow making the cavity look larger"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.2,
+    0.3,
+    0.55,
+    0.2
+   ],
+   "localized": true,
+   "visible_reason": "Several round dark holes sit in the upper timber surface, and a faint rectangular plate-shaped outline is visible toward the right. No spikes or screws are seen in the holes, which could mean fasteners were removed.",
+   "assessability": "assessable",
+   "uncertainty": "High. The timber appears to be stacked off the track, not installed, so there is no way to tell whether fasteners are missing from a track position. The holes may be old and unused.",
+   "alternatives": [
+    "Unused or old spike holes",
+    "Holes left by deliberate fastener removal when the timber was taken out of service",
+    "Knots or insect or decay cavities rather than fastener holes",
+    "Tie plate impression rather than a displaced fastener"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "p1-tie_old_rotten",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:43Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

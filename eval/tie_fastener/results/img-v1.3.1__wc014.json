@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"cannot_assess\",\"cannot_assess_reason\":\"The photo is taken from low down and to the side, looking at the underside and ends of the ties. The fastener positions (clips, spikes, plates) on the tie tops are not clearly in view, so fastenings cannot be judged. Strong backlight and lens flare on the right, plus debris and shadow, limit the view of the tie surfaces. The visible tie sides and ends show grey weathering and end checking, and none of the clearly in-scope features. This is not a finding of no issues, and a human should review the full image.\",\"candidates\":[]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.19,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The photo is taken from low down and to the side, looking at the underside and ends of the ties. The fastener positions (clips, spikes, plates) on the tie tops are not clearly in view, so fastenings cannot be judged. Strong backlight and lens flare on the right, plus debris and shadow, limit the view of the tie surfaces. The visible tie sides and ends show grey weathering and end checking, and none of the clearly in-scope features. This is not a finding of no issues, and a human should review the full image.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc014",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:34Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

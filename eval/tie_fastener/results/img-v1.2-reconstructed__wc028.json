@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.44,0.5,0.22,0.22],\"visible_reason\":\"On the lower tie, where it meets the rail, no clip, insulator or similar small dark hardware is visible on the exposed concrete surface. The upper tie, by contrast, shows a small dark block next to the rail. The rail's side-on angle and the strip along its base may be hiding the fastening on the lower tie.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The camera angle is oblique and the rail foot area is partly hidden, so the fastening may simply be out of view. The fastening design is also not clear.\",\"alternatives\":[\"fastener hidden by the rail body or camera angle\",\"alternate fastening design that is not visible from above\",\"shadow or rail edge masking the hardware\",\"ballast or debris covering the fastener\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.6,0.68,0.3,0.3],\"visible_reason\":\"The far end of the lower concrete tie has a rough, uneven top surface with a stained, mottled tone and a ragged, worn-looking edge against the ballast.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The roughness could be ordinary weathering, dirt or the original molded finish rather than damage. The photo is a single view with no scale or close-up.\",\"alternatives\":[\"normal surface weathering or staining\",\"original molded or textured concrete finish\",\"dirt or dust film\",\"ballast contact marks\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 11.12,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.44,
+    0.5,
+    0.22,
+    0.22
+   ],
+   "localized": true,
+   "visible_reason": "On the lower tie, where it meets the rail, no clip, insulator or similar small dark hardware is visible on the exposed concrete surface. The upper tie, by contrast, shows a small dark block next to the rail. The rail's side-on angle and the strip along its base may be hiding the fastening on the lower tie.",
+   "assessability": "assessable",
+   "uncertainty": "High. The camera angle is oblique and the rail foot area is partly hidden, so the fastening may simply be out of view. The fastening design is also not clear.",
+   "alternatives": [
+    "fastener hidden by the rail body or camera angle",
+    "alternate fastening design that is not visible from above",
+    "shadow or rail edge masking the hardware",
+    "ballast or debris covering the fastener"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.6,
+    0.68,
+    0.3,
+    0.3
+   ],
+   "localized": true,
+   "visible_reason": "The far end of the lower concrete tie has a rough, uneven top surface with a stained, mottled tone and a ragged, worn-looking edge against the ballast.",
+   "assessability": "assessable",
+   "uncertainty": "High. The roughness could be ordinary weathering, dirt or the original molded finish rather than damage. The photo is a single view with no scale or close-up.",
+   "alternatives": [
+    "normal surface weathering or staining",
+    "original molded or textured concrete finish",
+    "dirt or dust film",
+    "ballast contact marks"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc028",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:48:37Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

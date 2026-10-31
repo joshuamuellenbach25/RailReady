@@ -1,0 +1,119 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.62,0.47,0.22,0.1],\"visible_reason\":\"The tie plate on the right has one visible spike or bolt head near the top edge. The other holes in the plate (square holes at the corners and edges) look empty, with no visible fastener heads in them. A large part of the plate's rail-side edge sits under the rail base.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the plate is rusty and the square holes are small and dark. Some holes may be unused by design, or a fastener may be there but hidden by shadow or rust.\",\"alternatives\":[\"unused spike holes in a multi-hole plate\",\"alternate fastening design that uses only some holes\",\"rust-colored fastener blending into the plate\",\"shadow in the holes\",\"camera angle hiding fastener heads\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.12,0.45,0.25,0.12],\"visible_reason\":\"The tie plate on the left shows one hex-headed bolt or spike at its left end and a hook-shaped (J/C-shaped) rusty metal piece on its rail-side edge. The two small square holes next to the bolt look empty. The hook piece looks like a bent rod or clip, not a standard fastener, and its relation to the rail base is unclear.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the hook may be an intended part of this fastening or a display item, and the empty holes may just be unused.\",\"alternatives\":[\"intended clip or anchor hardware of an alternate fastening design\",\"unused spike holes\",\"object placed on the plate rather than a track fastener\",\"shadow or rust hiding fastener heads\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.19,0.0,0.24,0.32],\"visible_reason\":\"The dark wooden tie at the top has a long vertical crack or split running down its surface. There are also darker, weathered, rough patches along the grain.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: surface checking is common in aged timber, and the photo does not show how deep the cracks go or whether the wood is soft.\",\"alternatives\":[\"normal surface checking or weathering\",\"wet or dark wood colour\",\"shadow\",\"staining from preservative\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.61,0.57,0.28,0.43],\"visible_reason\":\"The lower-right wooden tie has several long vertical cracks and splits along the grain, with a roughened, weathered surface and some darker streaks.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the cracks look like surface-level grain checks, and the photo does not show their depth or the condition of the wood inside.\",\"alternatives\":[\"normal seasoning checks in aged wood\",\"grain pattern\",\"shadow in cracks\",\"dirt or staining\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.6,0.0,0.2,0.32],\"visible_reason\":\"The upper-right tie has a thin vertical crack along its surface and a darker knot-like or damaged spot near the top, with weathered, grey-brown wood.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: the marks are small and could be natural features, and the photo doesn't show their depth.\",\"alternatives\":[\"natural knot\",\"normal weathering\",\"surface dirt\",\"shadow\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.4,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.62,
+    0.47,
+    0.22,
+    0.1
+   ],
+   "localized": true,
+   "visible_reason": "The tie plate on the right has one visible spike or bolt head near the top edge. The other holes in the plate (square holes at the corners and edges) look empty, with no visible fastener heads in them. A large part of the plate's rail-side edge sits under the rail base.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the plate is rusty and the square holes are small and dark. Some holes may be unused by design, or a fastener may be there but hidden by shadow or rust.",
+   "alternatives": [
+    "unused spike holes in a multi-hole plate",
+    "alternate fastening design that uses only some holes",
+    "rust-colored fastener blending into the plate",
+    "shadow in the holes",
+    "camera angle hiding fastener heads"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.12,
+    0.45,
+    0.25,
+    0.12
+   ],
+   "localized": true,
+   "visible_reason": "The tie plate on the left shows one hex-headed bolt or spike at its left end and a hook-shaped (J/C-shaped) rusty metal piece on its rail-side edge. The two small square holes next to the bolt look empty. The hook piece looks like a bent rod or clip, not a standard fastener, and its relation to the rail base is unclear.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the hook may be an intended part of this fastening or a display item, and the empty holes may just be unused.",
+   "alternatives": [
+    "intended clip or anchor hardware of an alternate fastening design",
+    "unused spike holes",
+    "object placed on the plate rather than a track fastener",
+    "shadow or rust hiding fastener heads"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.19,
+    0.0,
+    0.24,
+    0.32
+   ],
+   "localized": true,
+   "visible_reason": "The dark wooden tie at the top has a long vertical crack or split running down its surface. There are also darker, weathered, rough patches along the grain.",
+   "assessability": "assessable",
+   "uncertainty": "medium: surface checking is common in aged timber, and the photo does not show how deep the cracks go or whether the wood is soft.",
+   "alternatives": [
+    "normal surface checking or weathering",
+    "wet or dark wood colour",
+    "shadow",
+    "staining from preservative"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.61,
+    0.57,
+    0.28,
+    0.43
+   ],
+   "localized": true,
+   "visible_reason": "The lower-right wooden tie has several long vertical cracks and splits along the grain, with a roughened, weathered surface and some darker streaks.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the cracks look like surface-level grain checks, and the photo does not show their depth or the condition of the wood inside.",
+   "alternatives": [
+    "normal seasoning checks in aged wood",
+    "grain pattern",
+    "shadow in cracks",
+    "dirt or staining"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.6,
+    0.0,
+    0.2,
+    0.32
+   ],
+   "localized": true,
+   "visible_reason": "The upper-right tie has a thin vertical crack along its surface and a darker knot-like or damaged spot near the top, with weathered, grey-brown wood.",
+   "assessability": "assessable",
+   "uncertainty": "high: the marks are small and could be natural features, and the photo doesn't show their depth.",
+   "alternatives": [
+    "natural knot",
+    "normal weathering",
+    "surface dirt",
+    "shadow"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc002",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:00Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

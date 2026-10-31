@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\": \"cannot_assess\", \"cannot_assess_reason\": \"The whole photo is heavily out of focus. Tie-plate holes, fastener heads, clips and the wood grain of the ties are smeared, so I cannot tell whether fasteners are present, displaced or missing, or whether the tie surfaces are cracked, split or decayed. Some dark and rusty-looking areas are visible, for example the dark vertical gap at the bottom center of the lower tie and the small round shapes on the tie plates. At this level of blur they could be a real split, a shadow, a bolt or spike head, an unused hole, or ballast. I cannot reliably tell these apart, so I am not flagging them. A sharper, closer photo is needed for review.\", \"candidates\": []}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 6.88,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The whole photo is heavily out of focus. Tie-plate holes, fastener heads, clips and the wood grain of the ties are smeared, so I cannot tell whether fasteners are present, displaced or missing, or whether the tie surfaces are cracked, split or decayed. Some dark and rusty-looking areas are visible, for example the dark vertical gap at the bottom center of the lower tie and the small round shapes on the tie plates. At this level of blur they could be a real split, a shadow, a bolt or spike head, an unused hole, or ballast. I cannot reliably tell these apart, so I am not flagging them. A sharper, closer photo is needed for review.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc004-blur",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:50:02Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

@@ -1,0 +1,62 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.18,0.55,0.45,0.43],\"visible_reason\":\"The weathered grey wooden tie in the foreground has a long lengthwise crack or split running along its top surface, with rough, fibrous, checked wood near the upper-left end where it meets the rail base. Many small dark pinhole marks are scattered across the surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The crack is clearly visible, but from one angle and without scale I cannot tell how deep it goes. Weathered grey wood often has surface checking that looks worse than the condition underneath.\",\"alternatives\":[\"superficial seasoning checks in aged timber\",\"small pinholes from old spikes, tie plates, or insects\",\"shadow exaggerating the crack\",\"debris or ballast stones sitting on the surface\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.33,0.39,0.4,0.15],\"visible_reason\":\"At the rail base there is a rusty flat plate with one visible spike head and a small slot or hole beside it. Two rusted, upright clip-like or hook-shaped pieces sit at either end of the plate against the rail foot. The arrangement looks irregular, and only one spike is visible on this plate. The other hole on the plate looks empty, and the plate sits at an angle to the tie.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The fastening design is unclear and could be an older style with fewer spikes or with anchors. The view is partial and low-angle, and leaf litter and small stones partly cover the area.\",\"alternatives\":[\"an older or alternate fastening design that uses fewer spikes\",\"an unused or empty spike hole in the plate\",\"ballast, leaves, or twigs covering a fastener\",\"a viewing angle hiding other fasteners\",\"a plate that has settled in place without being displaced\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.11,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.18,
+    0.55,
+    0.45,
+    0.43
+   ],
+   "localized": true,
+   "visible_reason": "The weathered grey wooden tie in the foreground has a long lengthwise crack or split running along its top surface, with rough, fibrous, checked wood near the upper-left end where it meets the rail base. Many small dark pinhole marks are scattered across the surface.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The crack is clearly visible, but from one angle and without scale I cannot tell how deep it goes. Weathered grey wood often has surface checking that looks worse than the condition underneath.",
+   "alternatives": [
+    "superficial seasoning checks in aged timber",
+    "small pinholes from old spikes, tie plates, or insects",
+    "shadow exaggerating the crack",
+    "debris or ballast stones sitting on the surface"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.33,
+    0.39,
+    0.4,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "At the rail base there is a rusty flat plate with one visible spike head and a small slot or hole beside it. Two rusted, upright clip-like or hook-shaped pieces sit at either end of the plate against the rail foot. The arrangement looks irregular, and only one spike is visible on this plate. The other hole on the plate looks empty, and the plate sits at an angle to the tie.",
+   "assessability": "assessable",
+   "uncertainty": "High. The fastening design is unclear and could be an older style with fewer spikes or with anchors. The view is partial and low-angle, and leaf litter and small stones partly cover the area.",
+   "alternatives": [
+    "an older or alternate fastening design that uses fewer spikes",
+    "an unused or empty spike hole in the plate",
+    "ballast, leaves, or twigs covering a fastener",
+    "a viewing angle hiding other fasteners",
+    "a plate that has settled in place without being displaced"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc007",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:34Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

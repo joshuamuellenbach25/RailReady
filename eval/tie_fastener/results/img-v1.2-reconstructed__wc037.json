@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.74,0.3,0.24],\"visible_reason\":\"The wooden tie surfaces at the lower left look grey and rough, with dark streaks and what may be surface checking between the rail chairs. Ballast stones partly cover the tie ends.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The photo is oblique and moderate resolution, so it is hard to tell real surface breakdown from ordinary weathering. Sunlight and shadow also change how the texture looks.\",\"alternatives\":[\"normal grey weathering of aged timber\",\"ballast or dirt covering the surface\",\"shadow or uneven sunlight\",\"staining from rust or oil\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.3,0.82,0.2,0.15],\"visible_reason\":\"The tie in the near foreground between the chairs has a worn, uneven grey surface with a darker patch near the chair base. This could be surface wear or splitting.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The view is from a low angle, and the area is small and partly covered by loose stones, so the texture is ambiguous.\",\"alternatives\":[\"wet or stained wood colour\",\"ballast dust or debris on the surface\",\"shadow from the rail or chair\",\"normal wear around the chair seat\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.44,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.74,
+    0.3,
+    0.24
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie surfaces at the lower left look grey and rough, with dark streaks and what may be surface checking between the rail chairs. Ballast stones partly cover the tie ends.",
+   "assessability": "assessable",
+   "uncertainty": "High. The photo is oblique and moderate resolution, so it is hard to tell real surface breakdown from ordinary weathering. Sunlight and shadow also change how the texture looks.",
+   "alternatives": [
+    "normal grey weathering of aged timber",
+    "ballast or dirt covering the surface",
+    "shadow or uneven sunlight",
+    "staining from rust or oil"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.3,
+    0.82,
+    0.2,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "The tie in the near foreground between the chairs has a worn, uneven grey surface with a darker patch near the chair base. This could be surface wear or splitting.",
+   "assessability": "assessable",
+   "uncertainty": "High. The view is from a low angle, and the area is small and partly covered by loose stones, so the texture is ambiguous.",
+   "alternatives": [
+    "wet or stained wood colour",
+    "ballast dust or debris on the surface",
+    "shadow from the rail or chair",
+    "normal wear around the chair seat"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc037",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:36Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

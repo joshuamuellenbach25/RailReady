@@ -1,0 +1,233 @@
+{
+  "app_name": "RailReady",
+  "personality": "5 Brutalist Mobile fused with 7 Dark-First Utility influences",
+  "personality_one_liner": "An industrial, hyper-functional field tool prioritizing absolute clarity, massive touch targets, and truthful offline status over aesthetic fluff.",
+  "color": {
+    "surface": "#FFFFFF",
+    "onSurface": "#111827",
+    "surfaceSecondary": "#F3F4F6",
+    "onSurfaceSecondary": "#111827",
+    "surfaceTertiary": "#E5E7EB",
+    "onSurfaceTertiary": "#374151",
+    "surfaceInverse": "#111827",
+    "onSurfaceInverse": "#F9FAFB",
+    "brand": "#EA580C",
+    "onBrand": "#FFFFFF",
+    "brandPrimary": "#EA580C",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#FDBA74",
+    "onBrandSecondary": "#111827",
+    "brandTertiary": "#FFEDD5",
+    "onBrandTertiary": "#EA580C",
+    "success": "#15803D",
+    "onSuccess": "#FFFFFF",
+    "warning": "#B45309",
+    "onWarning": "#FFFFFF",
+    "error": "#B91C1C",
+    "onError": "#FFFFFF",
+    "info": "#4B5563",
+    "onInfo": "#FFFFFF",
+    "border": "#D1D5DB",
+    "borderStrong": "#9CA3AF",
+    "divider": "#E5E7EB",
+    "muted": "#4B5563"
+  },
+  "colorDark": {
+    "surface": "#111827",
+    "onSurface": "#F9FAFB",
+    "surfaceSecondary": "#1F2937",
+    "onSurfaceSecondary": "#F9FAFB",
+    "surfaceTertiary": "#374151",
+    "onSurfaceTertiary": "#D1D5DB",
+    "surfaceInverse": "#F9FAFB",
+    "onSurfaceInverse": "#111827",
+    "brand": "#F97316",
+    "onBrand": "#111827",
+    "brandPrimary": "#F97316",
+    "onBrandPrimary": "#111827",
+    "brandSecondary": "#9A3412",
+    "onBrandSecondary": "#F9FAFB",
+    "brandTertiary": "#431407",
+    "onBrandTertiary": "#FDBA74",
+    "success": "#22C55E",
+    "onSuccess": "#064E3B",
+    "warning": "#F59E0B",
+    "onWarning": "#451A03",
+    "error": "#EF4444",
+    "onError": "#450A0A",
+    "info": "#9CA3AF",
+    "onInfo": "#111827",
+    "border": "#374151",
+    "borderStrong": "#6B7280",
+    "divider": "#1F2937",
+    "muted": "#9CA3AF"
+  },
+  "typography": {
+    "displayFontFamily": "System",
+    "textFontFamily": "System",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous and forgiving for gloved hands and jolting environments. Minimum 56pt height for any interactive element.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "pill": 999
+  },
+  "shadow_tier": 0,
+  "navigation": "stack_only",
+  "icon_set": "MaterialCommunityIcons",
+  "glassmorphism": {
+    "enabled": false,
+    "do's": [],
+    "dont's": [
+      "No glassmorphism. Causes contrast degradation in high-glare outdoor environments."
+    ]
+  },
+  "platform_libraries": {
+    "glass": null,
+    "image": "expo-image",
+    "blur": null,
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Sign In",
+      "purpose": "Secure authentication to access the contractor's assigned sites and data.",
+      "states": {
+        "loading": "Full-screen spinner with 'Authenticating...'",
+        "empty": "N/A",
+        "error": "Inline error message above login fields + clear retry button."
+      },
+      "layout": "Hero image banner (industrial tracks) stacked above a high-contrast auth form. Heavy, 56pt primary button for Sign In."
+    },
+    {
+      "name": "Site List & Prepare",
+      "purpose": "Select a site and bundle data for offline use.",
+      "states": {
+        "loading": "Skeleton rows of site cards.",
+        "empty": "Illustration of a map + 'No sites assigned for today.'",
+        "error": "Message + 'Retry Sync' button."
+      },
+      "layout": "Vertical list of heavy border cards. Each card displays site name, address, and explicit 'Offline ready' status with timestamp (using icon + text). Primary bottom sticky CTA to 'Prepare Offline Bundle' for selected site."
+    },
+    {
+      "name": "Visit Capture",
+      "purpose": "The primary data collection hub at a site (photos, audio, notes).",
+      "states": {
+        "loading": "Loading skeleton on metadata load.",
+        "empty": "N/A - Defaults to collection tools.",
+        "error": "Error message when local save fails."
+      },
+      "layout": "Dashboard grid of massive square buttons or stacked 56pt full-width buttons (Add Photo, Record, Note, Measurement, Not Inspected). Extremely explicit 'Saved on this device' toast/footer upon local commit."
+    },
+    {
+      "name": "Photo Candidate Review",
+      "purpose": "Validate AI-extracted info from captured photos.",
+      "states": {
+        "loading": "Spinner overlaid on image, 'Analyzing image...'",
+        "empty": "N/A",
+        "error": "Failed analysis state with 'Request closer photo' CTA."
+      },
+      "layout": "Full-screen photo view with a bounded, high-contrast highlighted region overlay. Sticky bottom sheet displaying extracted field + 4 massive action buttons (Confirm, Correct, Dismiss, Request closer photo)."
+    },
+    {
+      "name": "Proposed Fields Review",
+      "purpose": "Review excerpts and resolve discrepancies found in site data.",
+      "states": {
+        "loading": "Skeleton rows for data points.",
+        "empty": "Checkmark + 'All fields reviewed.'",
+        "error": "Error loading discrepancies."
+      },
+      "layout": "Side-by-side or stacked card design showing 'Proposed' vs 'Current' data. Distinct radio-style selection to resolve conflicts."
+    },
+    {
+      "name": "Departure Check",
+      "purpose": "Wizard-like check before leaving site to ensure completeness.",
+      "states": {
+        "loading": "Loading next question.",
+        "empty": "N/A",
+        "error": "Failed to log answer."
+      },
+      "layout": "Paginating wizard (one question per screen). Massive typography for the question. Large block buttons for 'Answer' or 'Needs estimator input'. Progress indicator at the top."
+    },
+    {
+      "name": "Submit Visit",
+      "purpose": "Finalize visit and lock records.",
+      "states": {
+        "loading": "Submitting state with active progress bar.",
+        "empty": "N/A",
+        "error": "Error block listing issues preventing submission."
+      },
+      "layout": "Summary screen listing readiness labels (Provided, Missing, Unknown, etc.). The 'Submit Visit' sticky bottom CTA is disabled if uploads are incomplete or required fields are missing."
+    },
+    {
+      "name": "Outbox",
+      "purpose": "Transparently display the sync states of all data moving from device to server.",
+      "states": {
+        "loading": "Checking queue...",
+        "empty": "Checkmark + 'All items synced.'",
+        "error": "List of items with 'Blocked' or 'Retry wait' states."
+      },
+      "layout": "List view where each row specifies item type, timestamp, and a brutally explicit state label (e.g., [ ⏳ Queued ], [ ⬆️ Uploading ], [ ⚠️ Uploaded unverified ]). Explicit 'Sync Now' global CTA."
+    },
+    {
+      "name": "Office Inbox (Estimator)",
+      "purpose": "Web/Tablet-friendly view for estimators to review incoming and submitted visits.",
+      "states": {
+        "loading": "Skeleton list of visits.",
+        "empty": "No visits to review.",
+        "error": "Error loading inbox."
+      },
+      "layout": "Master-detail view or wide list layout displaying 'Submitted' vs 'Draft transfers' with strong visual grouping and thick dividers."
+    },
+    {
+      "name": "Visit Review (Estimator)",
+      "purpose": "Deep dive into a specific site visit from the office.",
+      "states": {
+        "loading": "Loading visit details...",
+        "empty": "N/A",
+        "error": "Failed to load visit data."
+      },
+      "layout": "Content-heavy dashboard. Sections separated by thick `borderStrong` dividers. High-contrast typography for field excerpts and measurements."
+    }
+  ],
+  "images": {
+    "login_hero": {
+      "url": "https://images.unsplash.com/photo-1540804236945-b6ae24bfe0a9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwxfHxyYWlsd2F5JTIwdHJhY2tzJTIwaW5kdXN0cmlhbHxlbnwwfHx8fDE3OTI4NzY1MDV8MA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1501704163333-86d3832cd4ea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwyfHxyYWlsd2F5JTIwdHJhY2tzJTIwaW5kdXN0cmlhbHxlbnwwfHx8fDE3OTI4NzY1MDV8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Railway tracks leading into a forest, industrial vibe"
+    },
+    "site_placeholder": {
+      "url": "https://images.pexels.com/photos/1963212/pexels-photo-1963212.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Industrial train yard placeholder"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Ensure the `theme.ts` file is updated to include the `dark` theme alongside `light`. Use the `colorDark` block provided in this JSON to populate the dark theme values.",
+    "Do NOT use @expo-google-fonts. Rely entirely on the system font for maximum reliability and a plain, unbranded industrial aesthetic.",
+    "All interactive touch targets (buttons, list rows) MUST be a minimum of 56pt height to accommodate gloved hands.",
+    "Avoid glassmorphism completely. Rely on solid colors, thick borders (`borderStrong`), and high contrast for elevation and separation.",
+    "Status indicators must ALWAYS combine an icon with text (e.g. '💾 Saved on this device', '⏳ Queued'). Never rely solely on color to convey state.",
+    "The Outbox screen must clearly differentiate between offline storage states and network states (e.g. Saved Locally vs. Uploading vs. Verified).",
+    "Adhere to Stack Navigation only. Do not introduce bottom tabs to maximize the usable screen space for forms and lists.",
+    "Ensure strict adherence to WCAG AA contrast, particularly since this app is used outdoors in direct sunlight."
+  ]
+}

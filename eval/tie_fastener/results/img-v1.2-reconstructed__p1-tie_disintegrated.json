@@ -1,0 +1,77 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.08,0.37,0.47],\"visible_reason\":\"Large gray-white wooden member in the upper left with a heavily weathered surface. Pixels show deep lengthwise grain cracks, raised splintered fibers and a frayed, broken end near the center-left.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The surface damage is clear, but the frame shows no rail, plate or fastener, so it is unclear whether this is a tie or loose timber debris.\",\"alternatives\":[\"loose wood debris or branches rather than an in-track tie\",\"normal weathering or sun-bleaching of old wood\",\"fragment of a previously removed tie left in the ballast\"]},{\"region\":[0.38,0.3,0.4,0.42],\"category\":\"visible tie-surface deterioration\",\"visible_reason\":\"Cluster of thin, splintered wood strips and slivers in the center, with fibers separated into stringy layers and pieces lying at different angles. A narrow shard sticks up diagonally near the middle.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. The pieces are fragmented and overlapping, so it is hard to tell whether they belong to one in-place member or are scattered remnants.\",\"alternatives\":[\"loose broken wood fragments resting on the ballast\",\"leaf litter and debris overlapping the wood\",\"shadow between the strips making the splits look deeper\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.55,0.45,0.45,0.45],\"visible_reason\":\"Long, weathered wooden piece running diagonally toward the lower right, with a gray, checked and cracked surface. A separate flat plank-like piece lies across the bottom, showing layered, flaking grain along its edge.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The wood looks aged and cracked, but the frame is a close-up with no clear tie outline or fastening hardware, so its role is unclear.\",\"alternatives\":[\"loose timber or lumber offcut\",\"ordinary surface weathering without structural meaning\",\"ballast stones and plant growth partly covering the wood\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.89,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.08,
+    0.37,
+    0.47
+   ],
+   "localized": true,
+   "visible_reason": "Large gray-white wooden member in the upper left with a heavily weathered surface. Pixels show deep lengthwise grain cracks, raised splintered fibers and a frayed, broken end near the center-left.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The surface damage is clear, but the frame shows no rail, plate or fastener, so it is unclear whether this is a tie or loose timber debris.",
+   "alternatives": [
+    "loose wood debris or branches rather than an in-track tie",
+    "normal weathering or sun-bleaching of old wood",
+    "fragment of a previously removed tie left in the ballast"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.38,
+    0.3,
+    0.4,
+    0.42
+   ],
+   "localized": true,
+   "visible_reason": "Cluster of thin, splintered wood strips and slivers in the center, with fibers separated into stringy layers and pieces lying at different angles. A narrow shard sticks up diagonally near the middle.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. The pieces are fragmented and overlapping, so it is hard to tell whether they belong to one in-place member or are scattered remnants.",
+   "alternatives": [
+    "loose broken wood fragments resting on the ballast",
+    "leaf litter and debris overlapping the wood",
+    "shadow between the strips making the splits look deeper"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.55,
+    0.45,
+    0.45,
+    0.45
+   ],
+   "localized": true,
+   "visible_reason": "Long, weathered wooden piece running diagonally toward the lower right, with a gray, checked and cracked surface. A separate flat plank-like piece lies across the bottom, showing layered, flaking grain along its edge.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The wood looks aged and cracked, but the frame is a close-up with no clear tie outline or fastening hardware, so its role is unclear.",
+   "alternatives": [
+    "loose timber or lumber offcut",
+    "ordinary surface weathering without structural meaning",
+    "ballast stones and plant growth partly covering the wood"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "p1-tie_disintegrated",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:45Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

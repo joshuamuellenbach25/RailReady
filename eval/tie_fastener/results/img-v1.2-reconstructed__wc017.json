@@ -1,0 +1,99 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.47,0.52,0.33,0.15],\"visible_reason\":\"The front timber in the foreground has a rough, weathered top and end face. There are dark linear marks that could be cracks or splits, and a frayed-looking end.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The surface is lit by low, harsh sun with strong shadow, and the dark lines could be natural grain.\",\"alternatives\":[\"Normal weathering or surface checking\",\"Shadow or grain pattern\",\"Dirt or creosote staining\",\"Wet or dark wood colour\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.22,0.22,0.15,0.13],\"visible_reason\":\"The angled timber at upper left appears to have a rough, splintered or broken-looking end and a pale, uneven surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. It is partly overlapped by other pieces and shadowed, so it is hard to tell damage from overlap or lighting.\",\"alternatives\":[\"Occlusion by adjacent timbers\",\"Shadow\",\"Cut end rather than damage\",\"Surface weathering only\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.07,0.26,0.22,0.08],\"visible_reason\":\"The long, low timber at far left has a greyish, uneven surface with possible lengthwise cracking.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The timber is distant and foreshortened, and its detail is low.\",\"alternatives\":[\"Ordinary weathering\",\"Shadow from the fence or vegetation\",\"Ballast dust coating the wood\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.35,0.33,0.35,0.2],\"visible_reason\":\"Several orange-brown tie plates are visible on the tops of the stacked timbers. At this angle and distance I cannot see whether spikes or other fasteners are present or absent, and some plates may sit at slightly different angles.\",\"assessability\":\"cannot_assess\",\"uncertainty\":\"High. These timbers are piled off the track, not installed, so plate position and missing hardware may not mean anything. The view is oblique and low-resolution.\",\"alternatives\":[\"Fasteners deliberately removed when the ties were pulled\",\"Plates shifted from stacking or handling\",\"Spikes hidden by angle, shadow or rust colour\",\"Unused spike holes\",\"Alternate fastening design\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 12.4,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.47,
+    0.52,
+    0.33,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "The front timber in the foreground has a rough, weathered top and end face. There are dark linear marks that could be cracks or splits, and a frayed-looking end.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The surface is lit by low, harsh sun with strong shadow, and the dark lines could be natural grain.",
+   "alternatives": [
+    "Normal weathering or surface checking",
+    "Shadow or grain pattern",
+    "Dirt or creosote staining",
+    "Wet or dark wood colour"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.22,
+    0.22,
+    0.15,
+    0.13
+   ],
+   "localized": true,
+   "visible_reason": "The angled timber at upper left appears to have a rough, splintered or broken-looking end and a pale, uneven surface.",
+   "assessability": "assessable",
+   "uncertainty": "High. It is partly overlapped by other pieces and shadowed, so it is hard to tell damage from overlap or lighting.",
+   "alternatives": [
+    "Occlusion by adjacent timbers",
+    "Shadow",
+    "Cut end rather than damage",
+    "Surface weathering only"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.07,
+    0.26,
+    0.22,
+    0.08
+   ],
+   "localized": true,
+   "visible_reason": "The long, low timber at far left has a greyish, uneven surface with possible lengthwise cracking.",
+   "assessability": "assessable",
+   "uncertainty": "High. The timber is distant and foreshortened, and its detail is low.",
+   "alternatives": [
+    "Ordinary weathering",
+    "Shadow from the fence or vegetation",
+    "Ballast dust coating the wood"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.35,
+    0.33,
+    0.35,
+    0.2
+   ],
+   "localized": true,
+   "visible_reason": "Several orange-brown tie plates are visible on the tops of the stacked timbers. At this angle and distance I cannot see whether spikes or other fasteners are present or absent, and some plates may sit at slightly different angles.",
+   "assessability": "cannot_assess",
+   "uncertainty": "High. These timbers are piled off the track, not installed, so plate position and missing hardware may not mean anything. The view is oblique and low-resolution.",
+   "alternatives": [
+    "Fasteners deliberately removed when the ties were pulled",
+    "Plates shifted from stacking or handling",
+    "Spikes hidden by angle, shadow or rust colour",
+    "Unused spike holes",
+    "Alternate fastening design"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc017",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:57Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

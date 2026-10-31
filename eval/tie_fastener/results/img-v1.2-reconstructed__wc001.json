@@ -1,0 +1,79 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.29,0.68,0.55,0.32],\"visible_reason\":\"The exposed timber surface below and beside the tie plate shows deep vertical grain cracks, splintered and rough fibres, and weathered grey-brown wood. Several fissures run lengthwise down the visible end of the tie.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The surface checking looks pronounced at close range, but shallow weathering checks are common on aged timber, and the photo shows only the surface, not the depth or condition of the wood below.\",\"alternatives\":[\"normal superficial seasoning checks in weathered hardwood\",\"dry or weathered wood colour and texture\",\"shadows within the grain exaggerating the cracks\",\"close-up framing making the cracks look larger\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.63,0.51,0.09,0.2],\"visible_reason\":\"A single spike stands in the slot at the edge of the tie plate. Its head is tilted and appears raised, and its shank angles away from the rail foot rather than sitting flush and upright against it. Whether it is seated and engaging the rail foot is unclear.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. The spike's angle and seating depend on viewing perspective, and the rail foot is partly hidden by the plate edge. It may be an ordinary seated spike viewed obliquely.\",\"alternatives\":[\"spike properly seated, with the tilt caused by camera angle\",\"spike partly raised or backed out\",\"alternate fastening design with a different spike position\",\"tie plate edge hiding the contact point\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.39,0.76,0.05,0.07],\"visible_reason\":\"The square hole in the tie plate is empty, with no spike or screw visible in it. Some debris or cobweb-like material is visible inside.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. Tie plates commonly have extra holes that are intentionally left unused, so an empty hole does not necessarily mean a missing fastener.\",\"alternatives\":[\"unused spare hole by design\",\"hole intended for a different fastening pattern\",\"debris or shadow inside the hole\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.2,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.29,
+    0.68,
+    0.55,
+    0.32
+   ],
+   "localized": true,
+   "visible_reason": "The exposed timber surface below and beside the tie plate shows deep vertical grain cracks, splintered and rough fibres, and weathered grey-brown wood. Several fissures run lengthwise down the visible end of the tie.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The surface checking looks pronounced at close range, but shallow weathering checks are common on aged timber, and the photo shows only the surface, not the depth or condition of the wood below.",
+   "alternatives": [
+    "normal superficial seasoning checks in weathered hardwood",
+    "dry or weathered wood colour and texture",
+    "shadows within the grain exaggerating the cracks",
+    "close-up framing making the cracks look larger"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.63,
+    0.51,
+    0.09,
+    0.2
+   ],
+   "localized": true,
+   "visible_reason": "A single spike stands in the slot at the edge of the tie plate. Its head is tilted and appears raised, and its shank angles away from the rail foot rather than sitting flush and upright against it. Whether it is seated and engaging the rail foot is unclear.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. The spike's angle and seating depend on viewing perspective, and the rail foot is partly hidden by the plate edge. It may be an ordinary seated spike viewed obliquely.",
+   "alternatives": [
+    "spike properly seated, with the tilt caused by camera angle",
+    "spike partly raised or backed out",
+    "alternate fastening design with a different spike position",
+    "tie plate edge hiding the contact point"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.39,
+    0.76,
+    0.05,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "The square hole in the tie plate is empty, with no spike or screw visible in it. Some debris or cobweb-like material is visible inside.",
+   "assessability": "assessable",
+   "uncertainty": "High. Tie plates commonly have extra holes that are intentionally left unused, so an empty hole does not necessarily mean a missing fastener.",
+   "alternatives": [
+    "unused spare hole by design",
+    "hole intended for a different fastening pattern",
+    "debris or shadow inside the hole"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc001",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:43:58Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

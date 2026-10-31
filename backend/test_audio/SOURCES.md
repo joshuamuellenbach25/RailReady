@@ -1,0 +1,1 @@
+Synthetic test fixtures generated with OpenAI tts-1 (voice onyx) via Emergent Universal Key, scripted fictional dictation; used only to test server Whisper. dictation_58s.mp3 = long + short concatenated (~57.6s).

@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"cannot_assess\",\"cannot_assess_reason\":\"The photo shows a forest floor with leaf litter, ferns, and other vegetation, along with fallen branches and cut stumps. There is a moss-covered log-like object, but no clearly identifiable in-track tie surface or fastener positions (clips, plates, spikes) is in view. Moss and vegetation cover the surfaces, so tie surfaces and fastenings cannot be judged.\",\"candidates\":[]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 2.72,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The photo shows a forest floor with leaf litter, ferns, and other vegetation, along with fallen branches and cut stumps. There is a moss-covered log-like object, but no clearly identifiable in-track tie surface or fastener positions (clips, plates, spikes) is in view. Moss and vegetation cover the surfaces, so tie surfaces and fastenings cannot be judged.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc025",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:59Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

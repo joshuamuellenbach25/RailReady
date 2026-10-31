@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.12,0.45,0.24,0.12],\"visible_reason\":\"On the left tie plate, a rusty curved hook-shaped metal piece sits against the rail base edge, and it does not look like a standard seated spike or clip. Only one spike or bolt head is visible on this plate. Two small square holes in the plate next to it appear empty.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium-high. The hook could be an intentional rail anchor or clip of an alternate fastening design, and the empty holes may be unused plate holes.\",\"alternatives\":[\"alternate fastening design (hook-type anchor or clip)\",\"unused plate holes\",\"bent spike that is still functioning\",\"viewing angle hiding other fasteners\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.62,0.47,0.23,0.11],\"visible_reason\":\"On the right tie plate, only one spike head is visible, near the top edge by the rail. Three square holes in the plate show as empty or dark, and no spikes are seen in them.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The plate may have more holes than the fastening pattern uses, and the rail base partly hides the positions closest to the rail.\",\"alternatives\":[\"unused spike holes (plate has more holes than needed)\",\"fasteners hidden under the rail base\",\"alternate fastening pattern\",\"dirt or shadow in the holes\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 10.3,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.12,
+    0.45,
+    0.24,
+    0.12
+   ],
+   "localized": true,
+   "visible_reason": "On the left tie plate, a rusty curved hook-shaped metal piece sits against the rail base edge, and it does not look like a standard seated spike or clip. Only one spike or bolt head is visible on this plate. Two small square holes in the plate next to it appear empty.",
+   "assessability": "assessable",
+   "uncertainty": "Medium-high. The hook could be an intentional rail anchor or clip of an alternate fastening design, and the empty holes may be unused plate holes.",
+   "alternatives": [
+    "alternate fastening design (hook-type anchor or clip)",
+    "unused plate holes",
+    "bent spike that is still functioning",
+    "viewing angle hiding other fasteners"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.62,
+    0.47,
+    0.23,
+    0.11
+   ],
+   "localized": true,
+   "visible_reason": "On the right tie plate, only one spike head is visible, near the top edge by the rail. Three square holes in the plate show as empty or dark, and no spikes are seen in them.",
+   "assessability": "assessable",
+   "uncertainty": "High. The plate may have more holes than the fastening pattern uses, and the rail base partly hides the positions closest to the rail.",
+   "alternatives": [
+    "unused spike holes (plate has more holes than needed)",
+    "fasteners hidden under the rail base",
+    "alternate fastening pattern",
+    "dirt or shadow in the holes"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc002",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:50:40Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

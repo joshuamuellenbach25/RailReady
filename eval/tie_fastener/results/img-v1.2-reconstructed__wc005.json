@@ -1,0 +1,116 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.65,0.787,0.075,0.053],\"visible_reason\":\"A round hole in the lower tie plate, on the field side away from the bolt head, shows no spike or fastener head. Only a brownish, wood-like surface and a small leaf fragment are visible inside it.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The hole is clearly visible, but a close-up of one plate cannot show whether this plate design uses a spike in every hole.\",\"alternatives\":[\"unused or spare spike hole in the plate\",\"alternate fastening design where the bolt-type fasteners hold the plate\",\"spike removed during earlier maintenance and not an issue\",\"wet or dark wood colour inside the hole\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.275,0.168,0.075,0.055],\"visible_reason\":\"A round hole in the upper tie plate is filled with loose ballast stones and no spike head is visible. A second round hole on the same plate looks similar.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. Debris could be covering a spike that sits lower, and the holes may be unused by design.\",\"alternatives\":[\"ballast stones covering or filling a hole that is not used\",\"unused spike holes\",\"alternate fastening design relying on the visible bolt heads\",\"debris sitting above a spike that is seated below the plate surface\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.34,0.665,0.07,0.045],\"visible_reason\":\"A rectangular notch or slot at the edge of the lower plate near the rail base is filled with leaf litter and dark debris. No fastener hardware is visible in it.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. Slots like this are often part of the plate design and may never have held a fastener.\",\"alternatives\":[\"normal plate cutout or slot\",\"debris accumulation\",\"shadow in a recessed area\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.2,0.0,0.6,0.14],\"visible_reason\":\"The exposed wood above the upper plate is grey-brown and weathered. Many lengthwise grain lines and splits run along it, and the surface looks rough and fibrous.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. Surface checking is common on weathered timber, and this view cannot show how deep the splits go.\",\"alternatives\":[\"normal surface weathering and shallow seasoning checks\",\"dirt or moisture staining\",\"shadow between grain ridges\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.2,0.87,0.6,0.13],\"visible_reason\":\"The wood below the lower plate shows long vertical splits and a dark narrow gap or crack running along the grain, with a rough, worn surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. A dark line could be a deep split or only a shadowed grain groove, and its depth cannot be judged from the image.\",\"alternatives\":[\"shallow checking from weathering\",\"shadowed grain groove\",\"ballast or debris lodged in a surface gap\",\"wet wood colour\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 14.74,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.65,
+    0.787,
+    0.075,
+    0.053
+   ],
+   "localized": true,
+   "visible_reason": "A round hole in the lower tie plate, on the field side away from the bolt head, shows no spike or fastener head. Only a brownish, wood-like surface and a small leaf fragment are visible inside it.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The hole is clearly visible, but a close-up of one plate cannot show whether this plate design uses a spike in every hole.",
+   "alternatives": [
+    "unused or spare spike hole in the plate",
+    "alternate fastening design where the bolt-type fasteners hold the plate",
+    "spike removed during earlier maintenance and not an issue",
+    "wet or dark wood colour inside the hole"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.275,
+    0.168,
+    0.075,
+    0.055
+   ],
+   "localized": true,
+   "visible_reason": "A round hole in the upper tie plate is filled with loose ballast stones and no spike head is visible. A second round hole on the same plate looks similar.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. Debris could be covering a spike that sits lower, and the holes may be unused by design.",
+   "alternatives": [
+    "ballast stones covering or filling a hole that is not used",
+    "unused spike holes",
+    "alternate fastening design relying on the visible bolt heads",
+    "debris sitting above a spike that is seated below the plate surface"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.34,
+    0.665,
+    0.07,
+    0.045
+   ],
+   "localized": true,
+   "visible_reason": "A rectangular notch or slot at the edge of the lower plate near the rail base is filled with leaf litter and dark debris. No fastener hardware is visible in it.",
+   "assessability": "assessable",
+   "uncertainty": "High. Slots like this are often part of the plate design and may never have held a fastener.",
+   "alternatives": [
+    "normal plate cutout or slot",
+    "debris accumulation",
+    "shadow in a recessed area"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.2,
+    0.0,
+    0.6,
+    0.14
+   ],
+   "localized": true,
+   "visible_reason": "The exposed wood above the upper plate is grey-brown and weathered. Many lengthwise grain lines and splits run along it, and the surface looks rough and fibrous.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. Surface checking is common on weathered timber, and this view cannot show how deep the splits go.",
+   "alternatives": [
+    "normal surface weathering and shallow seasoning checks",
+    "dirt or moisture staining",
+    "shadow between grain ridges"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.2,
+    0.87,
+    0.6,
+    0.13
+   ],
+   "localized": true,
+   "visible_reason": "The wood below the lower plate shows long vertical splits and a dark narrow gap or crack running along the grain, with a rough, worn surface.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. A dark line could be a deep split or only a shadowed grain groove, and its depth cannot be judged from the image.",
+   "alternatives": [
+    "shallow checking from weathering",
+    "shadowed grain groove",
+    "ballast or debris lodged in a surface gap",
+    "wet wood colour"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc005",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:24Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

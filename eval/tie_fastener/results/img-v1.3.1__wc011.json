@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"cannot_assess\",\"cannot_assess_reason\":\"The photo is a very low-angle shot with a shallow depth of field. Only the foreground tie surface is sharp, and it is seen at a grazing angle. The rails and any fastener positions are distant, blurred, or partly hidden by vegetation, so fastenings cannot be judged. The sharp foreground tie shows only grey weathered grain and surface checking, which is not flagged under the rules.\",\"candidates\":[]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 5.65,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The photo is a very low-angle shot with a shallow depth of field. Only the foreground tie surface is sharp, and it is seen at a grazing angle. The rails and any fastener positions are distant, blurred, or partly hidden by vegetation, so fastenings cannot be judged. The sharp foreground tie shows only grey weathered grain and surface checking, which is not flagged under the rules.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc011",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:15Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

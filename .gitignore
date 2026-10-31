@@ -1,0 +1,101 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# IDE and editors
+.idea/
+.vscode/
+
+# Dependencies
+node_modules/
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Production builds
+/build
+dist/
+dist
+
+# Environment files (comprehensive coverage)
+
+*token.json*
+*credentials.json*
+
+# Logs and debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dump.rdb
+
+# System files
+.DS_Store
+*.pem
+
+# Python
+__pycache__/
+*pyc*
+venv/
+.venv/
+
+# Development tools
+chainlit.md
+.chainlit
+.ipynb_checkpoints/
+.ac
+
+# Deployment
+.vercel
+
+# Data and databases
+agenthub/agents/youtube/db
+
+# Archive files and large assets
+**/*.zip
+**/*.tar.gz
+**/*.tar
+**/*.tgz
+*.pack
+*.deb
+*.dylib
+
+# Build caches
+.cache/
+
+
+# Mobile development
+android-sdk/
+
+# Expo
+mobile/.expo/
+mobile/.metro-cache/
+
+frontend/node_modules/.cache/default-development/0.pack
+models/whisper/blobs/42/429ffc84492c1122da005d7274fc397bf142fe12066eb7e4612dc25c579db2ea
+models/depth-anything-v2-small/model.onnx
+models/.hf/blobs/70/7045a0fdd8fcde2a920a8a57106d8c5dc16b0bf3911f87204814bec64a73c5aa
+models/qwen2.5-3b-instruct-q4_k_m.gguf
+frontend/node_modules/.cache/default-development/3.pack
+.env
+.env.*
+*.env
+credentials.json
+*.key
+.credentials
+
+# Local object storage used when no cloud key is set
+backend/.local_storage/

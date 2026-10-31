@@ -1,0 +1,96 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.28,0.75,0.43,0.25],\"visible_reason\":\"On the lower tie below the lower tie plate, the wood surface shows deep longitudinal cracks. A wide dark split runs down the middle of the tie and widens toward the bottom edge. The grain looks rough and weathered, with raised fibers.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The crack is clearly visible, but the photo cannot show how deep it goes or whether the tie is structurally affected. Shadow inside the split may make it look darker or deeper than it is.\",\"alternatives\":[\"Normal surface checking from seasoning and weathering of wood\",\"Shadow exaggerating the apparent depth of the split\",\"Debris or soil packed in the crack\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.3,0.0,0.41,0.23],\"visible_reason\":\"On the upper tie above the upper tie plate, the wood has several parallel vertical splits and rough, weathered grain. Small stones and debris are lodged in the cracks.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. The cracks look like surface checks, and the photo gives no clear sign of how severe they are.\",\"alternatives\":[\"Normal weathering checks in the wood\",\"Ballast fragments wedged in the grain, which make the cracks look more prominent\",\"Wet wood colour\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.57,0.3,0.06,0.04],\"visible_reason\":\"In the upper tie plate, a small rectangular opening near the bottom right edge beside the rail base shows ballast stones. Next to it is a lone round-headed bolt or spike-like head by the rail. The plate's two round holes also show stones or debris inside, with no visible fastener in them.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The plate may use a different fastening layout, with unused holes or slots. The top-down view cannot show whether fasteners sit below the debris.\",\"alternatives\":[\"Unused spike holes or an alternate fastening design\",\"Ballast or debris covering fastener heads\",\"Plate design with slots meant for other hardware\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.35,0.6,0.5,0.14],\"visible_reason\":\"In the lower tie plate, the two round holes in the plate show no visible fastener head. One contains leaf debris and the other looks empty and dark. A small square slot at the upper left of the plate shows dark debris.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The holes may be unused, or a fastener may be present but hidden by debris. A single top-down view cannot confirm this.\",\"alternatives\":[\"Unused spike holes\",\"Holes designed for optional fastening\",\"Debris or shadow obscuring the fastener\",\"Alternate fastening design on this plate\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.8,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.28,
+    0.75,
+    0.43,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "On the lower tie below the lower tie plate, the wood surface shows deep longitudinal cracks. A wide dark split runs down the middle of the tie and widens toward the bottom edge. The grain looks rough and weathered, with raised fibers.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The crack is clearly visible, but the photo cannot show how deep it goes or whether the tie is structurally affected. Shadow inside the split may make it look darker or deeper than it is.",
+   "alternatives": [
+    "Normal surface checking from seasoning and weathering of wood",
+    "Shadow exaggerating the apparent depth of the split",
+    "Debris or soil packed in the crack"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.3,
+    0.0,
+    0.41,
+    0.23
+   ],
+   "localized": true,
+   "visible_reason": "On the upper tie above the upper tie plate, the wood has several parallel vertical splits and rough, weathered grain. Small stones and debris are lodged in the cracks.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. The cracks look like surface checks, and the photo gives no clear sign of how severe they are.",
+   "alternatives": [
+    "Normal weathering checks in the wood",
+    "Ballast fragments wedged in the grain, which make the cracks look more prominent",
+    "Wet wood colour"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.57,
+    0.3,
+    0.06,
+    0.04
+   ],
+   "localized": true,
+   "visible_reason": "In the upper tie plate, a small rectangular opening near the bottom right edge beside the rail base shows ballast stones. Next to it is a lone round-headed bolt or spike-like head by the rail. The plate's two round holes also show stones or debris inside, with no visible fastener in them.",
+   "assessability": "assessable",
+   "uncertainty": "High. The plate may use a different fastening layout, with unused holes or slots. The top-down view cannot show whether fasteners sit below the debris.",
+   "alternatives": [
+    "Unused spike holes or an alternate fastening design",
+    "Ballast or debris covering fastener heads",
+    "Plate design with slots meant for other hardware"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.35,
+    0.6,
+    0.5,
+    0.14
+   ],
+   "localized": true,
+   "visible_reason": "In the lower tie plate, the two round holes in the plate show no visible fastener head. One contains leaf debris and the other looks empty and dark. A small square slot at the upper left of the plate shows dark debris.",
+   "assessability": "assessable",
+   "uncertainty": "High. The holes may be unused, or a fastener may be present but hidden by debris. A single top-down view cannot confirm this.",
+   "alternatives": [
+    "Unused spike holes",
+    "Holes designed for optional fastening",
+    "Debris or shadow obscuring the fastener",
+    "Alternate fastening design on this plate"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc004",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:09Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

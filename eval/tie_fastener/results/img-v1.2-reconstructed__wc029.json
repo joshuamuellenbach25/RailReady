@@ -1,0 +1,114 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.25,0.38,0.11,0.07],\"visible_reason\":\"On the near-left tie plate, only one stud or bolt head is clearly visible near the top-left of the plate. The other fastening position is not clearly visible. The plate sits partly under the rail base, and the nearby tie is split lengthwise.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The second fastener may be hidden by the rail base, the camera angle or plate shading. This plate may also use a different fastening layout from the plates on the right.\",\"alternatives\":[\"Occlusion by the rail base or camera angle\",\"Alternate fastening design with a single visible head\",\"Fastener covered by shadow or rust-colored dust\",\"Unused spike or bolt holes\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.67,0.49,0.15,0.2],\"visible_reason\":\"The near-right tie has long lengthwise cracks in the wood and a rough, weathered grain with dark patches on its top surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. Surface checking is common in weathered wood, and from this photo alone I cannot tell how deep the cracks go.\",\"alternatives\":[\"Normal surface checking or weathering\",\"Wet or dark wood color\",\"Shadow accentuating the grain\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.19,0.42,0.19,0.24],\"visible_reason\":\"The near-left tie appears split or separated lengthwise, with a dark gap or crack running along the tie and rough, frayed edges.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The dark line could be a gap between two narrow timbers, or a shadow between a tie and ballast, rather than a split.\",\"alternatives\":[\"Two separate narrow timbers\",\"Shadow or ballast filling a gap\",\"Normal weathering of the wood\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.63,0.04,0.14,0.28],\"visible_reason\":\"The far dark tie has a long lengthwise crack and rough, grainy, weathered patches on its top surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The tie is very dark and viewed at an oblique angle, so surface features may look more severe than they are.\",\"alternatives\":[\"Dark staining or creosote-type discoloration\",\"Normal surface checking\",\"Shadow\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.29,0.02,0.16,0.27],\"visible_reason\":\"The far middle tie has several lengthwise cracks, and its grain looks rough and weathered.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The cracks look shallow from this angle, and the lighting is uneven.\",\"alternatives\":[\"Normal weathering and surface checking\",\"Shadow or lighting effects\",\"Dust or ballast debris on the surface\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 14.41,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.25,
+    0.38,
+    0.11,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "On the near-left tie plate, only one stud or bolt head is clearly visible near the top-left of the plate. The other fastening position is not clearly visible. The plate sits partly under the rail base, and the nearby tie is split lengthwise.",
+   "assessability": "assessable",
+   "uncertainty": "High. The second fastener may be hidden by the rail base, the camera angle or plate shading. This plate may also use a different fastening layout from the plates on the right.",
+   "alternatives": [
+    "Occlusion by the rail base or camera angle",
+    "Alternate fastening design with a single visible head",
+    "Fastener covered by shadow or rust-colored dust",
+    "Unused spike or bolt holes"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.67,
+    0.49,
+    0.15,
+    0.2
+   ],
+   "localized": true,
+   "visible_reason": "The near-right tie has long lengthwise cracks in the wood and a rough, weathered grain with dark patches on its top surface.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. Surface checking is common in weathered wood, and from this photo alone I cannot tell how deep the cracks go.",
+   "alternatives": [
+    "Normal surface checking or weathering",
+    "Wet or dark wood color",
+    "Shadow accentuating the grain"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.19,
+    0.42,
+    0.19,
+    0.24
+   ],
+   "localized": true,
+   "visible_reason": "The near-left tie appears split or separated lengthwise, with a dark gap or crack running along the tie and rough, frayed edges.",
+   "assessability": "assessable",
+   "uncertainty": "High. The dark line could be a gap between two narrow timbers, or a shadow between a tie and ballast, rather than a split.",
+   "alternatives": [
+    "Two separate narrow timbers",
+    "Shadow or ballast filling a gap",
+    "Normal weathering of the wood"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.63,
+    0.04,
+    0.14,
+    0.28
+   ],
+   "localized": true,
+   "visible_reason": "The far dark tie has a long lengthwise crack and rough, grainy, weathered patches on its top surface.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The tie is very dark and viewed at an oblique angle, so surface features may look more severe than they are.",
+   "alternatives": [
+    "Dark staining or creosote-type discoloration",
+    "Normal surface checking",
+    "Shadow"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.29,
+    0.02,
+    0.16,
+    0.27
+   ],
+   "localized": true,
+   "visible_reason": "The far middle tie has several lengthwise cracks, and its grain looks rough and weathered.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The cracks look shallow from this angle, and the lighting is uneven.",
+   "alternatives": [
+    "Normal weathering and surface checking",
+    "Shadow or lighting effects",
+    "Dust or ballast debris on the surface"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc029",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:48:40Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

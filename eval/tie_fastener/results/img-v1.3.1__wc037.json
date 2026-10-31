@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"cannot_assess\",\"cannot_assess_reason\":\"The photo is taken at a low, oblique angle along the track. Most tie surfaces are partly covered by ballast, and the fastenings beyond the first few feet in the foreground are too distant and foreshortened to judge. Only a few chairs and tie ends are visible, and none show a clearly empty, broken or displaced fastening position or clear tie-surface damage. This is not a finding that anything is absent. A human reviewer would need closer, top-down photos.\",\"candidates\":[]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.02,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The photo is taken at a low, oblique angle along the track. Most tie surfaces are partly covered by ballast, and the fastenings beyond the first few feet in the foreground are too distant and foreshortened to judge. Only a few chairs and tie ends are visible, and none show a clearly empty, broken or displaced fastening position or clear tie-surface damage. This is not a finding that anything is absent. A human reviewer would need closer, top-down photos.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc037",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:53:01Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

@@ -1,0 +1,79 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.42,0.75,0.14,0.25],\"visible_reason\":\"Below the lower tie plate, a vertical split runs down the wood. It opens to a dark gap at the bottom of the frame, and the wood on both sides is fibrous and roughened. The split appears to run along the tie, but its depth cannot be seen from above.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The gap looks wide and dark, but a top-down view cannot show whether the split goes fully through the tie or is a deep surface check.\",\"alternatives\":[\"Deep surface checking that does not go through the tie\",\"Shadow or debris making the gap look wider\",\"Normal weathering of an in-service tie\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.35,0.6,0.32,0.15],\"visible_reason\":\"The lower tie plate has round holes at its lower left and lower right, plus a small rectangular slot at the upper left. The holes show stones, leaf bits or bare wood and no visible spike or screw head. Only a dome-headed fastener near the rail base is visible on this plate.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The plate may have extra holes that are not used with this fastening layout, and only part of the tie is in view.\",\"alternatives\":[\"Unused spike holes on a multi-hole plate\",\"Alternate fastening design where only some holes are used\",\"Fasteners seated below the visible surface or hidden by debris\",\"Rail-base hardware not shown in this view\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.35,0.25,0.32,0.11],\"visible_reason\":\"The upper tie plate has two round holes near its top edge and a small rectangular slot near the bottom right. All three contain ballast stones or debris, and no spike or screw head is visible in them. Only a dome-headed fastener near the rail base is visible on this plate.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. These holes may be unused positions on a multi-hole plate, and the full fastening pattern is not visible.\",\"alternatives\":[\"Unused spike holes\",\"Alternate fastening design\",\"Ballast or debris covering fasteners\",\"Rail-base hardware not shown in this view\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 13.79,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.42,
+    0.75,
+    0.14,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "Below the lower tie plate, a vertical split runs down the wood. It opens to a dark gap at the bottom of the frame, and the wood on both sides is fibrous and roughened. The split appears to run along the tie, but its depth cannot be seen from above.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The gap looks wide and dark, but a top-down view cannot show whether the split goes fully through the tie or is a deep surface check.",
+   "alternatives": [
+    "Deep surface checking that does not go through the tie",
+    "Shadow or debris making the gap look wider",
+    "Normal weathering of an in-service tie"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.35,
+    0.6,
+    0.32,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "The lower tie plate has round holes at its lower left and lower right, plus a small rectangular slot at the upper left. The holes show stones, leaf bits or bare wood and no visible spike or screw head. Only a dome-headed fastener near the rail base is visible on this plate.",
+   "assessability": "assessable",
+   "uncertainty": "High. The plate may have extra holes that are not used with this fastening layout, and only part of the tie is in view.",
+   "alternatives": [
+    "Unused spike holes on a multi-hole plate",
+    "Alternate fastening design where only some holes are used",
+    "Fasteners seated below the visible surface or hidden by debris",
+    "Rail-base hardware not shown in this view"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.35,
+    0.25,
+    0.32,
+    0.11
+   ],
+   "localized": true,
+   "visible_reason": "The upper tie plate has two round holes near its top edge and a small rectangular slot near the bottom right. All three contain ballast stones or debris, and no spike or screw head is visible in them. Only a dome-headed fastener near the rail base is visible on this plate.",
+   "assessability": "assessable",
+   "uncertainty": "High. These holes may be unused positions on a multi-hole plate, and the full fastening pattern is not visible.",
+   "alternatives": [
+    "Unused spike holes",
+    "Alternate fastening design",
+    "Ballast or debris covering fasteners",
+    "Rail-base hardware not shown in this view"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc004",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:50:54Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

@@ -1,0 +1,61 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.13,0.37,0.55,0.15],\"visible_reason\":\"A weathered grey wooden piece lies on dark soil with a split, splintered grain, a ragged broken right-hand end, and a rough, eroded surface. It looks fragmented rather than like an intact timber.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the object could be a fragment of a plank, board or other debris rather than a railway tie. No rails, fasteners or ballast are visible to confirm its role, and grey weathering can look like deterioration on sound wood.\",\"alternatives\":[\"Not a railway tie, such as a loose board or plank fragment\",\"Normal weathered grey wood surface\",\"Partial covering by grass and soil\",\"Shadow or wet-wood discolouration\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.13,0.54,0.56,0.12],\"visible_reason\":\"Two thin, elongated, weathered wooden strips lie end to end on dark soil. Their edges are uneven and broken, and the lengths look splintered and decayed.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high: the strips are narrow and could be pieces of lath, board or other debris instead of a tie. The context gives no clear indication that they are ties.\",\"alternatives\":[\"Not a railway tie, such as debris or scrap lumber\",\"Normal weathering of wood lying on soil\",\"Partial covering by grass or soil\",\"Shadow or moisture darkening\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.62,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.13,
+    0.37,
+    0.55,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "A weathered grey wooden piece lies on dark soil with a split, splintered grain, a ragged broken right-hand end, and a rough, eroded surface. It looks fragmented rather than like an intact timber.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the object could be a fragment of a plank, board or other debris rather than a railway tie. No rails, fasteners or ballast are visible to confirm its role, and grey weathering can look like deterioration on sound wood.",
+   "alternatives": [
+    "Not a railway tie, such as a loose board or plank fragment",
+    "Normal weathered grey wood surface",
+    "Partial covering by grass and soil",
+    "Shadow or wet-wood discolouration"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.13,
+    0.54,
+    0.56,
+    0.12
+   ],
+   "localized": true,
+   "visible_reason": "Two thin, elongated, weathered wooden strips lie end to end on dark soil. Their edges are uneven and broken, and the lengths look splintered and decayed.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high: the strips are narrow and could be pieces of lath, board or other debris instead of a tie. The context gives no clear indication that they are ties.",
+   "alternatives": [
+    "Not a railway tie, such as debris or scrap lumber",
+    "Normal weathering of wood lying on soil",
+    "Partial covering by grass or soil",
+    "Shadow or moisture darkening"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc027",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:48:24Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

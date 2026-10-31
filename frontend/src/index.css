@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Phase 5 design tokens (REQ-226/227). Contrast on white: text 15.6:1, secondary 6.1:1, action 6.5:1 (white on action 6.5:1). */
+:root {
+    --rr-canvas: #f3f4f4;
+    --rr-surface: #ffffff;
+    --rr-text: #202428;
+    --rr-secondary: #59636b;
+    --rr-border: #d9dee2;
+    --rr-nav: #22272b;
+    --rr-action: #b32624;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    background: var(--rr-canvas);
+    color: var(--rr-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code,
+.font-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* money / quantity columns: tabular numerals, right aligned where marked */
+.rr-num, td.text-right, th.text-right, .tabular-nums { font-variant-numeric: tabular-nums; }
+table td, table th { border-color: var(--rr-border); }
+h1, h2, h3 { overflow-wrap: anywhere; }
+
+/* Visible focus ring on every focusable element */
+.rr-focus:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #1f6fd1;
+    outline-offset: 2px;
+}
+
+@keyframes rr-rise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+.rr-rise {
+    animation: rr-rise 240ms ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+    .rr-rise {
+        animation: none;
+    }
+}
+
+/* Industrial hatch used for header accents */
+.rr-hatch {
+    background-image: repeating-linear-gradient(-45deg, #ea580c 0 10px, #111827 10px 20px);
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 221 39% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 221 39% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 221 39% 11%;
+        --primary: 21 90% 48%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 220 14% 96%;
+        --secondary-foreground: 221 39% 11%;
+        --muted: 220 14% 96%;
+        --muted-foreground: 215 14% 34%;
+        --accent: 220 14% 96%;
+        --accent-foreground: 221 39% 11%;
+        --destructive: 0 72% 42%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 216 12% 84%;
+        --input: 218 11% 65%;
+        --ring: 21 90% 48%;
+        --radius: 0.5rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+}
+
+/* Scene markers (HTML overlay pins projected from anchor xyz) */
+.rr-pin { will-change: transform; }
+.rr-pin-dot { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: #e6e8ea; border: 2px solid #111315; }
+.rr-pin-line { position: absolute; left: -1px; width: 2px; top: calc(var(--dy, 0px) - 8px); height: calc(8px - var(--dy, 0px)); background: #e6e8ea; }
+.rr-pin-label { position: absolute; left: -15px; top: calc(var(--dy, 0px) - 38px); min-width: 30px; height: 30px; padding: 0 6px; border-radius: 3px; border: 1px solid #111315; background: #e6e8ea; color: #111315; font: 700 13px/28px system-ui, -apple-system, "Segoe UI", Arial, sans-serif; cursor: pointer; }
+.rr-pin-label:hover { background: #ffffff; }
+.rr-pin-sel { background: #3f8f8c; color: #ffffff; border-color: #ffffff; outline: 2px solid #3f8f8c; outline-offset: 1px; }
+.rr-pin-sel:hover { background: #3f8f8c; }
+@media (pointer: coarse) {
+    .rr-pin-label { min-width: 44px; height: 44px; left: -22px; top: calc(var(--dy, 0px) - 52px); line-height: 42px; font-size: 15px; }
+}
+.sse-viewer canvas { outline: none; }
+.rr-pin[data-flip="1"] .rr-pin-label { top: calc(10px - var(--dy, 0px)); }
+.rr-pin[data-flip="1"] .rr-pin-line { display: none; }

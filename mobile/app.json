@@ -1,0 +1,81 @@
+{
+  "expo": {
+    "name": "RailReady",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mobile",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emergent.railreadydemo.jyc6p2",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Photograph track conditions during site visits",
+        "NSMicrophoneUsageDescription": "Record voice notes about track conditions",
+        "NSPhotoLibraryUsageDescription": "Attach existing track photos to a visit"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.emergent.railreadydemo.jyc6p2",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-image.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-status-bar",
+      "expo-sqlite",
+      "@react-native-vector-icons/material-design-icons",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Record voice notes about track conditions"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Photograph track conditions during site visits",
+          "photosPermission": "Attach existing track photos to a visit"
+        }
+      ],
+      "expo-video",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Photograph track conditions during site visits",
+          "recordAudioAndroid": false
+        }
+      ],
+      "./modules/volume-keys/plugin.js",
+      "expo-background-task"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

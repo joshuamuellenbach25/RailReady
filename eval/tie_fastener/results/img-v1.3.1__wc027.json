@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.13,0.37,0.58,0.3],\"visible_reason\":\"Grey weathered timber lies on dark soil among dry grass. It appears as long, narrow strips that are separated from each other, with ragged, splintered ends and edges. This could be a wooden tie that has split lengthwise and broken apart, with the sections lying apart.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. No rails, plates, spikes, clips or ballast are visible, so I cannot confirm this is a tie in track. The strips could be loose boards or lumber debris rather than a tie. Soil and vegetation also hide the surrounding context.\",\"alternatives\":[\"loose boards or discarded timber rather than an in-track tie\",\"a tie removed earlier and left beside the track\",\"normal weathering and surface checking made to look worse by soil and grass cover\",\"partial burial by soil and vegetation hiding the intact parts of the piece\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.8,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.13,
+    0.37,
+    0.58,
+    0.3
+   ],
+   "localized": true,
+   "visible_reason": "Grey weathered timber lies on dark soil among dry grass. It appears as long, narrow strips that are separated from each other, with ragged, splintered ends and edges. This could be a wooden tie that has split lengthwise and broken apart, with the sections lying apart.",
+   "assessability": "assessable",
+   "uncertainty": "High. No rails, plates, spikes, clips or ballast are visible, so I cannot confirm this is a tie in track. The strips could be loose boards or lumber debris rather than a tie. Soil and vegetation also hide the surrounding context.",
+   "alternatives": [
+    "loose boards or discarded timber rather than an in-track tie",
+    "a tie removed earlier and left beside the track",
+    "normal weathering and surface checking made to look worse by soil and grass cover",
+    "partial burial by soil and vegetation hiding the intact parts of the piece"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc027",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:52:09Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

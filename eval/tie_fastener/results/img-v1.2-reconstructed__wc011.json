@@ -1,0 +1,80 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.55,1.0,0.45],\"visible_reason\":\"The foreground wooden tie surface shows pronounced longitudinal cracks and splits, with a rough, weathered, grey-black grain and raised fibres running across the width. A few small dark pits or holes are visible in the lower part.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The foreground is in reasonably sharp focus, but the low camera angle and flat lighting make it hard to tell how deep the cracks go. Surface weathering may look worse than the condition of the wood below it.\",\"alternatives\":[\"normal age-related surface checking and weathering of wood\",\"dark staining or wet wood colour exaggerating the cracks\",\"shadow between the grain ridges\",\"unused spike holes or knots rather than damage\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.48,1.0,0.1],\"visible_reason\":\"The second tie, further back, has a rough, uneven top edge with dark gaps. Moss, grass and small plants grow on and along its surface, and some debris sits on it.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The tie is partly blurred and only seen at a grazing angle. Vegetation and debris cover parts of the surface, so the wood condition underneath is unclear.\",\"alternatives\":[\"vegetation and moss covering the surface\",\"soil or ballast debris\",\"shallow-focus blur hiding the true surface texture\",\"shadow in the gap between ties\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.05,0.3,0.12,0.12],\"visible_reason\":\"Near the left rail base there is a rusty, irregular object, possibly a plate or clip fragment, sitting oddly against the rail. It is out of focus, so it is unclear whether a fastener is properly seated there.\",\"assessability\":\"cannot_assess\",\"uncertainty\":\"High. The spot is blurred and partly hidden by vegetation and debris. The object's shape and position cannot be resolved.\",\"alternatives\":[\"a normal tie plate or rail anchor seen out of focus\",\"rust-coloured debris or a dead leaf\",\"an alternate fastening design\",\"vegetation or ballast covering the fastener\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.29,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.55,
+    1.0,
+    0.45
+   ],
+   "localized": true,
+   "visible_reason": "The foreground wooden tie surface shows pronounced longitudinal cracks and splits, with a rough, weathered, grey-black grain and raised fibres running across the width. A few small dark pits or holes are visible in the lower part.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The foreground is in reasonably sharp focus, but the low camera angle and flat lighting make it hard to tell how deep the cracks go. Surface weathering may look worse than the condition of the wood below it.",
+   "alternatives": [
+    "normal age-related surface checking and weathering of wood",
+    "dark staining or wet wood colour exaggerating the cracks",
+    "shadow between the grain ridges",
+    "unused spike holes or knots rather than damage"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.48,
+    1.0,
+    0.1
+   ],
+   "localized": true,
+   "visible_reason": "The second tie, further back, has a rough, uneven top edge with dark gaps. Moss, grass and small plants grow on and along its surface, and some debris sits on it.",
+   "assessability": "assessable",
+   "uncertainty": "High. The tie is partly blurred and only seen at a grazing angle. Vegetation and debris cover parts of the surface, so the wood condition underneath is unclear.",
+   "alternatives": [
+    "vegetation and moss covering the surface",
+    "soil or ballast debris",
+    "shallow-focus blur hiding the true surface texture",
+    "shadow in the gap between ties"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.05,
+    0.3,
+    0.12,
+    0.12
+   ],
+   "localized": true,
+   "visible_reason": "Near the left rail base there is a rusty, irregular object, possibly a plate or clip fragment, sitting oddly against the rail. It is out of focus, so it is unclear whether a fastener is properly seated there.",
+   "assessability": "cannot_assess",
+   "uncertainty": "High. The spot is blurred and partly hidden by vegetation and debris. The object's shape and position cannot be resolved.",
+   "alternatives": [
+    "a normal tie plate or rail anchor seen out of focus",
+    "rust-coloured debris or a dead leaf",
+    "an alternate fastening design",
+    "vegetation or ballast covering the fastener"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc011",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:32Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

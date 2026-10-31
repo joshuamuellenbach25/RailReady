@@ -1,0 +1,23 @@
+# Phase 5 journeys
+- JRN-110 steps: fresh foreman signs in. expected: My work shows In progress + Assigned sites; "Start inspection" visible on each site row; no Prepare/Sync/title step; Sign out only in account menu.
+- JRN-111 steps: tap Start inspection -> Take photo. expected: camera (or library fallback on web) opens within 2 taps; photo returns, shows thumbnail + "Saved on device", then "Synced" automatically when online.
+- JRN-112 steps: deny camera permission; then permanently deny. expected: reason + "Open settings" + "Use photo library"; inspection intact; no crash. (device: human)
+- JRN-113 steps: tap Take photo 5 times rapidly; cancel camera; background/foreground during capture. expected: one launch; cancel returns cleanly; draft intact. (device: human)
+- JRN-114 steps: pick a HEIC from library. expected: saved original; message about JPEG/PNG fallback for analysis/3D; no crash.
+- JRN-115 steps: Record note -> speak -> stop -> play -> save; interrupt another recording by backgrounding. expected: playback works; saved independent of transcription; interrupted recording recoverable. (interruption: device/human)
+- JRN-116 steps: online, save note "Inspected twelve ties; replace eight; customer supplies ties." expected: auto-sync + processing with no manual action; Review shows 12 inspected, 8 repair, Customer, each with excerpt, needing confirmation; spec + location asked; supplier not re-asked after confirm.
+- JRN-117 steps: second source says 10. expected: both sources shown; asks which is authoritative; publish blocked until resolved.
+- JRN-118 steps: pavement inspection note "Missing pavement beside the rail at this location; area and depth not measured." expected: Pavement template questions (area+unit, depth/spec, material, responsibility, access); unknowns recordable; no tie package; estimator uses manual lines.
+- JRN-119 steps: Ask estimator on missing spec with reason. expected: item stays unresolved with reason; field handoff allowed; publish still blocked "Specification missing".
+- JRN-120 steps: site with blocked policy; capture photo/note. expected: capture + sync work; "Analysis not enabled for this site – contact your admin"; zero provider calls.
+- JRN-121 steps: demo site (policy allows). expected: analysis runs automatically; Details shows "Analysis enabled by your organization".
+- JRN-122 steps: foreman tries to change policy via API. expected: 403.
+- JRN-123 steps: legacy visit with Denied/Unknown permission. expected: still blocked after migration.
+- JRN-124 steps: estimator edits Tie template (adds field) on web. expected: new version; active inspection keeps its version; issued documents unchanged.
+- JRN-125 steps: offline at an uncached site (previously signed in) start inspection, capture, reconnect. expected: provisional draft with "Site details unavailable offline"; on reconnect asked to pick authorized site; no site auto-created; no other workspace sites offered.
+- JRN-126 steps: sign in on a second browser as the same foreman. expected: server inspections listed under In progress, labelled not available offline until opened/cached.
+- JRN-127 steps: go offline after auto-cache, capture photo/audio/note, reload, reconnect. expected: originals replay; one receipt per item; hashes match; no duplicates.
+- JRN-128 steps: let auth expire with drafts. expected: drafts usable; sync asks to sign in first.
+- JRN-129 steps: compare screens at 360/390/1440 and 200% text. expected: tokens applied; no clipped labels/overflow; no hashes on default views; status text+icon.
+- JRN-130 steps: office web: login, jobs, visit review, estimate, agreement, proposal, customer page, work order. expected: same design system; scene workspace still charcoal with "AI-estimated depth. Geometry and scale unverified."
+- JRN-131 steps: regression estimate -> publish -> accept twice -> refresh. expected: exactly one work order; issued docs unchanged.

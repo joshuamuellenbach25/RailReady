@@ -1,0 +1,78 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.405,0.505,0.05,0.07],\"visible_reason\":\"The square notch at the upper left of the tie plate, beside the rail base, looks empty. Small stones and debris show inside it, and no spike head or shank is visible there. A spike head is visible in the notch to its right.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The notch is clearly visible, but this plate design may not need a spike in every opening, and the photo cannot show whether a spike is buried below the debris.\",\"alternatives\":[\"Unused or optional spike notch for this plate design\",\"Spike seated below the debris and not visible\",\"Debris and ballast fragments filling an intentionally open slot\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.37,0.63,0.27,0.08],\"visible_reason\":\"Two round holes near the bottom edge of the tie plate show no bolt, spike or screw. Each has stones or debris visible inside it.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium to high. Plates often have spare holes that are left unused, and the photo gives no way to tell whether these were meant to be filled.\",\"alternatives\":[\"Unused auxiliary holes on a multi-pattern plate\",\"Alternate fastening design that does not use these holes\",\"Fasteners removed by design during earlier work\",\"Debris covering the fastener heads\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.3,0.73,0.4,0.27],\"visible_reason\":\"The wooden tie below the plate has several long grain-parallel cracks. One prominent split runs roughly down the middle of the exposed surface, and the wood looks weathered and rough with raised grain.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. Surface checking and weathering are common on wood and may be only cosmetic. The photo shows nothing of the depth of the cracks or the condition of the wood inside.\",\"alternatives\":[\"Normal surface checking from seasoning\",\"Shadow or dark wet-wood staining that exaggerates the cracks\",\"Superficial weathering without structural significance\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 15.16,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.405,
+    0.505,
+    0.05,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "The square notch at the upper left of the tie plate, beside the rail base, looks empty. Small stones and debris show inside it, and no spike head or shank is visible there. A spike head is visible in the notch to its right.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The notch is clearly visible, but this plate design may not need a spike in every opening, and the photo cannot show whether a spike is buried below the debris.",
+   "alternatives": [
+    "Unused or optional spike notch for this plate design",
+    "Spike seated below the debris and not visible",
+    "Debris and ballast fragments filling an intentionally open slot"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.37,
+    0.63,
+    0.27,
+    0.08
+   ],
+   "localized": true,
+   "visible_reason": "Two round holes near the bottom edge of the tie plate show no bolt, spike or screw. Each has stones or debris visible inside it.",
+   "assessability": "assessable",
+   "uncertainty": "Medium to high. Plates often have spare holes that are left unused, and the photo gives no way to tell whether these were meant to be filled.",
+   "alternatives": [
+    "Unused auxiliary holes on a multi-pattern plate",
+    "Alternate fastening design that does not use these holes",
+    "Fasteners removed by design during earlier work",
+    "Debris covering the fastener heads"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.3,
+    0.73,
+    0.4,
+    0.27
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie below the plate has several long grain-parallel cracks. One prominent split runs roughly down the middle of the exposed surface, and the wood looks weathered and rough with raised grain.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. Surface checking and weathering are common on wood and may be only cosmetic. The photo shows nothing of the depth of the cracks or the condition of the wood inside.",
+   "alternatives": [
+    "Normal surface checking from seasoning",
+    "Shadow or dark wet-wood staining that exaggerates the cracks",
+    "Superficial weathering without structural significance"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc006",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:44:24Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

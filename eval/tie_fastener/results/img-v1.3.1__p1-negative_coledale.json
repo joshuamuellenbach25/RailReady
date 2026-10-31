@@ -1,0 +1,27 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[],\"note\":null}\n\nCorrection: the schema does not allow extra keys, so the version below is the final output.\n\n{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[]}"
+  },
+  {
+   "attempt": 2,
+   "repair": true,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[]}"
+  }
+ ],
+ "attempts": 2,
+ "duration_s": 5.74,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [],
+ "rejected": [],
+ "id": "p1-negative_coledale",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:53:13Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

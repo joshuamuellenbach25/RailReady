@@ -1,0 +1,77 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.34,0.66,0.07,0.08],\"visible_reason\":\"A round hole in the left part of the rusty tie plate has no bolt or spike in it. A small light-grey stone-like object sits inside the hole.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The hole is clearly visible, but the photo cannot show whether a fastener was ever meant to be there.\",\"alternatives\":[\"unused hole for a different plate or gauge pattern\",\"alternate fastening design that does not use every hole\",\"ballast fragment resting in a hole that was never fitted\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.52,0.50,0.17,0.25],\"visible_reason\":\"A rusty hook- or loop-shaped metal piece sits on the plate next to the rail foot. From this angle it is not clearly seen gripping the rail base, and its seating on the plate is hard to judge. A second plate hole beside it holds a small stone-like object.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. This could be a normal fastening or anchor design, and the viewing angle and rust make its engagement unclear.\",\"alternatives\":[\"intended alternate fastening or anchor hardware that is correctly seated\",\"perspective hiding the contact with the rail foot\",\"ballast fragment in the hole\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.10,0.68,0.62,0.32],\"visible_reason\":\"The wooden tie surface in the foreground shows grey weathered grain with several visible cracks or splits running along and across the wood. There is dark staining near the plate edge.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. Cracks are visible at the surface, but the photo cannot show their depth or whether the wood is sound underneath. Harsh sunlight and shadow exaggerate the texture.\",\"alternatives\":[\"superficial seasoning checks that are common on weathered wood\",\"shadow and strong sunlight emphasising the grain\",\"dirt or staining rather than decay\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 14.1,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.34,
+    0.66,
+    0.07,
+    0.08
+   ],
+   "localized": true,
+   "visible_reason": "A round hole in the left part of the rusty tie plate has no bolt or spike in it. A small light-grey stone-like object sits inside the hole.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The hole is clearly visible, but the photo cannot show whether a fastener was ever meant to be there.",
+   "alternatives": [
+    "unused hole for a different plate or gauge pattern",
+    "alternate fastening design that does not use every hole",
+    "ballast fragment resting in a hole that was never fitted"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.52,
+    0.5,
+    0.17,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "A rusty hook- or loop-shaped metal piece sits on the plate next to the rail foot. From this angle it is not clearly seen gripping the rail base, and its seating on the plate is hard to judge. A second plate hole beside it holds a small stone-like object.",
+   "assessability": "assessable",
+   "uncertainty": "High. This could be a normal fastening or anchor design, and the viewing angle and rust make its engagement unclear.",
+   "alternatives": [
+    "intended alternate fastening or anchor hardware that is correctly seated",
+    "perspective hiding the contact with the rail foot",
+    "ballast fragment in the hole"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.1,
+    0.68,
+    0.62,
+    0.32
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie surface in the foreground shows grey weathered grain with several visible cracks or splits running along and across the wood. There is dark staining near the plate edge.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. Cracks are visible at the surface, but the photo cannot show their depth or whether the wood is sound underneath. Harsh sunlight and shadow exaggerate the texture.",
+   "alternatives": [
+    "superficial seasoning checks that are common on weathered wood",
+    "shadow and strong sunlight emphasising the grain",
+    "dirt or staining rather than decay"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc030",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:48:54Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

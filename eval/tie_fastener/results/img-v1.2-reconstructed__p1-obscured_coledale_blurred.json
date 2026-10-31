@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"cannot_assess\",\"cannot_assess_reason\":\"The photo is heavily blurred and dark. Horizontal bands that may be rails and ballast are visible, but the tie surfaces and fastening hardware (clips, spikes, plates) cannot be resolved well enough to judge them. Fine surface texture, cracks and small fastener details are not distinguishable.\",\"candidates\":[]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 2.68,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "The photo is heavily blurred and dark. Horizontal bands that may be rails and ballast are visible, but the tie surfaces and fastening hardware (clips, spikes, plates) cannot be resolved well enough to judge them. Fine surface texture, cracks and small fastener details are not distinguishable.",
+ "candidates": [],
+ "rejected": [],
+ "id": "p1-obscured_coledale_blurred",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:48Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

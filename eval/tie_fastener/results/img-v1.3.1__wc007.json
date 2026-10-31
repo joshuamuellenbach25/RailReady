@@ -1,0 +1,60 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.22,0.6,0.4,0.4],\"visible_reason\":\"The wooden tie in the lower foreground has a long dark crack running down its length, from near the top-left edge toward the bottom. The crack looks open and wide enough to separate the wood into two sections. The wood around it looks rough and lifted.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The crack is clearly visible, but from one angle I cannot tell whether it runs fully through the tie thickness or is a deep surface check.\",\"alternatives\":[\"Deep surface checking typical of weathered serviceable wood\",\"Shadow or dirt inside the crack making it look wider\",\"Perspective exaggerating the gap\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.54,0.48,0.07,0.06],\"visible_reason\":\"On the rusty tie plate beside the single visible spike head, a small slot or hole in the plate appears to have no spike in it.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The hole could be an intentionally unused plate hole. The fastening layout and the plate's relationship to the tie are not fully visible, and the angle is oblique.\",\"alternatives\":[\"Unused spike hole, normal for this plate design\",\"Alternate fastening design that does not use a spike here\",\"Debris or shadow in the hole\",\"Hole partly covered by leaves or ballast\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 10.59,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.22,
+    0.6,
+    0.4,
+    0.4
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie in the lower foreground has a long dark crack running down its length, from near the top-left edge toward the bottom. The crack looks open and wide enough to separate the wood into two sections. The wood around it looks rough and lifted.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The crack is clearly visible, but from one angle I cannot tell whether it runs fully through the tie thickness or is a deep surface check.",
+   "alternatives": [
+    "Deep surface checking typical of weathered serviceable wood",
+    "Shadow or dirt inside the crack making it look wider",
+    "Perspective exaggerating the gap"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.54,
+    0.48,
+    0.07,
+    0.06
+   ],
+   "localized": true,
+   "visible_reason": "On the rusty tie plate beside the single visible spike head, a small slot or hole in the plate appears to have no spike in it.",
+   "assessability": "assessable",
+   "uncertainty": "High. The hole could be an intentionally unused plate hole. The fastening layout and the plate's relationship to the tie are not fully visible, and the angle is oblique.",
+   "alternatives": [
+    "Unused spike hole, normal for this plate design",
+    "Alternate fastening design that does not use a spike here",
+    "Debris or shadow in the hole",
+    "Hole partly covered by leaves or ballast"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc007",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:51:20Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

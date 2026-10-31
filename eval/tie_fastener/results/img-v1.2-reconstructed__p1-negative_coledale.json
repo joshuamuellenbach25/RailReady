@@ -1,0 +1,63 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.22,0.65,0.14,0.09],\"visible_reason\":\"The exposed top of a wooden tie between ballast stones looks grey and rough, with darker streaks and what may be fine lengthwise lines. The surface looks more worn than the surrounding rail steel and plates.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium-high. The view is a low, oblique angle and the area is small. Weathered grey wood can look like this without any real damage, and fine lines may only be shadow or dirt.\",\"alternatives\":[\"normal surface weathering of wood\",\"shadow from nearby ballast stones\",\"dust or dirt film on the tie\",\"ballast partly covering the surface\",\"wet or dry wood colour variation\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.59,0.65,0.14,0.09],\"visible_reason\":\"The exposed tie top beside a tie plate is dark grey and uneven, with possible cracks or grain breaks near the plate edge and stones pressing against it.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium-high. The tie is seen at a grazing angle and is partly hidden by ballast. Sun and shadow contrast makes the texture hard to read.\",\"alternatives\":[\"normal grain and weathering\",\"shadow\",\"ballast covering the tie\",\"staining from rust run-off from the plate\",\"unused spike holes or old plate marks\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.77,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.22,
+    0.65,
+    0.14,
+    0.09
+   ],
+   "localized": true,
+   "visible_reason": "The exposed top of a wooden tie between ballast stones looks grey and rough, with darker streaks and what may be fine lengthwise lines. The surface looks more worn than the surrounding rail steel and plates.",
+   "assessability": "assessable",
+   "uncertainty": "Medium-high. The view is a low, oblique angle and the area is small. Weathered grey wood can look like this without any real damage, and fine lines may only be shadow or dirt.",
+   "alternatives": [
+    "normal surface weathering of wood",
+    "shadow from nearby ballast stones",
+    "dust or dirt film on the tie",
+    "ballast partly covering the surface",
+    "wet or dry wood colour variation"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.59,
+    0.65,
+    0.14,
+    0.09
+   ],
+   "localized": true,
+   "visible_reason": "The exposed tie top beside a tie plate is dark grey and uneven, with possible cracks or grain breaks near the plate edge and stones pressing against it.",
+   "assessability": "assessable",
+   "uncertainty": "Medium-high. The tie is seen at a grazing angle and is partly hidden by ballast. Sun and shadow contrast makes the texture hard to read.",
+   "alternatives": [
+    "normal grain and weathering",
+    "shadow",
+    "ballast covering the tie",
+    "staining from rust run-off from the plate",
+    "unused spike holes or old plate marks"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "p1-negative_coledale",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:55Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

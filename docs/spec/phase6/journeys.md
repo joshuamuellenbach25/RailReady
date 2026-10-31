@@ -1,0 +1,13 @@
+# Phase 6 journeys (CAL01–CAL12)
+- CAL01 steps: start import; wait. expected: 2100 JPEGs, 2 JSON hashes match, 1600/500, 43545 raw / 41445 component anns, all 512×512, all re-verified in private storage; release "Complete" with receipt.
+- CAL02 steps: restart backend mid-import; inject corrupt member / changed archive hash / traversal member; retry. expected: resumes without duplicates; corrupt -> partial with named file; changed hash -> blocker + upload option; traversal rejected.
+- CAL03 steps: open stats. expected: exact category/Condition/Type counts as contract; 409 Bad ties shown as source labels; rail shows "No Bad rail labels – broken-rail sensitivity unsupported".
+- CAL04 steps: run baseline (<=48 train images). expected: real raw responses stored per item, labels withheld from input, failures/abstentions recorded; budget counter updated.
+- CAL05 steps: create partitions. expected: fit/calibration from train only; val locked test; grouping method recorded provisional; overlap groups quarantined; augmentation fit-only with seed.
+- CAL06 steps: start training. expected: completed real local job with checkpoint hash, or UNKNOWN with exact blocker; hosted model shows "weight training unsupported".
+- CAL07 steps: fit profile. expected: only calibration records used; a, b, score semantics, model binding stored; sparse classes -> null with reason.
+- CAL08 steps: evaluate on locked val. expected: metrics with denominators, Brier, reliability bins/ECE, abstentions; "classification given supplied boxes" label; no demo-picked accuracy.
+- CAL09 steps: foreman / other workspace / unauthenticated hits calibration APIs and dataset images. expected: 403/404/401; attribution + license visible to staff.
+- CAL10 steps: live photo after profile activation -> candidate -> review -> estimate. expected: calibrated field only where in-domain with scope label; same finding ids; no duplicate quantity; historical runs keep old versions.
+- CAL11 steps: SF validation status. expected: UNKNOWN with reason; hidden components abstain.
+- CAL12 steps: regression phone capture/sync + web viewer -> estimate -> publish -> accept -> one work order. expected: all still pass.

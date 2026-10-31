@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.33,0.57,0.11,0.13],\"visible_reason\":\"A square hole in the rusty tie plate, next to the two visible spike heads, has no spike in it. It looks filled with dirt or ballast fines instead of a spike shank or head.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The hole could be an unused or extra spike hole, which many plate designs have. The close-up view shows only part of the plate, so I can't tell whether this position is meant to hold a spike.\",\"alternatives\":[\"unused or spare spike hole in the plate\",\"alternate fastening pattern that leaves this hole empty\",\"hole partly filled with dirt or ballast dust\",\"the rest of the plate is out of frame, so the intended fastener layout is unclear\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.13,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.33,
+    0.57,
+    0.11,
+    0.13
+   ],
+   "localized": true,
+   "visible_reason": "A square hole in the rusty tie plate, next to the two visible spike heads, has no spike in it. It looks filled with dirt or ballast fines instead of a spike shank or head.",
+   "assessability": "assessable",
+   "uncertainty": "High. The hole could be an unused or extra spike hole, which many plate designs have. The close-up view shows only part of the plate, so I can't tell whether this position is meant to hold a spike.",
+   "alternatives": [
+    "unused or spare spike hole in the plate",
+    "alternate fastening pattern that leaves this hole empty",
+    "hole partly filled with dirt or ballast dust",
+    "the rest of the plate is out of frame, so the intended fastener layout is unclear"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc026",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:52:09Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

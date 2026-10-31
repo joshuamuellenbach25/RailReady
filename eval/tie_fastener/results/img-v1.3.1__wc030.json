@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.32,0.65,0.1,0.09],\"visible_reason\":\"The left hole in the orange base plate has no bolt, spike or clip in it. A small pale stone or ballast fragment is visible in or under the hole. The other hole holds a nut and washer, and a hooked clip sits beside the rail.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. This may be an unused or alternate-pattern hole that was never meant to hold a fastener. I can't tell from one photo whether a fastener is expected at this spot.\",\"alternatives\":[\"unused hole for an alternate fastening design\",\"fastener position not required for this plate type\",\"ballast fragment lodged in a deliberately empty hole\",\"the hole is a drainage or manufacturing feature\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.66,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.32,
+    0.65,
+    0.1,
+    0.09
+   ],
+   "localized": true,
+   "visible_reason": "The left hole in the orange base plate has no bolt, spike or clip in it. A small pale stone or ballast fragment is visible in or under the hole. The other hole holds a nut and washer, and a hooked clip sits beside the rail.",
+   "assessability": "assessable",
+   "uncertainty": "High. This may be an unused or alternate-pattern hole that was never meant to hold a fastener. I can't tell from one photo whether a fastener is expected at this spot.",
+   "alternatives": [
+    "unused hole for an alternate fastening design",
+    "fastener position not required for this plate type",
+    "ballast fragment lodged in a deliberately empty hole",
+    "the hole is a drainage or manufacturing feature"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc030",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:52:28Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

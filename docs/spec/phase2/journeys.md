@@ -1,0 +1,39 @@
+# Phase 2 journeys (estimate -> publish -> customer -> work order)
+
+- JRN-31 steps: estimator opens a submitted visit with a confirmed tie observation (repair 8, inspected 12, Contractor supply, crosstie spec), taps Preview tie package, then Add package. expected: tie material line qty 8 "each" (origin "confirmed repair count"); labor/equipment/trip lines with own allowance basis marked "Needs review"; added once.
+- JRN-32 steps: tap Add package again / retry same request. expected: no duplicate lines.
+- JRN-33 steps: same observation with material responsibility Customer. expected: no tie material purchase line; labor/handling/equipment lines remain; proposal shows "Ties supplied by customer".
+- JRN-34 steps: after review, change supplier from Customer to Contractor. expected: dependent lines "Needs review", estimator edits kept, reconciliation required before publish.
+- JRN-35 steps: preview package on observation missing specification. expected: blocker "Specification missing"; no priced material line.
+- JRN-36 steps: manual line Q=3, C=0.335, markup 25%, taxable, tax 7.5%. expected: internal cost 1.01; line total 1.26; tax 0.09; total 1.35.
+- JRN-37 steps: two taxable lines totaling 0.05 each, tax 5%. expected: subtotal 0.10; tax 0.01; total 0.11.
+- JRN-38 steps: enter qty 0, qty -1, cost -5, markup "NaN", 5-decimal cost; send a client total of 999. expected: each rejected with field error; server total unchanged.
+- JRN-39 steps: estimate with zero subtotal. expected: margin "N/A"; zero-price line requires explicit review.
+- JRN-40 steps: tax rate 0% configured. expected: configured tax treatment text shown; no "Taxes not included".
+- JRN-41 steps: add mobilization on two findings. expected: "Duplicate mobilization" warning; keeping both requires a reason.
+- JRN-42 steps: manual labor-only General repair line vs material-dependent General repair. expected: labor-only not asked for supplier/spec; material-dependent blocked until spec/responsibility supplied.
+- JRN-43 steps: mark missing specification "Not applicable" with reason, then Validate. expected: still blocked "Specification missing".
+- JRN-44 steps: Validate a draft on v-seed-pinecrest with unresolved 8 vs 10. expected: blocker "Unresolved discrepancy: repair quantity"; Publish disabled.
+- JRN-45 steps: Validate with an unreviewed line, no selected photo, expiry in the past. expected: each listed as a blocker.
+- JRN-46 steps: include a Not inspected area and a Further assessment observation. expected: shown distinctly with reasons; no quantities or charges for them.
+- JRN-47 steps: open Agreement preview. expected: populated agreement labeled "Illustrative sample – not contractor-approved terms" with all required variables filled from estimate.
+- JRN-48 steps: clear contractor legal identity / edit payment terms without review / change price after preview. expected: issue blocked naming the missing variable / "Unreviewed term edit" / "Stale price".
+- JRN-49 steps: publish a clean draft. expected: "Version 1 published"; snapshot hash and agreement document hash shown; contract status Issued.
+- JRN-50 steps: retry publish with same draft revision + key. expected: same version 1, no version 2.
+- JRN-51 steps: edit draft and catalog rate after publish; reopen version 1 and its print. expected: version 1 content, totals and hashes unchanged.
+- JRN-52 steps: save unpublished draft changes. expected: version 1 still actionable via link; publish -> version 2, version 1 shows "Superseded" read-only.
+- JRN-53 steps: Share -> open link /p/:token in a browser. expected: scope, selected photos, totals, tax treatment, agreement, terms, expiry with timezone; no cost, markup, margin, audio, transcript, dismissed candidate, model data.
+- JRN-54 steps: request a guessed/unselected media id via the token. expected: 404.
+- JRN-55 steps: revoke the link; reload page, fetch media, try accept. expected: all denied; a newly issued link shows the same version.
+- JRN-56 steps: accept with missing name, invalid email, unchecked agreement box. expected: field errors; no decision stored.
+- JRN-57 steps: set expiry to site-local time 1 minute from now (site timezone), wait past it, try accept. expected: "This proposal has expired"; UTC instant matches site-local entry.
+- JRN-58 steps: customer requests changes with comment "Can you lower the trip charge?". expected: stored with version, name/email; acceptance disabled; staff see topic suggestion "price"; customer does not see the topic.
+- JRN-59 steps: estimator copies changed-requested version to a new draft. expected: feedback + history visible; new draft editable.
+- JRN-60 steps: customer accepts a valid version. expected: "Accepted" confirmation; decision binds proposal version + agreement hash; exactly one work order created; contract status Accepted.
+- JRN-61 steps: 10 concurrent accept calls + a retry after lost response. expected: one decision, one work order; retries return same work order id.
+- JRN-62 steps: accept races with revoke / publish of new version / change request. expected: single consistent winner; never two work orders or acceptance of a stale version.
+- JRN-63 steps: attempt to publish another commercial revision after acceptance. expected: 409 "Engagement already accepted"; work order unchanged.
+- JRN-64 steps: open work order, assign seeded crew + date, set access Requested then Confirmed. expected: frozen accepted scope unchanged; access starts "Not arranged"; transitions attributed; no "repaired"/"released" wording.
+- JRN-65 steps: open printable proposal/contract (staff and customer). expected: contractor identity, customer/site, visit + proposal ids/version/date, findings, photos, coverage exclusions, totals, tax, assumptions, terms, expiry; no internal data; no clipped sections.
+- JRN-66 steps: do the whole estimate -> publish -> share flow on the Expo app as estimator; foreman account tries the same. expected: estimator succeeds on phone; foreman gets 403 on estimate/publish.
+- JRN-67 steps: cross-workspace user requests proposal/estimate/work-order ids. expected: 404, no side effect.

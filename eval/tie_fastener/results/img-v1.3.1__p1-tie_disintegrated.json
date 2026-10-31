@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.05,0.8,0.75],\"visible_reason\":\"Grey weathered timber pieces lie across the ballast. Several are visibly broken apart: long splinters, a snapped sliver angled across the middle, frayed and fibrous ends, and what look like missing chunks. The wood looks fragmented rather than a single intact tie surface.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The photo shows no clear tie outline, no rail, and no fastening hardware, so I cannot tell whether these pieces are an in-track tie or loose lumber on the ballast. Part of the splintering may also be ordinary weathering and checking.\",\"alternatives\":[\"Loose wood debris or old timber pieces lying on the ballast, not a tie in service\",\"Fallen branches or planks\",\"Deep surface checking and weathering on an otherwise intact tie\",\"Ballast, leaves and debris hiding the true shape of the wood\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 6.91,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.05,
+    0.8,
+    0.75
+   ],
+   "localized": true,
+   "visible_reason": "Grey weathered timber pieces lie across the ballast. Several are visibly broken apart: long splinters, a snapped sliver angled across the middle, frayed and fibrous ends, and what look like missing chunks. The wood looks fragmented rather than a single intact tie surface.",
+   "assessability": "assessable",
+   "uncertainty": "High. The photo shows no clear tie outline, no rail, and no fastening hardware, so I cannot tell whether these pieces are an in-track tie or loose lumber on the ballast. Part of the splintering may also be ordinary weathering and checking.",
+   "alternatives": [
+    "Loose wood debris or old timber pieces lying on the ballast, not a tie in service",
+    "Fallen branches or planks",
+    "Deep surface checking and weathering on an otherwise intact tie",
+    "Ballast, leaves and debris hiding the true shape of the wood"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "p1-tie_disintegrated",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:53:08Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

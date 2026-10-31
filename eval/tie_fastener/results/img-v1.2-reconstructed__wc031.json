@@ -1,0 +1,79 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.28,0.55,0.35,0.27],\"visible_reason\":\"The steel tie plate under the rail shows two square holes with only small amounts of light-coloured debris or soil inside and no spike or screw visible in either hole. A rounded metal knob sits on the plate edge near the rail base.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the close-up shows only one plate and one side of the rail, so the full fastening arrangement is not visible. The holes may be spare or unused positions, and the rounded object may be part of the fastening or a different hardware design.\",\"alternatives\":[\"unused spike holes in a multi-hole plate\",\"alternate fastening design not visible from this angle\",\"fastener hidden by rail base or shadow\",\"rounded knob is a clip or anchor component\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.03,0.75,0.35,0.24],\"visible_reason\":\"The wooden tie surface at the lower left has dark, rough, uneven patches with deep cracks and what looks like surface breakup or splintering. Long grain checks run along the timber toward the plate.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the dark rough texture could be real wood decay or damage, but surface weathering, checking and shadow can look similar in bright sunlight. Only one side of the tie is visible.\",\"alternatives\":[\"normal weathering and seasoning checks\",\"wet or oil-stained wood colour\",\"shadow in the cracks\",\"ballast dust or debris on the surface\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.45,0.72,0.23,0.25],\"visible_reason\":\"Longitudinal cracks and grain splitting run across the tie face to the right of the plate, ending at a dark, rough edge near the ballast.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: these look like typical timber checking, and nothing in the photo shows how deep or severe the cracks are.\",\"alternatives\":[\"normal seasoning checks\",\"shadow from adjacent ballast\",\"surface weathering only\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.27,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.28,
+    0.55,
+    0.35,
+    0.27
+   ],
+   "localized": true,
+   "visible_reason": "The steel tie plate under the rail shows two square holes with only small amounts of light-coloured debris or soil inside and no spike or screw visible in either hole. A rounded metal knob sits on the plate edge near the rail base.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the close-up shows only one plate and one side of the rail, so the full fastening arrangement is not visible. The holes may be spare or unused positions, and the rounded object may be part of the fastening or a different hardware design.",
+   "alternatives": [
+    "unused spike holes in a multi-hole plate",
+    "alternate fastening design not visible from this angle",
+    "fastener hidden by rail base or shadow",
+    "rounded knob is a clip or anchor component"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.03,
+    0.75,
+    0.35,
+    0.24
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie surface at the lower left has dark, rough, uneven patches with deep cracks and what looks like surface breakup or splintering. Long grain checks run along the timber toward the plate.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the dark rough texture could be real wood decay or damage, but surface weathering, checking and shadow can look similar in bright sunlight. Only one side of the tie is visible.",
+   "alternatives": [
+    "normal weathering and seasoning checks",
+    "wet or oil-stained wood colour",
+    "shadow in the cracks",
+    "ballast dust or debris on the surface"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.45,
+    0.72,
+    0.23,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "Longitudinal cracks and grain splitting run across the tie face to the right of the plate, ending at a dark, rough edge near the ballast.",
+   "assessability": "assessable",
+   "uncertainty": "high: these look like typical timber checking, and nothing in the photo shows how deep or severe the cracks are.",
+   "alternatives": [
+    "normal seasoning checks",
+    "shadow from adjacent ballast",
+    "surface weathering only"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc031",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:48:48Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

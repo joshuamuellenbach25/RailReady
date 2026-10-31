@@ -1,0 +1,26 @@
+# Phase 4 journeys
+
+- JRN-86 steps: upload two different real rail photos to a draft visit (web or mobile), sync. expected: each reaches scene "Ready" with its own scene id and source hash; model id/revision/onnx hash shown in provenance; originals unchanged.
+- JRN-87 steps: re-trigger scene generation for the same photo without changes. expected: same scene returned; no new inference run recorded.
+- JRN-88 steps: open /office/visits/:id/scene as estimator. expected: top bar, provenance strip, inventory, scene, evidence drawer, footer; "AI-estimated depth. Geometry and scale unverified." visible; Ready only after first frame renders.
+- JRN-89 steps: orbit, pan, zoom, then Reset view. expected: camera returns to capture view; orbit limited near capture viewpoint.
+- JRN-90 steps: click a marker; then click a different inventory row. expected: row + drawer follow the marker's finding id; clicking row highlights its marker; ids match.
+- JRN-91 steps: toggle Original photo; toggle Markers off and on. expected: real photo with normalized boxes at the same spots; markers hide without data loss and return.
+- JRN-92 steps: switch to the other photo; switch back 10 times. expected: only the current photo's geometry/markers show; no stale markers; at most one live WebGL context.
+- JRN-93 steps: upload a portrait photo, a landscape photo and one with EXIF rotation. expected: box, crop and marker positions correspond to the same visible spot (within Q-24) in each.
+- JRN-94 steps: move an anchor, reload. expected: new anchor version persists with actor/time and basis "manual"; candidate review state, quantities and issued documents unchanged.
+- JRN-95 steps: confirm a candidate in the drawer; open its estimate link and return. expected: review persists after reload; selection restored; no duplicated repair quantity.
+- JRN-96 steps: a candidate whose region can't be placed (unlocalized). expected: listed "Unplaced" with reason; evidence still viewable.
+- JRN-97 steps: force depth failure (fault injection) then Retry. expected: scene "Failed" with reason + Retry; original photo, candidates and review usable; retry succeeds without reupload.
+- JRN-98 steps: upload a HEIC (or unsupported) file. expected: "Unsupported photo format – view original or upload JPEG/PNG"; original retained.
+- JRN-99 steps: disable WebGL (or simulate context failure). expected: "Graphics unavailable" with evidence-only view; review still works.
+- JRN-100 steps: other-workspace user or no auth requests scene asset / crop / original URL; reuse an expired short-lived asset URL. expected: 404/401/403; no bytes returned.
+- JRN-101 steps: type in a search/notes field inside the workspace and press W/A/S/D/arrows. expected: text typed; camera does not move.
+- JRN-102 steps: open the workspace at 1440, 1024, 390 and 360 px. expected: layouts per spec; at 390 scene above list with evidence sheet; no horizontal overflow; 44px touch targets.
+- JRN-103 steps: reopen the same visit scene 5 times. expected: zero new image-analysis or depth runs.
+- JRN-104 steps: open `/` in a fresh browser. expected: nav How it works / What it handles / Example job / Contact; hero "Run the track work. Keep the business moving."; "View example job" + "Discuss your workflow"; prototype-stage label; illustrative job labelled "Illustrative example, fictional data. No live transaction."; "Open demo workspace" and "Staff sign in" reachable; no gradients/animated counters.
+- JRN-105 steps: enter tie each-priced quantity 8.5. expected: field error "Whole number required"; 8 accepted.
+- JRN-106 steps: revoke a link while the customer page is open, then load another photo on it. expected: media request denied.
+- JRN-107 steps: create demo session while object storage blips. expected: retried; otherwise 503 "Demo setup temporarily unavailable – try again", never a raw 500.
+- JRN-108 steps: on work order select crew and immediately tap access next. expected: controls disabled while saving; no 409 for the user.
+- JRN-109 steps: full regression: estimate -> publish -> customer accept (and duplicate accept, refresh) on web. expected: exactly one work order; immutable proposal/agreement unchanged.

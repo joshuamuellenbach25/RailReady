@@ -1,0 +1,98 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.0,0.23,0.42,0.7],\"visible_reason\":\"The wooden tie surface on the left shows heavy graining with long cracks and splits running along the wood. Some edges look rough or frayed, and there is a dark gap near the upper edge where the surface appears separated. Wood fibres look weathered and grey-brown.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: cracking and weathering are clearly visible, but surface checking is common on aged wood and the photo cannot show how deep the cracks go.\",\"alternatives\":[\"normal surface checking on weathered wood\",\"dry or sun-bleached wood colour\",\"shadow emphasizing grain lines\",\"ballast dust on the surface\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.2,0.8,0.22,0.15],\"visible_reason\":\"At the bottom edge of the tie there is a roughly broken or splintered piece of wood with a jagged outline, lying near the ballast stones. It may be a chipped or split section of the tie end or a loose wood fragment.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: the piece is partly covered by stones and shadow, so it is unclear whether it is attached to the tie or is separate debris.\",\"alternatives\":[\"loose wood debris resting on the ballast\",\"ballast stones occluding the tie edge\",\"shadow hiding the true tie outline\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.38,0.14,0.06,0.07],\"visible_reason\":\"On the upper part of the tie plate there is a dark notch or hole near the plate edge, with no fastener head visible in it. Other holes on the plate seem to hold spikes, so this one stands out as empty.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: it is small and dark, and the photo cannot show whether this hole is meant to hold a fastener.\",\"alternatives\":[\"unused spike hole\",\"alternate plate design with extra holes\",\"shadow or debris filling the hole\",\"spike removed during earlier maintenance\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.49,0.64,0.1,0.17],\"visible_reason\":\"The lower spike head next to the rail base is sitting at an angle and looks slightly different in position from the upper spike. It appears to stand a little proud of the plate, with a visible shadow beside it.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: the viewing angle and close-up perspective could make a normally seated spike look tilted or raised.\",\"alternatives\":[\"normal spike seating seen from an oblique angle\",\"perspective distortion at close range\",\"rust or corrosion changing the apparent head shape\",\"ballast stones partly covering the spike base\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.28,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.0,
+    0.23,
+    0.42,
+    0.7
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie surface on the left shows heavy graining with long cracks and splits running along the wood. Some edges look rough or frayed, and there is a dark gap near the upper edge where the surface appears separated. Wood fibres look weathered and grey-brown.",
+   "assessability": "assessable",
+   "uncertainty": "medium: cracking and weathering are clearly visible, but surface checking is common on aged wood and the photo cannot show how deep the cracks go.",
+   "alternatives": [
+    "normal surface checking on weathered wood",
+    "dry or sun-bleached wood colour",
+    "shadow emphasizing grain lines",
+    "ballast dust on the surface"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.2,
+    0.8,
+    0.22,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "At the bottom edge of the tie there is a roughly broken or splintered piece of wood with a jagged outline, lying near the ballast stones. It may be a chipped or split section of the tie end or a loose wood fragment.",
+   "assessability": "assessable",
+   "uncertainty": "high: the piece is partly covered by stones and shadow, so it is unclear whether it is attached to the tie or is separate debris.",
+   "alternatives": [
+    "loose wood debris resting on the ballast",
+    "ballast stones occluding the tie edge",
+    "shadow hiding the true tie outline"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.38,
+    0.14,
+    0.06,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "On the upper part of the tie plate there is a dark notch or hole near the plate edge, with no fastener head visible in it. Other holes on the plate seem to hold spikes, so this one stands out as empty.",
+   "assessability": "assessable",
+   "uncertainty": "high: it is small and dark, and the photo cannot show whether this hole is meant to hold a fastener.",
+   "alternatives": [
+    "unused spike hole",
+    "alternate plate design with extra holes",
+    "shadow or debris filling the hole",
+    "spike removed during earlier maintenance"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.49,
+    0.64,
+    0.1,
+    0.17
+   ],
+   "localized": true,
+   "visible_reason": "The lower spike head next to the rail base is sitting at an angle and looks slightly different in position from the upper spike. It appears to stand a little proud of the plate, with a visible shadow beside it.",
+   "assessability": "assessable",
+   "uncertainty": "high: the viewing angle and close-up perspective could make a normally seated spike look tilted or raised.",
+   "alternatives": [
+    "normal spike seating seen from an oblique angle",
+    "perspective distortion at close range",
+    "rust or corrosion changing the apparent head shape",
+    "ballast stones partly covering the spike base"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc018",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:45:06Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

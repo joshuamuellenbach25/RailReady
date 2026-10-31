@@ -1,0 +1,78 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.36,0.28,0.49,0.31],\"visible_reason\":\"The exposed end face of the wooden tie shows many radial and branching cracks. One long dark crack runs diagonally across the face, with finer checks around it. The grain looks weathered and rough.\",\"assessability\":\"assessable\",\"uncertainty\":\"medium: the end face is clearly visible and sharp, but I cannot tell whether the cracks are shallow seasoning checks or deeper structural damage from this angle.\",\"alternatives\":[\"normal seasoning checks in hardwood end grain\",\"surface weathering without internal decay\",\"shadow or dirt making cracks look deeper than they are\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.37,0.32,0.12,0.3],\"visible_reason\":\"The left side face of the tie looks rough, with weathered grain and some fine dark lines running along it. Part of the surface is dark and stained near the rail.\",\"assessability\":\"assessable\",\"uncertainty\":\"high: the side face is seen at a steep angle and the staining could be unrelated to the wood condition.\",\"alternatives\":[\"wet or stained wood colour\",\"soil or dust staining\",\"lighting and viewing angle effects\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.32,0.24,0.14,0.08],\"visible_reason\":\"At the junction of the rail base and the tie top, a dark curved object lies partly under ballast stones. I cannot see a clear plate, spike or clip seated on the tie there, and the area is partly covered.\",\"assessability\":\"cannot_assess\",\"uncertainty\":\"high: ballast and the camera angle hide the rail seat, and the object might be a normal fastening part or a piece of debris.\",\"alternatives\":[\"ballast covering the tie plate or spike\",\"a plate edge or clip of a different fastening design\",\"debris or a bent metal fragment\",\"occlusion by the rail web and foreground stones\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 9.66,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.36,
+    0.28,
+    0.49,
+    0.31
+   ],
+   "localized": true,
+   "visible_reason": "The exposed end face of the wooden tie shows many radial and branching cracks. One long dark crack runs diagonally across the face, with finer checks around it. The grain looks weathered and rough.",
+   "assessability": "assessable",
+   "uncertainty": "medium: the end face is clearly visible and sharp, but I cannot tell whether the cracks are shallow seasoning checks or deeper structural damage from this angle.",
+   "alternatives": [
+    "normal seasoning checks in hardwood end grain",
+    "surface weathering without internal decay",
+    "shadow or dirt making cracks look deeper than they are"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.37,
+    0.32,
+    0.12,
+    0.3
+   ],
+   "localized": true,
+   "visible_reason": "The left side face of the tie looks rough, with weathered grain and some fine dark lines running along it. Part of the surface is dark and stained near the rail.",
+   "assessability": "assessable",
+   "uncertainty": "high: the side face is seen at a steep angle and the staining could be unrelated to the wood condition.",
+   "alternatives": [
+    "wet or stained wood colour",
+    "soil or dust staining",
+    "lighting and viewing angle effects"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.32,
+    0.24,
+    0.14,
+    0.08
+   ],
+   "localized": true,
+   "visible_reason": "At the junction of the rail base and the tie top, a dark curved object lies partly under ballast stones. I cannot see a clear plate, spike or clip seated on the tie there, and the area is partly covered.",
+   "assessability": "cannot_assess",
+   "uncertainty": "high: ballast and the camera angle hide the rail seat, and the object might be a normal fastening part or a piece of debris.",
+   "alternatives": [
+    "ballast covering the tie plate or spike",
+    "a plate edge or clip of a different fastening design",
+    "debris or a bent metal fragment",
+    "occlusion by the rail web and foreground stones"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc032",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:04Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

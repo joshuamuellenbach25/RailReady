@@ -1,0 +1,22 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\": \"cannot_assess\", \"cannot_assess_reason\": \"This is a close-up of a single rusted rail section on a metal base plate with a bolt, nut and clamp. No tie surface is in view, so tie deterioration cannot be judged. Only one fastening position is visible and the surrounding fastening positions are out of frame. Leaves, plants and shadows partly occlude the rail and ballast. Nothing in view falls clearly into either allowed category, but the image is too limited for a meaningful review of ties or fastenings.\", \"candidates\": []}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 6.85,
+ "image_assessability": "cannot_assess",
+ "cannot_assess_reason": "This is a close-up of a single rusted rail section on a metal base plate with a bolt, nut and clamp. No tie surface is in view, so tie deterioration cannot be judged. Only one fastening position is visible and the surrounding fastening positions are out of frame. Leaves, plants and shadows partly occlude the rail and ballast. Nothing in view falls clearly into either allowed category, but the image is too limited for a meaningful review of ties or fastenings.",
+ "candidates": [],
+ "rejected": [],
+ "id": "wc034",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:52:46Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

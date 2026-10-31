@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.18,0.4,0.2,0.25],\"visible_reason\":\"On the lower-left tie under the rail, a dark lengthwise line divides the wood into two strips. A gap between them may run through the tie, with stones visible at its upper end near the plate. The line is wider and more continuous than the fine surface checking seen on neighbouring ties.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The viewing angle is oblique, and I cannot tell whether the line is a through-split or a deep surface check. It could also be two separate narrow timbers side by side.\",\"alternatives\":[\"Deep surface check rather than a through-split\",\"Two adjacent narrow ties or a tie with a spliced or boxed section\",\"Shadow or ballast filling a natural groove\",\"Perspective effect from the low camera angle\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 11.43,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.18,
+    0.4,
+    0.2,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "On the lower-left tie under the rail, a dark lengthwise line divides the wood into two strips. A gap between them may run through the tie, with stones visible at its upper end near the plate. The line is wider and more continuous than the fine surface checking seen on neighbouring ties.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The viewing angle is oblique, and I cannot tell whether the line is a through-split or a deep surface check. It could also be two separate narrow timbers side by side.",
+   "alternatives": [
+    "Deep surface check rather than a through-split",
+    "Two adjacent narrow ties or a tie with a spliced or boxed section",
+    "Shadow or ballast filling a natural groove",
+    "Perspective effect from the low camera angle"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc029",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:52:21Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

@@ -1,0 +1,16 @@
+# Phase 4b journeys (V01–V15)
+- V01 steps: two different rail photos, one newly uploaded through existing upload controls. expected: photo-specific geometry/colors; distinct source + scene hashes; no fixed scene.
+- V02 steps: zero-finding photo; finding without box. expected: renders with empty list; boxless finding "Unplaced", no invented geometry/detections.
+- V03 steps: landscape, portrait, EXIF-rotated photos; numeric test of all 8 orientation transforms. expected: photo/crop/box/pin coordinates match; transforms numerically correct.
+- V04 steps: at Reset view compare projected anchors vs [(col+0.5)/W,(row+0.5)/H] at DPR 1 and 2, resized, wide + tall layouts. expected: <= half-sample + 2 CSS px.
+- V05 steps: open 3D view. expected: complete first frame before "Interactive ready"; orbit/pan/zoom/reset, Original photo toggle, Markers, selection and crops work.
+- V06 steps: reload; then create a new scene revision. expected: same photo/finding/anchors restored; new revision does not reuse old XYZ silently.
+- V07 steps: rapid A->B switching, unmount during processing/loading, repeated enter/exit. expected: no stale completion shown; <=1 WebGL context; no leaked listeners.
+- V08 steps: reopen/interact with ready scenes; let a signed URL expire. expected: zero depth/detection calls; refresh fetches same scene.
+- V09 steps: corrupt, oversized, unsupported, model checksum failure, flat/uninformative depth, storage failure, expired media, no WebGL. expected: truthful state each; original access preserved.
+- V10 steps: other workspace / unauthorized guessed ids for status/assets/manifest/depth/crops/anchor PUT. expected: denied, no bytes, no change.
+- V11 steps: desktop + 390px + touch + rotation + keyboard. expected: works, no horizontal overflow; physical phone marked UNKNOWN unless tested.
+- V12 steps: compare evidence/finding/review records before and after. expected: unchanged identities/values; only viewer metadata added.
+- V13 steps: provision with good cache, bad cache, bad download, interrupted download. expected: verified install only; mismatch rejected; partial files cleaned; one reusable session.
+- V14 steps: load private PLY via Bearer route (Blob URL) and via signed URL; teardown; expiry. expected: loads; Blob URLs revoked; expiry refresh without inference.
+- V15 steps: existing boxes -> anchors; duplicate deliveries; auto refresh after manual move. expected: correct anchors, no duplicates, manual placement kept.

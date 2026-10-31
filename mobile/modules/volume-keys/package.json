@@ -1,0 +1,7 @@
+{
+  "name": "railready-volume-keys",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "description": "Android volume-key capture for the in-app camera (local Expo module)."
+}

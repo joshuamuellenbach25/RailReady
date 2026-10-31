@@ -1,0 +1,59 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.42,0.45,0.38,0.14],\"visible_reason\":\"On the top tie, the surface around and below the plate seat looks broken up. Wood layers are peeling and splintered, with a cavity-like dark hollow and loose slivers or flaps near the lower centre-right. A thin piece of wood or metal sticks out from the splintered area.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. The view is oblique and the rust staining makes it hard to tell surface splintering from deeper loss. The depth of the damage cannot be judged from one photo.\",\"alternatives\":[\"Superficial surface delamination or weathering made to look worse by rust staining and shadow\",\"Handling or stacking damage on a tie that is not in track\",\"Debris or loose wood fragments resting on the surface\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.2,0.28,0.45,0.25],\"visible_reason\":\"Around the plate seat area on the top tie, the wood is heavily rust-stained and the grain looks torn and layered. Several dark round holes and elongated dark voids sit along the surface, with open cracks running between them.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The round holes could be old spike or bolt holes. The cracks may be ordinary checking, and it is unclear whether the damage goes through the tie.\",\"alternatives\":[\"Unused or old spike holes\",\"Normal surface checking and rust staining from a removed tie plate\",\"Dark shadowed areas that look like voids\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 5.62,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.42,
+    0.45,
+    0.38,
+    0.14
+   ],
+   "localized": true,
+   "visible_reason": "On the top tie, the surface around and below the plate seat looks broken up. Wood layers are peeling and splintered, with a cavity-like dark hollow and loose slivers or flaps near the lower centre-right. A thin piece of wood or metal sticks out from the splintered area.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. The view is oblique and the rust staining makes it hard to tell surface splintering from deeper loss. The depth of the damage cannot be judged from one photo.",
+   "alternatives": [
+    "Superficial surface delamination or weathering made to look worse by rust staining and shadow",
+    "Handling or stacking damage on a tie that is not in track",
+    "Debris or loose wood fragments resting on the surface"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.2,
+    0.28,
+    0.45,
+    0.25
+   ],
+   "localized": true,
+   "visible_reason": "Around the plate seat area on the top tie, the wood is heavily rust-stained and the grain looks torn and layered. Several dark round holes and elongated dark voids sit along the surface, with open cracks running between them.",
+   "assessability": "assessable",
+   "uncertainty": "High. The round holes could be old spike or bolt holes. The cracks may be ordinary checking, and it is unclear whether the damage goes through the tie.",
+   "alternatives": [
+    "Unused or old spike holes",
+    "Normal surface checking and rust staining from a removed tie plate",
+    "Dark shadowed areas that look like voids"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "p1-tie_old_rotten",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:53:06Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.78,0.75,0.11,0.05],\"visible_reason\":\"The rusty steel tie plate at lower right has a square hole that looks empty. There is a little debris or dried plant matter inside and no spike or clip head visible in it.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. Only part of the plate and tie is in frame, so it cannot be told whether this hole is an expected fastening position. Many plates have extra holes that are normally left unused.\",\"alternatives\":[\"unused spike hole on a multi-hole plate\",\"alternate fastening design that does not use this hole\",\"fastener out of frame or hidden by the camera angle\",\"debris hiding a spike shank\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 7.59,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.78,
+    0.75,
+    0.11,
+    0.05
+   ],
+   "localized": true,
+   "visible_reason": "The rusty steel tie plate at lower right has a square hole that looks empty. There is a little debris or dried plant matter inside and no spike or clip head visible in it.",
+   "assessability": "assessable",
+   "uncertainty": "High. Only part of the plate and tie is in frame, so it cannot be told whether this hole is an expected fastening position. Many plates have extra holes that are normally left unused.",
+   "alternatives": [
+    "unused spike hole on a multi-hole plate",
+    "alternate fastening design that does not use this hole",
+    "fastener out of frame or hidden by the camera angle",
+    "debris hiding a spike shank"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc001-crop",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:53:28Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

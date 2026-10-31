@@ -1,0 +1,132 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"visible tie-surface deterioration\",\"region\":[0.38,0.06,0.2,0.56],\"visible_reason\":\"The grey, weathered tie in the upper centre shows long lengthwise cracks and splits. The grain looks opened up and fibrous, and the surface is rough and fragmented along its length.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the cracks are clearly visible, but from a single top-down view I cannot tell how deep they go. Some of this may be normal surface checking on old, dry wood.\",\"alternatives\":[\"superficial seasoning checks\",\"sun-bleached weathering that looks worse than it is\",\"ballast or soil staining\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.85,0.17,0.15,0.45],\"visible_reason\":\"The tie at the right edge has a splintered, frayed end with a dark void or gap near its lower right. The surface shows several split lines.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the tie is partly cut off by the frame edge, and the dark area could be a shadow or a gap in the ballast rather than a hole in the wood.\",\"alternatives\":[\"shadow\",\"gap in ballast beside the tie\",\"frame cropping hiding the true extent\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.64,0.17,0.11,0.45],\"visible_reason\":\"The tie has a split or lifted section along its length, with a layered, peeling look toward the lower end near the rail.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the edge of the split is visible, but depth and extent are unclear from this angle.\",\"alternatives\":[\"surface checking\",\"shadow along the split\",\"weathered grain pattern\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.3,0.7,0.14,0.24],\"visible_reason\":\"The tie below the lower rail has a stringy, splintered surface with several parallel splits. The wood looks separated into strands.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the splitting is visible, but the contrast between grey fibres and dark gaps could exaggerate it.\",\"alternatives\":[\"normal weathering checks\",\"shadow in the cracks\",\"dry-wood grain separation\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.12,0.7,0.14,0.24],\"visible_reason\":\"The tie below the lower rail near the left has a rough, splintered surface with lengthwise splits and a ragged end.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium: the cracks are visible, but depth and condition under the surface cannot be judged from the photo.\",\"alternatives\":[\"surface checking\",\"shadow\",\"ballast debris along the edges\"]},{\"category\":\"possible missing/displaced fastener\",\"region\":[0.35,0.68,0.09,0.05],\"visible_reason\":\"The tie plate and fastening on this tie at the lower rail appear to sit toward the edge of the tie, and no clear spike or bolt heads are seen on it. The plate looks possibly offset from the tie's centre line.\",\"assessability\":\"assessable\",\"uncertainty\":\"High: the angle and rust-coloured surfaces make it hard to see the fastener hardware, and the apparent offset may just be the tie's own angle or position.\",\"alternatives\":[\"alternate fastening design\",\"tie skew rather than plate shift\",\"rust blending the hardware into the rail\",\"spike heads hidden in shadow\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 22.24,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.38,
+    0.06,
+    0.2,
+    0.56
+   ],
+   "localized": true,
+   "visible_reason": "The grey, weathered tie in the upper centre shows long lengthwise cracks and splits. The grain looks opened up and fibrous, and the surface is rough and fragmented along its length.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the cracks are clearly visible, but from a single top-down view I cannot tell how deep they go. Some of this may be normal surface checking on old, dry wood.",
+   "alternatives": [
+    "superficial seasoning checks",
+    "sun-bleached weathering that looks worse than it is",
+    "ballast or soil staining"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.85,
+    0.17,
+    0.15,
+    0.45
+   ],
+   "localized": true,
+   "visible_reason": "The tie at the right edge has a splintered, frayed end with a dark void or gap near its lower right. The surface shows several split lines.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the tie is partly cut off by the frame edge, and the dark area could be a shadow or a gap in the ballast rather than a hole in the wood.",
+   "alternatives": [
+    "shadow",
+    "gap in ballast beside the tie",
+    "frame cropping hiding the true extent"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.64,
+    0.17,
+    0.11,
+    0.45
+   ],
+   "localized": true,
+   "visible_reason": "The tie has a split or lifted section along its length, with a layered, peeling look toward the lower end near the rail.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the edge of the split is visible, but depth and extent are unclear from this angle.",
+   "alternatives": [
+    "surface checking",
+    "shadow along the split",
+    "weathered grain pattern"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.3,
+    0.7,
+    0.14,
+    0.24
+   ],
+   "localized": true,
+   "visible_reason": "The tie below the lower rail has a stringy, splintered surface with several parallel splits. The wood looks separated into strands.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the splitting is visible, but the contrast between grey fibres and dark gaps could exaggerate it.",
+   "alternatives": [
+    "normal weathering checks",
+    "shadow in the cracks",
+    "dry-wood grain separation"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.12,
+    0.7,
+    0.14,
+    0.24
+   ],
+   "localized": true,
+   "visible_reason": "The tie below the lower rail near the left has a rough, splintered surface with lengthwise splits and a ragged end.",
+   "assessability": "assessable",
+   "uncertainty": "Medium: the cracks are visible, but depth and condition under the surface cannot be judged from the photo.",
+   "alternatives": [
+    "surface checking",
+    "shadow",
+    "ballast debris along the edges"
+   ]
+  },
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.35,
+    0.68,
+    0.09,
+    0.05
+   ],
+   "localized": true,
+   "visible_reason": "The tie plate and fastening on this tie at the lower rail appear to sit toward the edge of the tie, and no clear spike or bolt heads are seen on it. The plate looks possibly offset from the tie's centre line.",
+   "assessability": "assessable",
+   "uncertainty": "High: the angle and rust-coloured surfaces make it hard to see the fastener hardware, and the apparent offset may just be the tie's own angle or position.",
+   "alternatives": [
+    "alternate fastening design",
+    "tie skew rather than plate shift",
+    "rust blending the hardware into the rail",
+    "spike heads hidden in shadow"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc035",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:49:26Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

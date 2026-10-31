@@ -1,0 +1,79 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.77,0.75,0.11,0.07],\"visible_reason\":\"The square hole in the flat steel plate on the right shows no spike or screw head. Only small debris or dried material is visible inside it. The rail foot and any fastening that would hold it down are not clearly visible in this close-up.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The photo is a tight close-up with no view of the rail foot's hold-down hardware, so it is unclear whether this hole was ever meant to carry a fastener.\",\"alternatives\":[\"unused or spare spike hole\",\"alternate fastening design where this hole is not used\",\"fastener located outside the frame\",\"hole is a lifting or manufacturing hole in the plate\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.57,0.67,0.43,0.33],\"visible_reason\":\"The wooden tie below and beside the plate has a rough, weathered surface with vertical grain lines and what look like splits or checks. The tie edge near the spool-shaped object looks frayed, with splintered wood fibres.\",\"assessability\":\"assessable\",\"uncertainty\":\"Medium. Weathered grain and surface checking can look similar to deeper deterioration. The photo shows only a small part of the tie and gives no sense of depth or condition below the surface.\",\"alternatives\":[\"normal surface weathering and shallow checking\",\"wet wood colour\",\"shadow in the grain\",\"ballast or debris against the tie edge\"]},{\"category\":\"visible tie-surface deterioration\",\"region\":[0.28,0.70,0.27,0.15],\"visible_reason\":\"Thin, flat, splintered pieces of pale wood lie between the ballast stones next to the spool-shaped object. They may have broken off the tie edge.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. It is unclear whether these pieces came from the tie or are loose debris such as bark or leaf litter.\",\"alternatives\":[\"loose debris or bark\",\"dry leaf fragments\",\"wood pieces from elsewhere lodged in the ballast\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 13.82,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.77,
+    0.75,
+    0.11,
+    0.07
+   ],
+   "localized": true,
+   "visible_reason": "The square hole in the flat steel plate on the right shows no spike or screw head. Only small debris or dried material is visible inside it. The rail foot and any fastening that would hold it down are not clearly visible in this close-up.",
+   "assessability": "assessable",
+   "uncertainty": "High. The photo is a tight close-up with no view of the rail foot's hold-down hardware, so it is unclear whether this hole was ever meant to carry a fastener.",
+   "alternatives": [
+    "unused or spare spike hole",
+    "alternate fastening design where this hole is not used",
+    "fastener located outside the frame",
+    "hole is a lifting or manufacturing hole in the plate"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.57,
+    0.67,
+    0.43,
+    0.33
+   ],
+   "localized": true,
+   "visible_reason": "The wooden tie below and beside the plate has a rough, weathered surface with vertical grain lines and what look like splits or checks. The tie edge near the spool-shaped object looks frayed, with splintered wood fibres.",
+   "assessability": "assessable",
+   "uncertainty": "Medium. Weathered grain and surface checking can look similar to deeper deterioration. The photo shows only a small part of the tie and gives no sense of depth or condition below the surface.",
+   "alternatives": [
+    "normal surface weathering and shallow checking",
+    "wet wood colour",
+    "shadow in the grain",
+    "ballast or debris against the tie edge"
+   ]
+  },
+  {
+   "category": "visible tie-surface deterioration",
+   "region": [
+    0.28,
+    0.7,
+    0.27,
+    0.15
+   ],
+   "localized": true,
+   "visible_reason": "Thin, flat, splintered pieces of pale wood lie between the ballast stones next to the spool-shaped object. They may have broken off the tie edge.",
+   "assessability": "assessable",
+   "uncertainty": "High. It is unclear whether these pieces came from the tie or are loose debris such as bark or leaf litter.",
+   "alternatives": [
+    "loose debris or bark",
+    "dry leaf fragments",
+    "wood pieces from elsewhere lodged in the ballast"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc001-crop",
+ "prompt_version": "img-v1.2-reconstructed",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:50:16Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}

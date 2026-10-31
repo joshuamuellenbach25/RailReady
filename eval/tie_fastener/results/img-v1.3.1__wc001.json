@@ -1,0 +1,42 @@
+{
+ "status": "Done",
+ "error_stage": null,
+ "error": null,
+ "raw_responses": [
+  {
+   "attempt": 1,
+   "response": "{\"image_assessability\":\"assessable\",\"cannot_assess_reason\":null,\"candidates\":[{\"category\":\"possible missing/displaced fastener\",\"region\":[0.385,0.75,0.06,0.05],\"visible_reason\":\"A square hole in the steel base plate, left of the one dog spike that is in place, shows bare wood and debris at the bottom and no spike, clip or other fastener.\",\"assessability\":\"assessable\",\"uncertainty\":\"High. The photo is a tight close-up, so it is unclear whether this hole is an expected fastening position for this plate or just a spare or unused hole. The rail-side spike and the two rail-mounted anchor/clip-like pieces appear present.\",\"alternatives\":[\"unused or spare spike hole in a multi-hole plate\",\"alternate fastening design that does not use a spike at this hole\",\"hole intended for a different plate or rail size\",\"viewing angle hides the hole's actual role\"]}]}"
+  }
+ ],
+ "attempts": 1,
+ "duration_s": 8.16,
+ "image_assessability": "assessable",
+ "cannot_assess_reason": null,
+ "candidates": [
+  {
+   "category": "possible missing/displaced fastener",
+   "region": [
+    0.385,
+    0.75,
+    0.06,
+    0.05
+   ],
+   "localized": true,
+   "visible_reason": "A square hole in the steel base plate, left of the one dog spike that is in place, shows bare wood and debris at the bottom and no spike, clip or other fastener.",
+   "assessability": "assessable",
+   "uncertainty": "High. The photo is a tight close-up, so it is unclear whether this hole is an expected fastening position for this plate or just a spare or unused hole. The rail-side spike and the two rail-mounted anchor/clip-like pieces appear present.",
+   "alternatives": [
+    "unused or spare spike hole in a multi-hole plate",
+    "alternate fastening design that does not use a spike at this hole",
+    "hole intended for a different plate or rail size",
+    "viewing angle hides the hole's actual role"
+   ]
+  }
+ ],
+ "rejected": [],
+ "id": "wc001",
+ "prompt_version": "img-v1.3.1",
+ "model_id": "claude-sonnet-5-5",
+ "ran_at": "2026-10-24T22:50:38Z",
+ "cost": "UNKNOWN (not reported by provider wrapper)"
+}
